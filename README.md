@@ -22,7 +22,7 @@ dist: [dist ouptut from expo export ...]
 
 ---
 
-# Preparing a bundled update
+# Getting a manifest
 
 assets/[sha-256 + key]
 
@@ -51,3 +51,15 @@ locahost:3000/api/assets/[sha256(sha256(asset-name) + content-type))]
 ---
 
 "key" in the Assets object is suppose to be the assets/ID_here from the /dist metadata.json. the launch assets dont need to have the "key" set, since they're launch assets.
+
+---
+
+# Publish stuff
+
+reads metadata.json, if not metro bundler, throw an error
+
+---
+
+# Tasks
+
+- [ ] Stuff you'd want to do, if you want to make this a real thing that works for you.
