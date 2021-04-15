@@ -51,11 +51,11 @@ This will create a folder named **dist** inside of **/client** with an update.
 
 ### Load the update on the server
 
-Back in the parent folder of this custom server, we want to take the update we just made in **/client/dist** and load it into our server. We can accomplish this by running `yarn expo-publish` or `npm run expo-publish`. This runs the **publish.js** file, which will store the assets from the update and save it to a SQLite table.
+Back in the parent folder of this custom server, we want to take the update we just made in **/client/dist** and load it into our server. We can accomplish this by running `yarn`, then `yarn expo-publish` or `npm run expo-publish`. This runs the **publish.js** file, which will store the assets from the update and save it to a SQLite table.
 
 ### Send an update
 
-Now we're ready to run the update server. Run `yarn dev` in the parent folder of this repo to start the server.
+Now we're ready to run the update server. Run `yarn dev` or `npm run dev` in the parent folder of this repo to start the server.
 
 In the simulator running the "release" version of the app, force close the app and re-open it. It should make a request to /api/manifest, then to /api/assets. After the app loads, it should show any changes you made locally.
 
