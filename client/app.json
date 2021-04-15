@@ -1,0 +1,12 @@
+{
+  "name": "test-custom-eas-update-server-client",
+  "displayName": "test-custom-eas-update-server-client",
+  "expo": {
+    "name": "test-custom-eas-update-server-client",
+    "slug": "test-custom-eas-update-server-client",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
