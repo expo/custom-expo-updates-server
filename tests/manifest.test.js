@@ -6,7 +6,7 @@ test('returns 400 with POST request', async () => {
 
   await handleManifest(req, res);
 
-  expect(res._getStatusCode()).toBe(400);
+  expect(res._getStatusCode()).toBe(405);
 });
 
 test('returns 400 with unsupported platform header', async () => {

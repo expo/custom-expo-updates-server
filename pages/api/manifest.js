@@ -27,8 +27,8 @@ export default async function manifestEndpoint(req, res) {
   const channel = req.headers['expo-channel-name'];
 
   if (req.method !== 'GET') {
-    res.statusCode = 400;
-    res.json({ error: 'Bad method. Expected GET.' });
+    res.statusCode = 405;
+    res.json({ error: 'Expected GET.' });
     res.end();
     return;
   }
