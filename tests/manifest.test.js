@@ -56,7 +56,7 @@ test('returns latest ios manifest', async () => {
   const { req, res } = createMocks({
     method: 'GET',
     headers: {
-      'expo-runtime-version': '41',
+      'expo-runtime-version': '1',
       'expo-platform': 'ios',
       'expo-channel-name': 'main',
     },
@@ -67,30 +67,30 @@ test('returns latest ios manifest', async () => {
   const firstAsset = data.assets[0];
 
   expect(res._getStatusCode()).toBe(200);
-  expect(data.id).toBe('068f815c-2450-4035-86c8-ccfdfe4a5990');
-  expect(data.createdAt).toBe('2021-04-14T20:49:45.760Z');
-  expect(data.runtimeVersion).toBe('41');
+  expect(data.id).toBe('663cdf84-799b-4a76-8b3c-d0691c1514c1');
+  expect(data.createdAt).toBe('2021-04-15T16:02:56.074Z');
+  expect(data.runtimeVersion).toBe('1');
 
   expect(data.launchAsset.hash).toBe(
-    'b6817c321e398e78bb21c1670637877885b1b0ef315970ce45d9ba59234dfec1'
+    '7150d995d5330ce3851a945f995f075735f94062e6c5abbc387da93ddf81c9ed'
   );
-  expect(data.launchAsset.key).toBe('723d3c7cc7d2bc1488d6a18e0b8cbc64.bundle');
+  expect(data.launchAsset.key).toBe('1c377a3d8385daeee2c6fe355793fff1.bundle');
   expect(data.launchAsset.contentType).toBe('application/javascript');
   expect(data.launchAsset.url).toBe(
-    'http://localhost:3000/api/assets/16a7f94fab7489ec93749b28f8b4b9e34bd7d5e6190401e321509fcfa25a9d62.js'
+    'http://localhost:3000/api/assets/aa45e592585056b252968e7fefb72e7706dde1a2837e2cb0fcdb58a1895140f5.js'
   );
 
   expect(firstAsset.hash).toBe(
-    '2cdfeb8e5ccde7976f7012fb8cce73af2229029ee21d4f1509fed114871c6cd8'
+    '38b0ab4977499b171bb4e9384a9004cccf4bd9cdf950870c8070ac0a5a2611e1'
   );
-  expect(firstAsset.key).toBe('7d40544b395c5949f4646f5e150fe020.png');
-  expect(firstAsset.contentType).toBe('image/png');
+  expect(firstAsset.key).toBe('4842a0f5ef20e73aa86e03bdc980c6ad.jpg');
+  expect(firstAsset.contentType).toBe('image/jpeg');
   expect(firstAsset.url).toBe(
-    'http://localhost:3000/api/assets/9d636fea23253b6e95f7e01a97a86a7ed2dbaddf32f23b88253e74259690cfb3.png'
+    'http://localhost:3000/api/assets/31fea2560634258e9d002be1000bfa42384a5e752e8c42e9471e429daddb04bd.jpeg'
   );
 
   expect(data.updateMetadata.updateGroup).toBe(
-    '112377e0-ee1d-4986-8635-5bf8faf865c7'
+    '16a16b9a-308e-4970-8fbf-3f44c2145e76'
   );
   expect(data.updateMetadata.branchName).toBe('main');
 });
@@ -99,7 +99,7 @@ test('returns latest android manifest', async () => {
   const { req, res } = createMocks({
     method: 'GET',
     headers: {
-      'expo-runtime-version': '41',
+      'expo-runtime-version': '1',
       'expo-platform': 'android',
       'expo-channel-name': 'main',
     },
@@ -110,20 +110,20 @@ test('returns latest android manifest', async () => {
   const firstAsset = data.assets[0];
 
   expect(res._getStatusCode()).toBe(200);
-  expect(data.id).toBe('7844a433-79bc-40d2-b575-0aa155f9c6e9');
-  expect(data.createdAt).toBe('2021-04-14T20:49:45.760Z');
-  expect(data.runtimeVersion).toBe('41');
+  expect(data.id).toBe('ecbdfc41-b9a3-4c20-9515-24605846774b');
+  expect(data.createdAt).toBe('2021-04-15T16:02:56.074Z');
+  expect(data.runtimeVersion).toBe('1');
 
   expect(data.launchAsset.hash).toBe(
-    'e39d0defbd2c26eb697baba2611d8a1da0f41c3ad5c280c7fa5360c07b6beb8a'
+    '910af2ca55bfd531a9730a5d7eed14a0a3690f8512933e44db5e3e5b8d5dcc0d'
   );
 
   expect(firstAsset.hash).toBe(
-    '8b61a4c7ef70dc92753f0494976482f66fd4150ec23dfc772ab65e10373afa55'
+    '38b0ab4977499b171bb4e9384a9004cccf4bd9cdf950870c8070ac0a5a2611e1'
   );
 
   expect(data.updateMetadata.updateGroup).toBe(
-    '112377e0-ee1d-4986-8635-5bf8faf865c7'
+    '16a16b9a-308e-4970-8fbf-3f44c2145e76'
   );
   expect(data.updateMetadata.branchName).toBe('main');
 });

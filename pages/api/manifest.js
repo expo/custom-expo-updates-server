@@ -9,7 +9,9 @@ function getManifestRowFromDB({ platform, runtimeVersion }) {
       [platform, runtimeVersion],
       (err, row) => {
         if (!row) {
-          reject('No row!');
+          reject(
+            `No manifest found with platform "${platform}" and rtv "${runtimeVersion}"`
+          );
           return;
         }
 
@@ -19,39 +21,33 @@ function getManifestRowFromDB({ platform, runtimeVersion }) {
   });
 }
 
-export default async (req, res) => {
-  if (req.method !== 'GET') {
-    // Bad method. Expected GET.
-    res.statusCode = 400;
-    return;
-  }
-
+export default async function manifestEndpoint(req, res) {
   const platform = req.headers['expo-platform'];
-
-  if (platform !== 'ios' && platform !== 'android') {
-    // Unsupported platform. Expected either ios or android.
-    res.statusCode = 400;
-    return;
-  }
-
+  const runtimeVersion = req.headers['expo-runtime-version'];
   const channel = req.headers['expo-channel-name'];
 
+  if (req.method !== 'GET') {
+    res.statusCode = 400;
+    res.json({ error: 'Bad method. Expected GET.' });
+    res.end();
+    return;
+  }
+
+  if (platform !== 'ios' && platform !== 'android') {
+    res.statusCode = 400;
+    res.json({
+      error: 'Unsupported platform. Expected either ios or android.',
+    });
+    res.end();
+    return;
+  }
+
   if (!channel) {
-    // Channel name is required.
     res.statusCode = 400;
+    res.json({ error: 'Channel name is required.' });
+    res.end();
     return;
   }
-
-  const headerKeys = Object.keys(req.headers);
-  if (headerKeys.includes('expo-accept-signature')) {
-    // Signatures not supported.
-    res.statusCode = 400;
-    // res.setHeader('expo-manifest-signature-version', 0);
-    // res.setHeader('expo-manifest-signature', 'RSA SHA256 signature');
-    return;
-  }
-
-  const runtimeVersion = req.headers['expo-runtime-version'];
 
   try {
     let manifestRow = await getManifestRowFromDB({
@@ -80,7 +76,9 @@ export default async (req, res) => {
     res.setHeader('content-type', 'application/json; charset=utf-8');
     res.setHeader('expo-manifest-filters', `branchname="${channel}"`);
     res.json(manifest);
-  } catch {
+  } catch (error) {
     res.statusCode = 404;
+    res.json({ error });
+    res.end();
   }
-};
+}
