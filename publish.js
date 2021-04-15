@@ -11,13 +11,13 @@ const runtimeVersion = process.argv[3];
 // 1. load files from the bundle.
 if (!expoUpdateBundlePath) {
   throw new Error(
-    'You must provide a path to a previously bundled Expo update as an argument to this command.\nExample:\n\nyarn publish ../my-app/dist 41\n\n'
+    'You must provide a path to a previously bundled Expo update as an argument to this command.\nExample:\n\nyarn publish ../my-app/dist 1\n\n'
   );
 }
 
 if (!runtimeVersion) {
   throw new Error(
-    'You must provide a runtime version as an argument to this command.\nExample:\n\nyarn publish ../my-app/dist 41\n\n'
+    'You must provide a runtime version as an argument to this command.\nExample:\n\nyarn publish ../my-app/dist 1\n\n'
   );
 }
 
@@ -30,8 +30,8 @@ const metadataJSONExists = fs.existsSync(resolvedPath);
 
 if (!metadataJSONExists) {
   throw new Error(
-    'There is no metadata.json file at this path. Please provide a path to an Expo update you created with expo export.'
-  ); // TODO: fix this command
+    'There is no metadata.json file at this path. Please provide a path to an Expo update you created with "expo export --experimental-bundle --force".'
+  );
 }
 
 const metadataJSONFile = require(resolvedPath);
@@ -123,14 +123,12 @@ db.serialize(() => {
           return console.log(err.message);
         }
 
-        console.log(`A row has been inserted with rowid ${this.lastID}`);
+        console.log(
+          `✅ Successfully added update\nPlatform: ${platform}\nRTV: ${runtimeVersion}\nGroup ID: ${updateGroupId}\nUpdate ID: ${updateId}\nCreated At: ${createdAt}\n\n`
+        );
       }
     );
   });
-});
-
-db.each('SELECT * FROM updates', function (err, row) {
-  console.log(row);
 });
 
 db.close();

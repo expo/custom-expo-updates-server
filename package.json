@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "test": "jest",
-    "expo-publish": "node publish.js"
+    "expo-publish": "node publish.js client/dist 1"
   },
   "dependencies": {
     "mime": "^2.5.2",

@@ -2,7 +2,7 @@ import sqlite3 from 'sqlite3';
 
 const db = new sqlite3.Database('updates.db');
 
-function getManifestRowFromDB({ platform, runtimeVersion }) {
+export function getManifestRowFromDB({ platform, runtimeVersion }) {
   return new Promise((resolve, reject) => {
     db.get(
       'SELECT * FROM updates WHERE platform = ? AND rtv = ? ORDER BY created_at DESC LIMIT 1',
