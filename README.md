@@ -25,7 +25,7 @@ The flow for creating an update is as follows:
 3. In the server, we'll use a script to take the update bundle and save its contents in the right spots. First, we save all the assets in the bundle into the **./assets** folder on the server. Then we save the update and details about that update in an SQLite database, located at **updates.db**.
 4. In the "release" app, force close and reopen the app to make a request for an update from the custom update server. The server will query the SQLite database and return a manifest.
 5. Once the "release" app receives the manifest, it will then make requests for each asset, which will also be served from this server.
-6. Once the app ass all the required assets it needs from the server, it will load the update.
+6. Once the app has all the required assets it needs from the server, it will load the update.
 
 ## The setup
 
