@@ -1,9 +1,9 @@
 {
-  "name": "test-custom-eas-update-server-client",
-  "displayName": "test-custom-eas-update-server-client",
+  "name": "expo-updates-client",
+  "displayName": "expo-updates-client",
   "expo": {
-    "name": "test-custom-eas-update-server-client",
-    "slug": "test-custom-eas-update-server-client",
+    "name": "expo-updates-client",
+    "slug": "expo-updates-client",
     "version": "1.0.0",
     "assetBundlePatterns": [
       "**/*"

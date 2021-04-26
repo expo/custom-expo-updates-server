@@ -1,26 +1,26 @@
 import { createMocks } from 'node-mocks-http';
-import handleAssets from '../pages/api/assets/[asset].js';
+import handleAssets from '../pages/api/assets';
 
 test('returns asset file', async () => {
   const { req, res } = createMocks({
     method: 'GET',
     query: {
-      asset:
-        '16a405335608716d01677acba7587812ec11e226ade1bcfbbd28e8cae2715a64.js',
+      contentType: 'image/jpeg',
+      asset: 'updates/1/assets/489ea2f19fa850b65653ab445637a181',
     },
   });
 
   await handleAssets(req, res);
 
   expect(res._getStatusCode()).toBe(200);
-  expect(res._getHeaders()['content-type']).toBe('application/javascript');
+  expect(res._getHeaders()['content-type']).toBe('image/jpeg');
 });
 
 test('returns 404 when asset does not exist', async () => {
   const { req, res } = createMocks({
     method: 'GET',
     query: {
-      asset: 'does-not-exist.png',
+      asset: 'updates/1/assets/does-not-exist.png',
     },
   });
 

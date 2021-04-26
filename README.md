@@ -6,8 +6,6 @@ This repo contains an server that implements the [EAS Update protocol](https://g
 
 Expo provides a service named EAS (Expo Application Services), which can host and serve updates for an Expo app using the expo-updates library. In some cases, you may need complete control of how updates are sent to your app. To accomplish this, it's possible to implement your own custom updates server that will provide update manifests and assets to your end-users' apps. This repo serves as an example of one way to implement the protocol above.
 
-Note: This example is not a production ready server. It's goal is to serve as inspiration for your own custom server.
-
 ## Getting started
 
 ### Updates overview
@@ -33,33 +31,39 @@ The flow for creating an update is as follows:
 
 ### Create a "release" app
 
-This server comes with an example Expo project located in **/client**. We can `cd` into that directory, run `yarn` to install packages, and run it locally with `yarn ios`. This app is configured to talk with this custom server. In **/client/ios/testcustomeasupdateserverclient/Supporting/Expo.plist**, you'll find a modified Plist that specifies the updates URL to point toward http://localhost:3000/api/manifest. Since that URL will work, we're ready to create a "release" version of our Expo project.
+This server comes with an example Expo project located in **/client**. We can `cd` into that directory, run `yarn` and `npx pod-install` to install packages, and run it locally with `yarn ios`. This app is configured to query this custom server for updates on launch. In **/client/ios/testcustomeasupdateserverclient/Supporting/Expo.plist**, you'll find a modified Plist that specifies the updates URL to point toward http://localhost:3000/api/manifest. Now we need to create a "release" version of our Expo project.
 
 Open Xcode, then open **/client/ios**. Click on the project's name in the top bar, then click "Edit scheme". In the modal, select "Release" for "Build configuration" (by default it's set to "Debug").
 
-Then, build the app. You should see it open on an iOS simulator.
+Then, build the app. You should see it open in an iOS simulator.
 
 ### Make a change
 
-Let's make a change to the expo project that we'll want to push as an update from our custom server. `cd` in to **/client**, then make a change in **App.js**. You can see the output of your changes by running `yarn ios` in **/client**.
+Let's make a change to the project in /client that we'll want to push as an update from our custom server to the "release" app. `cd` in to **/client**, then make a change in **App.js**. You can see the output of your changes by running `yarn ios` in **/client**.
 
 Once you've made a change you're happy with, inside of **/client**, run:
 
 ```
-expo export --experimental-bundle --force
+expo export --experimental-bundle
 ```
 
 This will create a folder named **dist** inside of **/client** with an update.
 
 ### Load the update on the server
 
-Back in the parent folder of this custom server, we want to take the update we just made in **/client/dist** and load it into our server. We can accomplish this by running `yarn`, then `yarn expo-publish` or `npm run expo-publish`. This runs the **publish.js** file, which will store the assets from the update and save it to a SQLite table.
+Back in the parent folder of this custom server, we want to take the update we just made in **/client/dist** and load it into our server. We can accomplish this by copying the contents of **/client/dist** into **updates/1**. The **1** here stands for the runtime version.
 
 ### Send an update
 
 Now we're ready to run the update server. Run `yarn dev` or `npm run dev` in the parent folder of this repo to start the server.
 
-In the simulator running the "release" version of the app, force close the app and re-open it. It should make a request to /api/manifest, then to /api/assets. After the app loads, it should show any changes you made locally.
+In the simulator running the "release" version of the app, force close the app and re-open it. It should make a request to /api/manifest, then requests to /api/assets. After the app loads, it should show any changes you made locally.
+
+## About this server
+
+This server was created with NextJS, and their API routes. You can find the API endpoints in **pages/api/manifest.js** and **pages/api/assets.js**.
+
+We chose to make this example with NextJS so that you can run one command to get the API running, and also so that you could deploy this to Vercel to load updates from a real server. If you choose to deploy this to Vercel, you'll need to find the URL the endpoints exist at, then update the Expo.plist for iOS with the URL under the `EXUpdatesURL` key, then rebuild a "release" app to include the new URL.
 
 ## Next steps
 

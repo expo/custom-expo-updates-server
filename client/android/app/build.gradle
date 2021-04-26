@@ -132,7 +132,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.testcustomeasupdateserverclient"
+        applicationId "com.expoupdatesclient"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

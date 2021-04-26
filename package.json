@@ -1,13 +1,13 @@
 {
-  "name": "test-custom-eas-update-server",
-  "version": "0.1.0",
+  "name": "custom-expo-updates-server",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "test": "jest",
-    "expo-publish": "cd client && expo export --experimental-bundle --force && cd ../ && rm -rf updates/2/ && cp -r client/dist/ updates/2"
+    "expo-publish": "cd client && expo export --experimental-bundle --force && cd ../ && rm -rf updates/1/ && cp -r client/dist/ updates/1"
   },
   "dependencies": {
     "mime": "^2.5.2",
