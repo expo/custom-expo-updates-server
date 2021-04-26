@@ -3626,10 +3626,10 @@ expo-structured-headers@~1.0.1:
   resolved "https://registry.yarnpkg.com/expo-structured-headers/-/expo-structured-headers-1.0.1.tgz#2f3117fc9480e01aa6705493d3213060c2dcf683"
   integrity sha512-U4frE8rT5x1LqZv5Ru/9CtzY8gh0wp1MfwTu5hetPydnwxXfWchuXvKgWRjEHglFU2X/29kYFY/J1UkPvCN8xg==
 
-expo-updates@~0.5.4:
-  version "0.5.4"
-  resolved "https://registry.yarnpkg.com/expo-updates/-/expo-updates-0.5.4.tgz#ee1b395fee701fb230e7ae28729f4d7055dd3514"
-  integrity sha512-2lwvcBqZutUT4TwqPgTpcBuomjTHt781k1DjGKpf1lS9X/E4w1dgklESXfSASaTS84YuXfK/i6/7LjTWucCv/A==
+expo-updates@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/expo-updates/-/expo-updates-0.6.0.tgz#34b8f9986b203b93f1b124d0918634e577c95f2c"
+  integrity sha512-q6jqwvxFx0SpRJh3zb4evykHe6YqiGfHqqM3fbKo6ZgwbmXb/yoecE7JFJ5DuWALCCo01oJGHaEGCzelPSRKMg==
   dependencies:
     "@expo/config-plugins" "^1.0.18"
     "@expo/metro-config" "^0.1.59"

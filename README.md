@@ -4,7 +4,9 @@ This repo contains an server that implements the [EAS Update protocol](https://g
 
 ## Why
 
-Expo provides a service named EAS (Expo Application Services), which can host and serve updates for an Expo app. In some cases, you may need complete control of how updates are sent to your app. To accomplish this, it's possible to implement your own custom EAS Update server that will provide update manifests and assets to your end-users' apps. This repo serves as an example of one way to implement the protocol above.
+Expo provides a service named EAS (Expo Application Services), which can host and serve updates for an Expo app using the expo-updates library. In some cases, you may need complete control of how updates are sent to your app. To accomplish this, it's possible to implement your own custom updates server that will provide update manifests and assets to your end-users' apps. This repo serves as an example of one way to implement the protocol above.
+
+Note: This example is not a production ready server. It's goal is to serve as inspiration for your own custom server.
 
 ## Getting started
 
@@ -12,7 +14,7 @@ Expo provides a service named EAS (Expo Application Services), which can host an
 
 To understand this repo, it's important to understand some terminology around updates:
 
-- **RTV (Runtime Version)**: Type: String. RTV specifies the version of the underlying native code your app is running. You'll want to update the RTV of an update when it relies on new or changed native code, like when you update the Expo SDK, or add in any native modules into your apps.
+- **RTV (Runtime Version)**: Type: String. RTV specifies the version of the underlying native code your app is running. You'll want to update the RTV of an update when it relies on new or changed native code, like when you update the Expo SDK, or add in any native modules into your apps. Failing to update an update's RTV will cause your end-user's app to crash, if the update relies on native code the end-user is not running.
 - **Platform**: Type: "ios" or "android". Specifies which platform to to provide an update.
 - **Manifest**: Described in the protocol. The manifest is an object that describes assets and other details that an Expo app needs to know to load an update.
 
@@ -22,8 +24,8 @@ The flow for creating an update is as follows:
 
 1. Configure and build a "release" version of an app, then run it on a simulator or deploy to an app store.
 2. Run the project locally, make changes, then export the app as an update.
-3. In the server, we'll use a script to take the update bundle and save its contents in the right spots. First, we save all the assets in the bundle into the **./assets** folder on the server. Then we save the update and details about that update in an SQLite database, located at **updates.db**.
-4. In the "release" app, force close and reopen the app to make a request for an update from the custom update server. The server will query the SQLite database and return a manifest.
+3. In the server repo, we'll copy the update made in #2 to the **updates** directory, under a corresponding runtime version sub-directory.
+4. In the "release" app, force close and reopen the app to make a request for an update from the custom update server. The server will return a manifest that matches the requests platform and RTV.
 5. Once the "release" app receives the manifest, it will then make requests for each asset, which will also be served from this server.
 6. Once the app has all the required assets it needs from the server, it will load the update.
 

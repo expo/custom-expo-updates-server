@@ -40,7 +40,7 @@ export function getMetadataSync(updateBundlePath) {
 
     return {
       metadataJson,
-      createdAt: metadataStat.birthtime,
+      createdAt: new Date(metadataStat.birthtime).toISOString(),
       id: createHash(updateMetadataBuffer, 'sha256'),
     };
   } catch (error) {
@@ -48,4 +48,11 @@ export function getMetadataSync(updateBundlePath) {
       `No update found with runtime version: ${runtimeVersion}. Error: ${error}`
     );
   }
+}
+
+export function convertStringToUUID(value) {
+  return `${value.slice(0, 8)}-${value.slice(8, 12)}-${value.slice(
+    12,
+    16
+  )}-${value.slice(16, 20)}-${value.slice(20, 32)}`;
 }

@@ -3,7 +3,7 @@
 <plist version="1.0">
   <dict>
     <key>EXUpdatesRuntimeVersion</key>
-    <string>1</string>
+    <string>2</string>
     <key>EXUpdatesURL</key>
     <string>http://localhost:3000/api/manifest</string>
     <key>EXUpdatesEnabled</key>

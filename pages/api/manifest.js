@@ -3,6 +3,7 @@ import fs from 'fs';
 import {
   saveFileAndGetAssetMetadata,
   getMetadataSync,
+  convertStringToUUID,
 } from '../../common/helpers';
 
 export default async function manifestEndpoint(req, res) {
@@ -37,15 +38,8 @@ export default async function manifestEndpoint(req, res) {
   try {
     const { metadataJson, createdAt, id } = getMetadataSync(updateBundlePath);
     const platformSpecificMetadata = metadataJson.fileMetadata[platform];
-
-    res.statusCode = 200;
-    res.setHeader('expo-protocol-version', 0);
-    res.setHeader('expo-sfv-version', 0);
-    res.setHeader('cache-control', 'private, max-age=0');
-    res.setHeader('content-type', 'application/json; charset=utf-8');
-    res.setHeader('expo-manifest-filters', `branchname="${channel}"`);
-    res.json({
-      id,
+    const manifest = {
+      id: convertStringToUUID(id),
       createdAt,
       runtimeVersion,
       assets: platformSpecificMetadata.assets.map((asset) =>
@@ -63,7 +57,15 @@ export default async function manifestEndpoint(req, res) {
       updateMetadata: {
         branchName: channel,
       },
-    });
+    };
+
+    res.statusCode = 200;
+    res.setHeader('expo-protocol-version', 0);
+    res.setHeader('expo-sfv-version', 0);
+    res.setHeader('cache-control', 'private, max-age=0');
+    res.setHeader('content-type', 'application/json; charset=utf-8');
+    res.setHeader('expo-manifest-filters', `branchname="${channel}"`);
+    res.json(manifest);
   } catch (error) {
     res.statusCode = 404;
     res.json({ error });
