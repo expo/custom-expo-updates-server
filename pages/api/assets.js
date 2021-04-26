@@ -4,6 +4,7 @@ import mime from 'mime';
 
 export default function assetsEndpoint(req, res) {
   const assetName = req.query.asset;
+  const contentType = req.query.contentType;
 
   if (!assetName) {
     res.statusCode = 400;
@@ -12,7 +13,7 @@ export default function assetsEndpoint(req, res) {
     return;
   }
 
-  const assetPath = path.resolve('assets', assetName);
+  const assetPath = path.resolve(assetName);
 
   if (!fs.existsSync(assetPath)) {
     res.statusCode = 404;
@@ -25,7 +26,7 @@ export default function assetsEndpoint(req, res) {
     const asset = fs.readFileSync(assetPath, null);
 
     res.statusCode = 200;
-    res.setHeader('content-type', mime.getType(path.extname(assetName)));
+    res.setHeader('content-type', contentType);
     res.end(asset);
   } catch (error) {
     res.statusCode = 500;

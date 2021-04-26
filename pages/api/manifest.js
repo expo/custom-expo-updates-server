@@ -1,30 +1,15 @@
-import sqlite3 from 'sqlite3';
-
-const db = new sqlite3.Database('updates.db');
-
-export function getManifestRowFromDB({ platform, runtimeVersion }) {
-  return new Promise((resolve, reject) => {
-    db.get(
-      'SELECT * FROM updates WHERE platform = ? AND rtv = ? ORDER BY created_at DESC LIMIT 1',
-      [platform, runtimeVersion],
-      (err, row) => {
-        if (!row) {
-          reject(
-            `No manifest found with platform "${platform}" and rtv "${runtimeVersion}"`
-          );
-          return;
-        }
-
-        resolve(row);
-      }
-    );
-  });
-}
+import path from 'path';
+import fs from 'fs';
+import {
+  saveFileAndGetAssetMetadata,
+  getMetadataSync,
+} from '../../common/helpers';
 
 export default async function manifestEndpoint(req, res) {
   const platform = req.headers['expo-platform'];
   const runtimeVersion = req.headers['expo-runtime-version'];
   const channel = req.headers['expo-channel-name'];
+  const updateBundlePath = `updates/${runtimeVersion}`;
 
   if (req.method !== 'GET') {
     res.statusCode = 405;
@@ -50,24 +35,8 @@ export default async function manifestEndpoint(req, res) {
   }
 
   try {
-    let manifestRow = await getManifestRowFromDB({
-      platform,
-      runtimeVersion,
-    });
-
-    const parsedManifestFragment = JSON.parse(manifestRow.manifest_fragment);
-
-    const manifest = {
-      id: manifestRow.id,
-      createdAt: manifestRow.created_at,
-      runtimeVersion: manifestRow.rtv,
-      assets: parsedManifestFragment.assets,
-      launchAsset: parsedManifestFragment.launchAsset,
-      updateMetadata: {
-        updateGroup: manifestRow.group_id,
-        branchName: channel,
-      },
-    };
+    const { metadataJson, createdAt, id } = getMetadataSync(updateBundlePath);
+    const platformSpecificMetadata = metadataJson.fileMetadata[platform];
 
     res.statusCode = 200;
     res.setHeader('expo-protocol-version', 0);
@@ -75,7 +44,26 @@ export default async function manifestEndpoint(req, res) {
     res.setHeader('cache-control', 'private, max-age=0');
     res.setHeader('content-type', 'application/json; charset=utf-8');
     res.setHeader('expo-manifest-filters', `branchname="${channel}"`);
-    res.json(manifest);
+    res.json({
+      id,
+      createdAt,
+      runtimeVersion,
+      assets: platformSpecificMetadata.assets.map((asset) =>
+        saveFileAndGetAssetMetadata({
+          updateBundlePath,
+          filePath: asset.path,
+          ext: asset.ext,
+        })
+      ),
+      launchAsset: saveFileAndGetAssetMetadata({
+        updateBundlePath,
+        filePath: platformSpecificMetadata.bundle,
+        isLaunchAsset: true,
+      }),
+      updateMetadata: {
+        branchName: channel,
+      },
+    });
   } catch (error) {
     res.statusCode = 404;
     res.json({ error });
