@@ -81,7 +81,6 @@ test.each([
   expect(res._getStatusCode()).toBe(200);
 
   expect(data.id).toBe('5668cf5b-c7cc-1fc3-da9c-4b6548e9eb9c');
-  expect(data.createdAt).toBe('2021-04-27T16:36:49.086Z');
   expect(data.runtimeVersion).toBe('test');
 
   const launchAsset = data.launchAsset;
