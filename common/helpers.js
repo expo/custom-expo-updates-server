@@ -1,27 +1,26 @@
 import fs from 'fs';
 import crypto from 'crypto';
 import mime from 'mime';
+import path from 'path';
 
 export function createHash(file, hashingAlgorithm) {
   return crypto.createHash(hashingAlgorithm).update(file).digest('hex');
 }
 
-export function saveFileAndGetAssetMetadata({
+export function getAssetMetadataSync({
   updateBundlePath,
   filePath,
   ext,
   isLaunchAsset,
 }) {
-  const assetFilePath = `${updateBundlePath}/${filePath}`;
+  const assetFilePath = path.resolve(`${updateBundlePath}/${filePath}`);
   const asset = fs.readFileSync(assetFilePath, null);
   const assetHash = createHash(asset, 'sha256');
   const keyHash = createHash(asset, 'md5');
   const keyExtensionSuffix = isLaunchAsset ? 'bundle' : ext;
-  const urlExtensionSuffix = ext ? `.${ext}` : '';
   const contentType = isLaunchAsset
     ? 'application/javascript'
     : mime.getType(ext);
-  const assetNameHash = createHash(`${asset}${contentType}`, 'sha256');
 
   return {
     hash: assetHash,

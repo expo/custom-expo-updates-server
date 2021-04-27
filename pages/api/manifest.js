@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import {
-  saveFileAndGetAssetMetadata,
+  getAssetMetadataSync,
   getMetadataSync,
   convertSHA256HashToUUID,
 } from '../../common/helpers';
@@ -9,7 +9,6 @@ import {
 export default async function manifestEndpoint(req, res) {
   const platform = req.headers['expo-platform'];
   const runtimeVersion = req.headers['expo-runtime-version'];
-  const channel = req.headers['expo-channel-name'];
   const updateBundlePath = `updates/${runtimeVersion}`;
 
   if (req.method !== 'GET') {
@@ -26,12 +25,6 @@ export default async function manifestEndpoint(req, res) {
     return;
   }
 
-  if (!channel) {
-    res.statusCode = 400;
-    res.json({ error: 'Channel name is required.' });
-    return;
-  }
-
   try {
     const { metadataJson, createdAt, id } = getMetadataSync(updateBundlePath);
     const platformSpecificMetadata = metadataJson.fileMetadata[platform];
@@ -40,20 +33,17 @@ export default async function manifestEndpoint(req, res) {
       createdAt,
       runtimeVersion,
       assets: platformSpecificMetadata.assets.map((asset) =>
-        saveFileAndGetAssetMetadata({
+        getAssetMetadataSync({
           updateBundlePath,
           filePath: asset.path,
           ext: asset.ext,
         })
       ),
-      launchAsset: saveFileAndGetAssetMetadata({
+      launchAsset: getAssetMetadataSync({
         updateBundlePath,
         filePath: platformSpecificMetadata.bundle,
         isLaunchAsset: true,
       }),
-      updateMetadata: {
-        branchName: channel,
-      },
     };
 
     res.statusCode = 200;
@@ -61,7 +51,6 @@ export default async function manifestEndpoint(req, res) {
     res.setHeader('expo-sfv-version', 0);
     res.setHeader('cache-control', 'private, max-age=0');
     res.setHeader('content-type', 'application/json; charset=utf-8');
-    res.setHeader('expo-manifest-filters', `branchname="${channel}"`);
     res.json(manifest);
   } catch (error) {
     res.statusCode = 404;
