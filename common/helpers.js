@@ -1,7 +1,6 @@
 import fs from 'fs';
 import crypto from 'crypto';
 import mime from 'mime';
-import path from 'path';
 
 export function createHash(file, hashingAlgorithm) {
   return crypto.createHash(hashingAlgorithm).update(file).digest('hex');
@@ -12,8 +11,10 @@ export function getAssetMetadataSync({
   filePath,
   ext,
   isLaunchAsset,
+  runtimeVersion,
+  platform,
 }) {
-  const assetFilePath = path.resolve(`${updateBundlePath}/${filePath}`);
+  const assetFilePath = `${updateBundlePath}/${filePath}`;
   const asset = fs.readFileSync(assetFilePath, null);
   const assetHash = createHash(asset, 'sha256');
   const keyHash = createHash(asset, 'md5');
@@ -26,11 +27,11 @@ export function getAssetMetadataSync({
     hash: assetHash,
     key: `${keyHash}.${keyExtensionSuffix}`,
     contentType,
-    url: `http://localhost:3000/api/assets?asset=${assetFilePath}&contentType=${contentType}`,
+    url: `http://localhost:3000/api/assets?asset=${assetFilePath}&runtimeVersion=${runtimeVersion}&platform=${platform}`,
   };
 }
 
-export function getMetadataSync(updateBundlePath) {
+export function getMetadataSync({ updateBundlePath, runtimeVersion }) {
   try {
     const metadataPath = `${updateBundlePath}/metadata.json`;
     const updateMetadataBuffer = fs.readFileSync(metadataPath, null);

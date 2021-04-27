@@ -26,7 +26,10 @@ export default async function manifestEndpoint(req, res) {
   }
 
   try {
-    const { metadataJson, createdAt, id } = getMetadataSync(updateBundlePath);
+    const { metadataJson, createdAt, id } = getMetadataSync({
+      updateBundlePath,
+      runtimeVersion,
+    });
     const platformSpecificMetadata = metadataJson.fileMetadata[platform];
     const manifest = {
       id: convertSHA256HashToUUID(id),
@@ -37,12 +40,16 @@ export default async function manifestEndpoint(req, res) {
           updateBundlePath,
           filePath: asset.path,
           ext: asset.ext,
+          runtimeVersion,
+          platform,
         })
       ),
       launchAsset: getAssetMetadataSync({
         updateBundlePath,
         filePath: platformSpecificMetadata.bundle,
         isLaunchAsset: true,
+        runtimeVersion,
+        platform,
       }),
     };
 

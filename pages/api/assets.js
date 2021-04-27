@@ -1,10 +1,10 @@
 import fs from 'fs';
 import path from 'path';
 import mime from 'mime';
+import { getMetadataSync } from '../../common/helpers';
 
 export default function assetsEndpoint(req, res) {
-  const assetName = req.query.asset;
-  const contentType = req.query.contentType;
+  const { asset: assetName, runtimeVersion, platform } = req.query;
 
   if (!assetName) {
     res.statusCode = 400;
@@ -12,7 +12,32 @@ export default function assetsEndpoint(req, res) {
     return;
   }
 
+  if (!platform) {
+    res.statusCode = 400;
+    res.json({ error: 'No platform provided. Expected "ios" or "android".' });
+    return;
+  }
+
+  if (!runtimeVersion) {
+    res.statusCode = 400;
+    res.json({ error: 'No runtimeVersion provided.' });
+    return;
+  }
+
+  const updateBundlePath = `updates/${runtimeVersion}`;
+  const { metadataJson } = getMetadataSync({
+    updateBundlePath,
+    runtimeVersion,
+  });
+
   const assetPath = path.resolve(assetName);
+  const assetMetadata = metadataJson.fileMetadata[platform].assets.find(
+    (asset) =>
+      asset.path === assetName.replace(`updates/${runtimeVersion}/`, '')
+  );
+  const isLaunchAsset =
+    metadataJson.fileMetadata[platform].bundle ===
+    assetName.replace(`updates/${runtimeVersion}/`, '');
 
   if (!fs.existsSync(assetPath)) {
     res.statusCode = 404;
@@ -24,7 +49,10 @@ export default function assetsEndpoint(req, res) {
     const asset = fs.readFileSync(assetPath, null);
 
     res.statusCode = 200;
-    res.setHeader('content-type', contentType);
+    res.setHeader(
+      'content-type',
+      isLaunchAsset ? 'application/javascript' : mime.getType(assetMetadata.ext)
+    );
     res.end(asset);
   } catch (error) {
     res.statusCode = 500;

@@ -12,7 +12,7 @@ Expo provides a service named EAS (Expo Application Services), which can host an
 
 To understand this repo, it's important to understand some terminology around updates:
 
-- **RTV (Runtime Version)**: Type: String. RTV specifies the version of the underlying native code your app is running. You'll want to update the RTV of an update when it relies on new or changed native code, like when you update the Expo SDK, or add in any native modules into your apps. Failing to update an update's RTV will cause your end-user's app to crash, if the update relies on native code the end-user is not running.
+- **Runtime version**: Type: String. Runtime version specifies the version of the underlying native code your app is running. You'll want to update the runtime version of an update when it relies on new or changed native code, like when you update the Expo SDK, or add in any native modules into your apps. Failing to update an update's runtime version will cause your end-user's app to crash, if the update relies on native code the end-user is not running.
 - **Platform**: Type: "ios" or "android". Specifies which platform to to provide an update.
 - **Manifest**: Described in the protocol. The manifest is an object that describes assets and other details that an Expo app needs to know to load an update.
 
@@ -23,7 +23,7 @@ The flow for creating an update is as follows:
 1. Configure and build a "release" version of an app, then run it on a simulator or deploy to an app store.
 2. Run the project locally, make changes, then export the app as an update.
 3. In the server repo, we'll copy the update made in #2 to the **updates** directory, under a corresponding runtime version sub-directory.
-4. In the "release" app, force close and reopen the app to make a request for an update from the custom update server. The server will return a manifest that matches the requests platform and RTV.
+4. In the "release" app, force close and reopen the app to make a request for an update from the custom update server. The server will return a manifest that matches the requests platform and runtime version.
 5. Once the "release" app receives the manifest, it will then make requests for each asset, which will also be served from this server.
 6. Once the app has all the required assets it needs from the server, it will load the update.
 
@@ -52,6 +52,8 @@ This will create a folder named **dist** inside of **/client** with an update.
 ### Load the update on the server
 
 Back in the parent folder of this custom server, we want to take the update we just made in **/client/dist** and load it into our server. We can accomplish this by copying the contents of **/client/dist** into **updates/1**. The **1** here stands for the runtime version.
+
+There's also a convenience script in **package.json** named `yarn expo-publish`. It goes into **client**, exports an update, then places it in the correct spot in **updates**. To publish to another runtime version, you'll need to edit that script.
 
 ### Send an update
 
