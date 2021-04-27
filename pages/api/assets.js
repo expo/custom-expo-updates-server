@@ -9,7 +9,6 @@ export default function assetsEndpoint(req, res) {
   if (!assetName) {
     res.statusCode = 400;
     res.json({ error: 'No asset name provided.' });
-    res.end();
     return;
   }
 
@@ -18,7 +17,6 @@ export default function assetsEndpoint(req, res) {
   if (!fs.existsSync(assetPath)) {
     res.statusCode = 404;
     res.json({ error: `Asset "${assetName}" does not exist.` });
-    res.end();
     return;
   }
 
@@ -31,6 +29,5 @@ export default function assetsEndpoint(req, res) {
   } catch (error) {
     res.statusCode = 500;
     res.json({ error });
-    res.end();
   }
 }

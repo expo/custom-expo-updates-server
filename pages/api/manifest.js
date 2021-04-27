@@ -15,7 +15,6 @@ export default async function manifestEndpoint(req, res) {
   if (req.method !== 'GET') {
     res.statusCode = 405;
     res.json({ error: 'Expected GET.' });
-    res.end();
     return;
   }
 
@@ -24,14 +23,12 @@ export default async function manifestEndpoint(req, res) {
     res.json({
       error: 'Unsupported platform. Expected either ios or android.',
     });
-    res.end();
     return;
   }
 
   if (!channel) {
     res.statusCode = 400;
     res.json({ error: 'Channel name is required.' });
-    res.end();
     return;
   }
 
@@ -69,6 +66,5 @@ export default async function manifestEndpoint(req, res) {
   } catch (error) {
     res.statusCode = 404;
     res.json({ error });
-    res.end();
   }
 }
