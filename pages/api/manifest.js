@@ -3,7 +3,7 @@ import fs from 'fs';
 import {
   saveFileAndGetAssetMetadata,
   getMetadataSync,
-  convertStringToUUID,
+  convertSHA256HashToUUID,
 } from '../../common/helpers';
 
 export default async function manifestEndpoint(req, res) {
@@ -36,7 +36,7 @@ export default async function manifestEndpoint(req, res) {
     const { metadataJson, createdAt, id } = getMetadataSync(updateBundlePath);
     const platformSpecificMetadata = metadataJson.fileMetadata[platform];
     const manifest = {
-      id: convertStringToUUID(id),
+      id: convertSHA256HashToUUID(id),
       createdAt,
       runtimeVersion,
       assets: platformSpecificMetadata.assets.map((asset) =>

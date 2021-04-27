@@ -50,7 +50,7 @@ export function getMetadataSync(updateBundlePath) {
   }
 }
 
-export function convertStringToUUID(value) {
+export function convertSHA256HashToUUID(value) {
   return `${value.slice(0, 8)}-${value.slice(8, 12)}-${value.slice(
     12,
     16
