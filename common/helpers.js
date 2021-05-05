@@ -27,6 +27,8 @@ export function getAssetMetadataSync({
     hash: assetHash,
     key: `${keyHash}.${keyExtensionSuffix}`,
     contentType,
+
+    // TODO: http(s), hostname, port header?
     url: `http://localhost:3000/api/assets?asset=${assetFilePath}&runtimeVersion=${runtimeVersion}&platform=${platform}`,
   };
 }

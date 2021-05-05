@@ -1,6 +1,6 @@
-# Custom EAS Update server
+# Custom Expo Updates server
 
-This repo contains an server that implements the [EAS Update protocol](https://github.com/expo/expo/pull/12461).
+This repo contains an server that implements the [Expo Updates protocol](https://github.com/expo/expo/pull/12461).
 
 ## Why
 
@@ -31,7 +31,7 @@ The flow for creating an update is as follows:
 
 ### Create a "release" app
 
-This server comes with an example Expo project located in **/client**. We can `cd` into that directory, run `yarn` and `npx pod-install` to install packages, and run it locally with `yarn ios`. This app is configured to query this custom server for updates on launch. In **/client/ios/testcustomeasupdateserverclient/Supporting/Expo.plist**, you'll find a modified Plist that specifies the updates URL to point toward http://localhost:3000/api/manifest. Now we need to create a "release" version of our Expo project.
+This server comes with an example Expo project located in **/client**. We can `cd` into that directory, run `yarn` and `npx pod-install` to install packages, and run it locally with `yarn ios`. This app is configured to query this custom server for updates on launch. In **/client/ios/expoupdatesclient/Supporting/Expo.plist**, you'll find a modified Plist that specifies the updates URL to point toward http://localhost:3000/api/manifest. Now we need to create a "release" version of our Expo project.
 
 Open Xcode, then open **/client/ios**. Click on the project's name in the top bar, then click "Edit scheme". In the modal, select "Release" for "Build configuration" (by default it's set to "Debug").
 
