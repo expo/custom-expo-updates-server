@@ -45,8 +45,7 @@ test.each([
       hash: '99b36e8b0afe02000087a91b220650e56106d1fa672bbc77f481aae9c21af3fb',
       key: 'dacaa233e4886477facc9d5ca16952ad.bundle',
       contentType: 'application/javascript',
-      url:
-        'http://localhost:3000/api/assets?asset=updates/test/bundles/ios-dacaa233e4886477facc9d5ca16952ad.js&runtimeVersion=test&platform=ios',
+      url: `${process.env.HOSTNAME}/api/assets?asset=updates/test/bundles/ios-dacaa233e4886477facc9d5ca16952ad.js&runtimeVersion=test&platform=ios`,
     },
   ],
   [
@@ -55,8 +54,7 @@ test.each([
       hash: '3712b3a9c1e3bf7f383fe916a113d9937b5ec0ccfe5a5f4002b2ff8fb00fa681',
       key: 'f1539de9a8bd655e7346639e6a6c2d2a.bundle',
       contentType: 'application/javascript',
-      url:
-        'http://localhost:3000/api/assets?asset=updates/test/bundles/android-f1539de9a8bd655e7346639e6a6c2d2a.js&runtimeVersion=test&platform=android',
+      url: `${process.env.HOSTNAME}/api/assets?asset=updates/test/bundles/android-f1539de9a8bd655e7346639e6a6c2d2a.js&runtimeVersion=test&platform=android`,
     },
   ],
 ])('returns latest %p manifest', async (platform, launchAssetExpectation) => {
@@ -64,7 +62,7 @@ test.each([
     hash: 'cb65fafb5ed456fc3ed8a726cf4087d37b875184eba96f33f6d99104e6e2266d',
     key: '489ea2f19fa850b65653ab445637a181.jpg',
     contentType: 'image/jpeg',
-    url: `http://localhost:3000/api/assets?asset=updates/test/assets/489ea2f19fa850b65653ab445637a181&runtimeVersion=test&platform=${platform}`,
+    url: `${process.env.HOSTNAME}/api/assets?asset=updates/test/assets/489ea2f19fa850b65653ab445637a181&runtimeVersion=test&platform=${platform}`,
   };
   const { req, res } = createMocks({
     method: 'GET',
