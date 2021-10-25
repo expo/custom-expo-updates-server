@@ -1,4 +1,5 @@
 import { createMocks } from 'node-mocks-http';
+
 import handleManifest from '../pages/api/manifest';
 
 test('returns 400 with POST request', async () => {
