@@ -3,9 +3,9 @@ import mime from 'mime';
 import { NextApiRequest, NextApiResponse } from 'next';
 import path from 'path';
 
-import { getMetadataSync } from '../../common/helpers';
+import { getMetadataAsync, createHash, signRSASHA256, getPrivateKeyAsync } from '../../common/helpers';
 
-export default function assetsEndpoint(req: NextApiRequest, res: NextApiResponse) {
+export default async function assetsEndpoint(req: NextApiRequest, res: NextApiResponse) {
   const { asset: assetName, runtimeVersion, platform } = req.query as {
     asset: string;
     platform: string;
@@ -31,7 +31,7 @@ export default function assetsEndpoint(req: NextApiRequest, res: NextApiResponse
   }
 
   const updateBundlePath = `updates/${runtimeVersion}`;
-  const { metadataJson } = getMetadataSync({
+  const { metadataJson } = await getMetadataAsync({
     updateBundlePath,
     runtimeVersion,
   });
@@ -58,8 +58,17 @@ export default function assetsEndpoint(req: NextApiRequest, res: NextApiResponse
       'content-type',
       isLaunchAsset ? 'application/javascript' : mime.getType(assetMetadata.ext)
     );
+
+    const privateKey = await getPrivateKeyAsync();
+    if (privateKey) {
+      const hash = createHash(asset, 'sha256');
+      const hashSignature = signRSASHA256(hash, privateKey);
+      res.setHeader('expo-signed-hash', hashSignature);
+    }
+
     res.end(asset);
   } catch (error) {
+    console.error(error);
     res.statusCode = 500;
     res.json({ error });
   }

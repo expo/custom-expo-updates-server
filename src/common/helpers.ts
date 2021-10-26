@@ -1,12 +1,31 @@
 import crypto from 'crypto';
-import fs from 'fs';
+import fs from 'fs/promises';
 import mime from 'mime';
+import forge from 'node-forge';
 
-export function createHash(file: Buffer, hashingAlgorithm: string) {
+export function createHash(file: crypto.BinaryLike, hashingAlgorithm: string) {
   return crypto.createHash(hashingAlgorithm).update(file).digest('hex');
 }
 
-export function getAssetMetadataSync({
+export function signRSASHA256(data: string, privateKey: forge.pki.rsa.PrivateKey): string {
+  var md = forge.md.sha256.create();
+  md.update(data, 'utf8');
+  const encodedSignature = privateKey.sign(md);
+  return Buffer.from(forge.util.binary.raw.decode(encodedSignature)).toString('base64');
+}
+
+export async function getPrivateKeyAsync(): Promise<forge.pki.rsa.PrivateKey | null> {
+  const privateKeyPath = process.env.PRIVATE_KEY_PATH;
+  if (!privateKeyPath) {
+    return null;
+  }
+
+  const pemBuffer = await fs.readFile(privateKeyPath);
+  const pem = pemBuffer.toString('utf8');
+  return forge.pki.privateKeyFromPem(pem);
+}
+
+export async function getAssetMetadataSync({
   updateBundlePath,
   filePath,
   ext,
@@ -22,7 +41,7 @@ export function getAssetMetadataSync({
   platform: string;
 }) {
   const assetFilePath = `${updateBundlePath}/${filePath}`;
-  const asset = fs.readFileSync(assetFilePath, null);
+  const asset = await fs.readFile(assetFilePath);
   const assetHash = createHash(asset, 'sha256');
   const keyHash = createHash(asset, 'md5');
   const keyExtensionSuffix = isLaunchAsset ? 'bundle' : ext;
@@ -36,7 +55,7 @@ export function getAssetMetadataSync({
   };
 }
 
-export function getMetadataSync({
+export async function getMetadataAsync({
   updateBundlePath,
   runtimeVersion,
 }: {
@@ -45,9 +64,9 @@ export function getMetadataSync({
 }) {
   try {
     const metadataPath = `${updateBundlePath}/metadata.json`;
-    const updateMetadataBuffer = fs.readFileSync(metadataPath, null);
+    const updateMetadataBuffer = await fs.readFile(metadataPath);
     const metadataJson = JSON.parse(updateMetadataBuffer.toString('utf-8'));
-    const metadataStat = fs.statSync(metadataPath);
+    const metadataStat = await fs.stat(metadataPath);
 
     return {
       metadataJson,

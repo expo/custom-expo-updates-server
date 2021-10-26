@@ -2,8 +2,11 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 import {
   getAssetMetadataSync,
-  getMetadataSync,
+  getMetadataAsync,
+  getPrivateKeyAsync,
   convertSHA256HashToUUID,
+  createHash,
+  signRSASHA256,
 } from '../../common/helpers';
 
 export default async function manifestEndpoint(req: NextApiRequest, res: NextApiResponse) {
@@ -26,7 +29,7 @@ export default async function manifestEndpoint(req: NextApiRequest, res: NextApi
   }
 
   try {
-    const { metadataJson, createdAt, id } = getMetadataSync({
+    const { metadataJson, createdAt, id } = await getMetadataAsync({
       updateBundlePath,
       runtimeVersion,
     });
@@ -60,8 +63,18 @@ export default async function manifestEndpoint(req: NextApiRequest, res: NextApi
     res.setHeader('expo-sfv-version', 0);
     res.setHeader('cache-control', 'private, max-age=0');
     res.setHeader('content-type', 'application/json; charset=utf-8');
+
+    const privateKey = await getPrivateKeyAsync();
+    if (privateKey) {
+      const manifestString = JSON.stringify(manifest);
+      const hash = createHash(manifestString, 'sha256');
+      const hashSignature = signRSASHA256(hash, privateKey);
+      res.setHeader('expo-signed-hash', hashSignature);
+    }
+
     res.json(manifest);
   } catch (error) {
+    console.error(error);
     res.statusCode = 404;
     res.json({ error });
   }

@@ -39,3 +39,6 @@ client/ios/Pods/
 
 # Expo
 client/.expo/*
+
+# keys
+keys

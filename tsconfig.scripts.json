@@ -1,0 +1,23 @@
+{
+  "extends": "@tsconfig/node14/tsconfig.json",
+  "ts-node": {
+    "transpileOnly": true
+  },
+  "compilerOptions": {
+    "allowJs": true,
+    "jsx": "react",
+    "rootDir": "./scripts",
+    "baseUrl": "./scripts",
+    "noEmit": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitAny": true,
+    "isolatedModules": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+  },
+  "include": ["scripts"]
+}
