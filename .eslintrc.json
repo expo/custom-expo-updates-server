@@ -1,0 +1,57 @@
+{
+  "root": true,
+  "extends": ["universe/node", "universe/web", "universe/shared/typescript-analysis"],
+  "settings": {
+    "import/resolver": {
+      "alias": {
+        "map": [["~", "."]],
+        "extensions": [".ts", ".js", ".tsx", ".jsx", ".json"]
+      }
+    }
+  },
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx", "*.d.ts"],
+      "parserOptions": {
+        "project": "./tsconfig.json"
+      },
+      "rules": {
+        "@typescript-eslint/explicit-function-return-type": [
+          "off",
+          {
+            "allowExpressions": true
+          }
+        ],
+        "@typescript-eslint/naming-convention": [
+          "warn",
+          {
+            "selector": "typeLike",
+            "format": ["PascalCase"]
+          },
+          {
+            "selector": "enumMember",
+            "format": ["UPPER_CASE"]
+          }
+        ],
+        "import/order": [
+          "warn",
+          {
+            "groups": [["external", "builtin"], "internal", ["parent", "sibling"]],
+            "newlines-between": "always",
+            "alphabetize": {
+              "order": "asc"
+            },
+            "pathGroups": [
+              {
+                "pattern": "~/**",
+                "group": "internal"
+              }
+            ]
+          }
+        ],
+        "react/react-in-jsx-scope": "off",
+        "react/no-this-in-sfc": "off"
+      }
+    }
+  ]
+}

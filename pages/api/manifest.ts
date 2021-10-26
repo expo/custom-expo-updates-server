@@ -1,14 +1,14 @@
-import path from 'path';
-import fs from 'fs';
+import { NextApiRequest, NextApiResponse } from 'next';
+
 import {
   getAssetMetadataSync,
   getMetadataSync,
   convertSHA256HashToUUID,
 } from '../../common/helpers';
 
-export default async function manifestEndpoint(req, res) {
+export default async function manifestEndpoint(req: NextApiRequest, res: NextApiResponse) {
   const platform = req.headers['expo-platform'];
-  const runtimeVersion = req.headers['expo-runtime-version'];
+  const runtimeVersion = req.headers['expo-runtime-version'] as string;
   const updateBundlePath = `updates/${runtimeVersion}`;
 
   if (req.method !== 'GET') {
@@ -38,6 +38,7 @@ export default async function manifestEndpoint(req, res) {
       assets: platformSpecificMetadata.assets.map((asset) =>
         getAssetMetadataSync({
           updateBundlePath,
+          isLaunchAsset: false,
           filePath: asset.path,
           ext: asset.ext,
           runtimeVersion,
@@ -50,6 +51,7 @@ export default async function manifestEndpoint(req, res) {
         isLaunchAsset: true,
         runtimeVersion,
         platform,
+        ext: null,
       }),
     };
 

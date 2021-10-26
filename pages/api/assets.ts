@@ -1,10 +1,16 @@
 import fs from 'fs';
-import path from 'path';
 import mime from 'mime';
+import { NextApiRequest, NextApiResponse } from 'next';
+import path from 'path';
+
 import { getMetadataSync } from '../../common/helpers';
 
-export default function assetsEndpoint(req, res) {
-  const { asset: assetName, runtimeVersion, platform } = req.query;
+export default function assetsEndpoint(req: NextApiRequest, res: NextApiResponse) {
+  const { asset: assetName, runtimeVersion, platform } = req.query as {
+    asset: string;
+    platform: string;
+    runtimeVersion: string;
+  };
 
   if (!assetName) {
     res.statusCode = 400;
@@ -32,8 +38,7 @@ export default function assetsEndpoint(req, res) {
 
   const assetPath = path.resolve(assetName);
   const assetMetadata = metadataJson.fileMetadata[platform].assets.find(
-    (asset) =>
-      asset.path === assetName.replace(`updates/${runtimeVersion}/`, '')
+    (asset) => asset.path === assetName.replace(`updates/${runtimeVersion}/`, '')
   );
   const isLaunchAsset =
     metadataJson.fileMetadata[platform].bundle ===

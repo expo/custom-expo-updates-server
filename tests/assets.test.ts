@@ -1,4 +1,5 @@
 import { createMocks } from 'node-mocks-http';
+
 import handleAssets from '../pages/api/assets';
 
 test('returns asset file', async () => {
@@ -11,7 +12,7 @@ test('returns asset file', async () => {
     },
   });
 
-  await handleAssets(req, res);
+  handleAssets(req, res);
 
   expect(res._getStatusCode()).toBe(200);
   expect(res._getHeaders()['content-type']).toBe('image/jpeg');
@@ -27,7 +28,7 @@ test('returns launch asset file', async () => {
     },
   });
 
-  await handleAssets(req, res);
+  handleAssets(req, res);
 
   expect(res._getStatusCode()).toBe(200);
   expect(res._getHeaders()['content-type']).toBe('application/javascript');
@@ -43,7 +44,7 @@ test('returns 404 when asset does not exist', async () => {
     },
   });
 
-  await handleAssets(req, res);
+  handleAssets(req, res);
 
   expect(res._getStatusCode()).toBe(404);
 });
@@ -58,7 +59,7 @@ test('returns 400 with no asset name', async () => {
     },
   });
 
-  await handleAssets(req, res);
+  handleAssets(req, res);
 
   expect(res._getStatusCode()).toBe(400);
 });
@@ -73,7 +74,7 @@ test('returns 400 with no runtime version', async () => {
     },
   });
 
-  await handleAssets(req, res);
+  handleAssets(req, res);
 
   expect(res._getStatusCode()).toBe(400);
 });
@@ -88,7 +89,7 @@ test('returns 400 with no platform', async () => {
     },
   });
 
-  await handleAssets(req, res);
+  handleAssets(req, res);
 
   expect(res._getStatusCode()).toBe(400);
 });
