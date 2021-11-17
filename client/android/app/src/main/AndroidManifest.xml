@@ -12,7 +12,7 @@
     </intent>
   </queries>
   <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="false" android:theme="@style/AppTheme" android:usesCleartextTraffic="true">
-    <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="http://localhost:3000/api/manifest"/>
+    <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="http://192.168.64.1:3000/api/manifest"/>
     <meta-data android:name="expo.modules.updates.EXPO_RUNTIME_VERSION" android:value="1"/>
     <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="43.0.0"/>
     <meta-data android:name="expo.modules.updates.ENABLED" android:value="true"/>

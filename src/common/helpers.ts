@@ -8,7 +8,7 @@ export function createHash(file: crypto.BinaryLike, hashingAlgorithm: string) {
 }
 
 export function signRSASHA256(data: string, privateKey: forge.pki.rsa.PrivateKey): string {
-  var md = forge.md.sha256.create();
+  const md = forge.md.sha256.create();
   md.update(data, 'utf8');
   const encodedSignature = privateKey.sign(md);
   return Buffer.from(forge.util.binary.raw.decode(encodedSignature)).toString('base64');
@@ -25,7 +25,7 @@ export async function getPrivateKeyAsync(): Promise<forge.pki.rsa.PrivateKey | n
   return forge.pki.privateKeyFromPem(pem);
 }
 
-export async function getAssetMetadataSync({
+export async function getAssetMetadataAsync({
   updateBundlePath,
   filePath,
   ext,

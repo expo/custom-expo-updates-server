@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import {
-  getAssetMetadataSync,
+  getAssetMetadataAsync,
   getMetadataAsync,
   getPrivateKeyAsync,
   convertSHA256HashToUUID,
@@ -38,17 +38,19 @@ export default async function manifestEndpoint(req: NextApiRequest, res: NextApi
       id: convertSHA256HashToUUID(id),
       createdAt,
       runtimeVersion,
-      assets: platformSpecificMetadata.assets.map((asset) =>
-        getAssetMetadataSync({
-          updateBundlePath,
-          isLaunchAsset: false,
-          filePath: asset.path,
-          ext: asset.ext,
-          runtimeVersion,
-          platform,
+      assets: await Promise.all(
+        (platformSpecificMetadata.assets as any[]).map(async (asset) => {
+          return await getAssetMetadataAsync({
+            updateBundlePath,
+            isLaunchAsset: false,
+            filePath: asset.path,
+            ext: asset.ext,
+            runtimeVersion,
+            platform,
+          });
         })
       ),
-      launchAsset: getAssetMetadataSync({
+      launchAsset: await getAssetMetadataAsync({
         updateBundlePath,
         filePath: platformSpecificMetadata.bundle,
         isLaunchAsset: true,
