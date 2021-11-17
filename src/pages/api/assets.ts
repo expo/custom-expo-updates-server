@@ -3,9 +3,21 @@ import mime from 'mime';
 import { NextApiRequest, NextApiResponse } from 'next';
 import path from 'path';
 
-import { getMetadataAsync, createHash, signRSASHA256, getPrivateKeyAsync } from '../../common/helpers';
+import {
+  getMetadataAsync,
+  createHash,
+  signRSASHA256,
+  getPrivateKeyAsync,
+} from '../../common/helpers';
 
 export default async function assetsEndpoint(req: NextApiRequest, res: NextApiResponse) {
+  const testHeaderValue = req.headers['test-header'];
+  if (!testHeaderValue || testHeaderValue !== 'test-header-value') {
+    res.statusCode = 400;
+    res.json({ error: 'Asset header sent with manifest request not supplied.' });
+    return;
+  }
+
   const { asset: assetName, runtimeVersion, platform } = req.query as {
     asset: string;
     platform: string;

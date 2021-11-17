@@ -72,6 +72,14 @@ export default async function manifestEndpoint(req: NextApiRequest, res: NextApi
       res.setHeader('expo-signed-hash', hashSignature);
     }
 
+    const assetHeaders: { [key: string]: { [key: string]: string } } = {};
+    [...manifest.assets, manifest.launchAsset].forEach((asset) => {
+      assetHeaders[asset.key] = {
+        'test-header': 'test-header-value',
+      };
+    });
+    res.setHeader('expo-asset-headers', JSON.stringify(assetHeaders));
+
     res.json(manifest);
   } catch (error) {
     console.error(error);
