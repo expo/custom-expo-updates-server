@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View, Image, ScrollView } from 'react-native';
+import { StyleSheet, Text, Image, ScrollView } from 'react-native';
+
 import DogImage from './assets/dog.jpg';
 
 export default function App() {
@@ -8,7 +9,7 @@ export default function App() {
     <ScrollView contentContainerStyle={styles.container}>
       <Image source={DogImage} style={styles.image} />
       <Text>This is an update for RTV 1!</Text>
-      <StatusBar style='auto' />
+      <StatusBar style="auto" />
     </ScrollView>
   );
 }

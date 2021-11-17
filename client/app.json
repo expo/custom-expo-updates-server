@@ -5,6 +5,7 @@
     "name": "expo-updates-client",
     "slug": "expo-updates-client",
     "version": "1.0.0",
+    "sdkVersion": "43.0.0",
     "assetBundlePatterns": [
       "**/*"
     ]
