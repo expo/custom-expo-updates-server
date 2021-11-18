@@ -8,7 +8,7 @@ export default function App() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Image source={DogImage} style={styles.image} />
-      <Text>This is an update for RTV 3!</Text>
+      <Text>This is an update for RTV 6!</Text>
       <StatusBar style="auto" />
     </ScrollView>
   );

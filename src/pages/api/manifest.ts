@@ -5,7 +5,6 @@ import {
   getMetadataAsync,
   getPrivateKeyAsync,
   convertSHA256HashToUUID,
-  createHash,
   signRSASHA256,
 } from '../../common/helpers';
 
@@ -69,8 +68,7 @@ export default async function manifestEndpoint(req: NextApiRequest, res: NextApi
     const privateKey = await getPrivateKeyAsync();
     if (privateKey) {
       const manifestString = JSON.stringify(manifest);
-      const hash = createHash(manifestString, 'sha256');
-      const hashSignature = signRSASHA256(hash, privateKey);
+      const hashSignature = signRSASHA256(manifestString, privateKey);
       res.setHeader('expo-signed-hash', hashSignature);
     }
 

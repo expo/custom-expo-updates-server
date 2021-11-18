@@ -1,28 +1,30 @@
 import crypto from 'crypto';
 import fs from 'fs/promises';
 import mime from 'mime';
-import forge from 'node-forge';
 
 export function createHash(file: crypto.BinaryLike, hashingAlgorithm: string) {
   return crypto.createHash(hashingAlgorithm).update(file).digest('hex');
 }
 
-export function signRSASHA256(data: string, privateKey: forge.pki.rsa.PrivateKey): string {
-  const md = forge.md.sha256.create();
-  md.update(data, 'utf8');
-  const encodedSignature = privateKey.sign(md);
-  return Buffer.from(forge.util.binary.raw.decode(encodedSignature)).toString('base64');
+export function signRSASHA256(data: string | crypto.BinaryLike, privateKey: string): string {
+  const sign = crypto.createSign('RSA-SHA256');
+  if (typeof data === 'string') {
+    sign.update(data, 'utf8');
+  } else {
+    sign.update(data);
+  }
+  sign.end();
+  return sign.sign(privateKey, 'base64');
 }
 
-export async function getPrivateKeyAsync(): Promise<forge.pki.rsa.PrivateKey | null> {
+export async function getPrivateKeyAsync(): Promise<string | null> {
   const privateKeyPath = process.env.PRIVATE_KEY_PATH;
   if (!privateKeyPath) {
     return null;
   }
 
   const pemBuffer = await fs.readFile(privateKeyPath);
-  const pem = pemBuffer.toString('utf8');
-  return forge.pki.privateKeyFromPem(pem);
+  return pemBuffer.toString('utf8');
 }
 
 export async function getAssetMetadataAsync({
@@ -52,6 +54,7 @@ export async function getAssetMetadataAsync({
     key: `${keyHash}.${keyExtensionSuffix}`,
     contentType,
     url: `${process.env.HOSTNAME}/api/assets?asset=${assetFilePath}&runtimeVersion=${runtimeVersion}&platform=${platform}`,
+    fileExtension: `.${keyExtensionSuffix}`,
   };
 }
 
