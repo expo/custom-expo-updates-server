@@ -72,6 +72,7 @@ export async function run() {
       timeStamping: false,
     },
   ]);
+  // cert.sign(privateKey, md.sha512.create());
   cert.sign(privateKey, md.sha256.create());
 
   console.log({

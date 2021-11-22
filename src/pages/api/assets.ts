@@ -3,7 +3,7 @@ import mime from 'mime';
 import { NextApiRequest, NextApiResponse } from 'next';
 import path from 'path';
 
-import { getMetadataAsync, signRSASHA256, getPrivateKeyAsync } from '../../common/helpers';
+import { getMetadataAsync } from '../../common/helpers';
 
 export default async function assetsEndpoint(req: NextApiRequest, res: NextApiResponse) {
   const testHeaderValue = req.headers['test-header'];
@@ -65,12 +65,6 @@ export default async function assetsEndpoint(req: NextApiRequest, res: NextApiRe
       'content-type',
       isLaunchAsset ? 'application/javascript' : mime.getType(assetMetadata.ext)
     );
-
-    const privateKey = await getPrivateKeyAsync();
-    if (privateKey) {
-      const hashSignature = signRSASHA256(asset, privateKey);
-      res.setHeader('expo-signed-hash', hashSignature);
-    }
 
     res.end(asset);
   } catch (error) {

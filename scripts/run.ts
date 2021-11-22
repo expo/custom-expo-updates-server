@@ -11,7 +11,7 @@ async function run(): Promise<void> {
     } else {
       scriptName = process.argv[1];
     }
-    const args = require('minimist')(process.argv.slice(2));
+    const args = require('minimist')(process.argv.slice(3));
 
     const script = require('./' + scriptName);
     await script.run(args);
