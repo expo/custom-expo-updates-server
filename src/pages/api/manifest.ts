@@ -1,3 +1,4 @@
+import { convertToDictionary, serializeDictionary } from 'common/structuredFieldValues';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import {
@@ -65,11 +66,15 @@ export default async function manifestEndpoint(req: NextApiRequest, res: NextApi
     res.setHeader('cache-control', 'private, max-age=0');
     res.setHeader('content-type', 'application/json; charset=utf-8');
 
-    const privateKey = await getPrivateKeyAsync();
-    if (privateKey) {
-      const manifestString = JSON.stringify(manifest);
-      const hashSignature = signRSASHA256(manifestString, privateKey);
-      res.setHeader('expo-signed-hash', hashSignature);
+    const acceptSignatureHeader = req.headers['expo-accept-signature'] as string;
+    if (acceptSignatureHeader) {
+      const privateKey = await getPrivateKeyAsync();
+      if (privateKey) {
+        const manifestString = JSON.stringify(manifest);
+        const hashSignature = signRSASHA256(manifestString, privateKey);
+        const dictionary = convertToDictionary({ sig: hashSignature });
+        res.setHeader('expo-signature', serializeDictionary(dictionary));
+      }
     }
 
     const assetHeaders: { [key: string]: { [key: string]: string } } = {};
