@@ -62,8 +62,6 @@ export default async function manifestEndpoint(req: NextApiRequest, res: NextApi
     };
 
     res.statusCode = 200;
-    res.setHeader('expo-protocol-version', 0);
-    res.setHeader('expo-sfv-version', 0);
     res.setHeader('cache-control', 'private, max-age=0');
 
     let signature: string | null = null;
@@ -89,6 +87,8 @@ export default async function manifestEndpoint(req: NextApiRequest, res: NextApi
     form.append('manifest', JSON.stringify(manifest), {
       contentType: 'application/json',
       header: {
+        'expo-protocol-version': 0,
+        'expo-sfv-version': 0,
         ...(signature ? { 'expo-signature': signature } : {}),
       },
     });
