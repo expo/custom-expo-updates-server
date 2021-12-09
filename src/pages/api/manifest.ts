@@ -1,4 +1,5 @@
 import { convertToDictionary, serializeDictionary } from 'common/structuredFieldValues';
+import FormData from 'form-data';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import {
@@ -64,28 +65,40 @@ export default async function manifestEndpoint(req: NextApiRequest, res: NextApi
     res.setHeader('expo-protocol-version', 0);
     res.setHeader('expo-sfv-version', 0);
     res.setHeader('cache-control', 'private, max-age=0');
-    res.setHeader('content-type', 'application/json; charset=utf-8');
 
-    const acceptSignatureHeader = req.headers['expo-accept-signature'] as string;
+    let signature: string | null = null;
+    const acceptSignatureHeader = req.headers['expo-expects-signature'] as string;
     if (acceptSignatureHeader) {
       const privateKey = await getPrivateKeyAsync();
       if (privateKey) {
         const manifestString = JSON.stringify(manifest);
         const hashSignature = signRSASHA256(manifestString, privateKey);
         const dictionary = convertToDictionary({ sig: hashSignature });
-        res.setHeader('expo-signature', serializeDictionary(dictionary));
+        signature = serializeDictionary(dictionary);
       }
     }
 
-    const assetHeaders: { [key: string]: { [key: string]: string } } = {};
+    const assetRequestHeaders: { [key: string]: { [key: string]: string } } = {};
     [...manifest.assets, manifest.launchAsset].forEach((asset) => {
-      assetHeaders[asset.key] = {
+      assetRequestHeaders[asset.key] = {
         'test-header': 'test-header-value',
       };
     });
-    res.setHeader('expo-asset-headers', JSON.stringify(assetHeaders));
 
-    res.json(manifest);
+    const form = new FormData();
+    form.append('manifest', JSON.stringify(manifest), {
+      contentType: 'application/json',
+      header: {
+        ...(signature ? { 'expo-signature': signature } : {}),
+      },
+    });
+    form.append('extensions', JSON.stringify({ assetRequestHeaders }), {
+      contentType: 'application/json',
+    });
+
+    res.setHeader('content-type', `multipart/mixed; boundary=${form.getBoundary()}`);
+    res.write(form.getBuffer());
+    res.end();
   } catch (error) {
     console.error(error);
     res.statusCode = 404;

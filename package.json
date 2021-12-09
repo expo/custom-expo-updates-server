@@ -13,6 +13,7 @@
     "custom-script": "ts-node -r tsconfig-paths/register --project tsconfig.scripts.json ./scripts/run.ts"
   },
   "dependencies": {
+    "form-data": "^4.0.0",
     "mime": "^2.5.2",
     "next": "10.1.3",
     "react": "17.0.2",
