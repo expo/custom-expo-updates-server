@@ -6,6 +6,35 @@ export function createHash(file, hashingAlgorithm) {
   return crypto.createHash(hashingAlgorithm).update(file).digest('hex');
 }
 
+export function convertToDictionaryItemsRepresentation(obj) {
+  return new Map(
+    Object.entries(obj).map(([k, v]) => {
+      return [k, [v, new Map()]];
+    })
+  );
+}
+
+export function signRSASHA256(data, privateKey) {
+  const sign = crypto.createSign('RSA-SHA256');
+  if (typeof data === 'string') {
+    sign.update(data, 'utf8');
+  } else {
+    sign.update(data);
+  }
+  sign.end();
+  return sign.sign(privateKey, 'base64');
+}
+
+export async function getPrivateKeyAsync() {
+  const privateKeyPath = process.env.PRIVATE_KEY_PATH;
+  if (!privateKeyPath) {
+    return null;
+  }
+
+  const pemBuffer = fs.readFileSync(privateKeyPath);
+  return pemBuffer.toString('utf8');
+}
+
 export function getAssetMetadataSync({
   updateBundlePath,
   filePath,
