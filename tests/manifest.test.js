@@ -1,5 +1,81 @@
 import { createMocks } from 'node-mocks-http';
+import Dicer from 'dicer';
+import nullthrows from 'nullthrows';
+import { Stream } from 'stream';
+import { parseItem } from 'structured-headers';
+
 import handleManifest from '../pages/api/manifest';
+
+function isManifestMultipartPart(multipartPart, part) {
+  const [, parameters] = parseItem(nullthrows(multipartPart.headers.get('content-disposition')));
+  const partName = parameters.get('name');
+  return partName === part;
+}
+
+export async function getManifestPartAsync(response, part) {
+  const multipartParts = await parseMultipartMixedResponseAsync(response);
+  const manifestPart = multipartParts.find(it => isManifestMultipartPart(it, part));
+  return manifestPart;
+}
+
+async function parseMultipartMixedResponseAsync(res) {
+  const contentType = res.getHeader('content-type');
+  if (!contentType || typeof contentType != 'string') {
+    throw new Error('The multipart manifest response is missing the content-type header');
+  }
+
+  const boundaryRegex = /^multipart\/.+?; boundary=(?:"([^"]+)"|([^\s;]+))/i;
+  const matches = boundaryRegex.exec(contentType);
+  if (!matches) {
+    throw new Error('The content-type header in the HTTP response is not a multipart media type');
+  }
+  const boundary = matches[1] ?? matches[2];
+
+  const bufferStream = new Stream.PassThrough();
+  bufferStream.end(res._getBuffer());
+
+  return await new Promise((resolve, reject) => {
+    const parts = [];
+    bufferStream.pipe(
+      new Dicer({ boundary })
+        .on('part', (p) => {
+          const part = {
+            body: '',
+            headers: new Map(),
+          };
+
+          p.on('header', (headers) => {
+            for (const h in headers) {
+              part.headers.set(h, headers[h][0]);
+            }
+          });
+          p.on('data', (data) => {
+            part.body += data.toString();
+          });
+          p.on('end', () => {
+            parts.push(part);
+          });
+        })
+        .on('finish', () => {
+          resolve(parts);
+        })
+        .on('error', (error) => {
+          reject(error);
+        })
+    );
+  });
+}
+
+const env = process.env;
+
+beforeEach(() => {
+  jest.resetModules();
+  process.env = { ...env };
+});
+
+afterEach(() => {
+  process.env = env;
+});
 
 test('returns 400 with POST request', async () => {
   const { req, res } = createMocks({ method: 'POST' });
@@ -58,6 +134,8 @@ test.each([
     },
   ],
 ])('returns latest %p manifest', async (platform, launchAssetExpectation) => {
+  process.env.PRIVATE_KEY_PATH = 'updates/test/privatekey.pem';
+
   const firstAssetExpectation = {
     hash: 'cb65fafb5ed456fc3ed8a726cf4087d37b875184eba96f33f6d99104e6e2266d',
     key: '489ea2f19fa850b65653ab445637a181.jpg',
@@ -70,13 +148,16 @@ test.each([
       'expo-runtime-version': 'test',
       'expo-platform': platform,
       'expo-channel-name': 'main',
+      'expo-expect-signature': 'true'
     },
   });
 
   await handleManifest(req, res);
 
-  const data = JSON.parse(res._getData());
   expect(res._getStatusCode()).toBe(200);
+
+  const { body, headers } = await getManifestPartAsync(res, 'manifest');
+  const data = JSON.parse(body);
 
   expect(data.id).toBe('5668cf5b-c7cc-1fc3-da9c-4b6548e9eb9c');
   expect(data.runtimeVersion).toBe('test');
@@ -92,4 +173,6 @@ test.each([
   expect(firstAsset.key).toBe(firstAssetExpectation.key);
   expect(firstAsset.contentType).toBe(firstAssetExpectation.contentType);
   expect(firstAsset.url).toBe(firstAssetExpectation.url);
+
+  expect(headers.get('expo-signature')).toBeTruthy();
 });

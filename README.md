@@ -31,17 +31,17 @@ The flow for creating an update is as follows:
 
 ### Create a "release" app
 
-This server comes with an example Expo project located in **/client**. We can `cd` into that directory, run `yarn` and `npx pod-install` to install packages, and run it locally with `yarn ios`. This app is configured to query this custom server for updates on launch. In **/client/ios/expoupdatesclient/Supporting/Expo.plist**, you'll find a modified Plist that specifies the updates URL to point toward http://localhost:3000/api/manifest. Now we need to create a "release" version of our Expo project.
+This server comes with an example Expo project located in **/expo-updates-client**. We can `cd` into that directory, run `yarn` and `npx pod-install` to install packages, and run it locally with `yarn ios`. This app is configured to query this custom server for updates on launch. In **/expo-updates-client/ios/expoupdatesclient/Supporting/Expo.plist**, you'll find a modified Plist that specifies the updates URL to point toward http://localhost:3000/api/manifest. Now we need to create a "release" version of our Expo project.
 
-Open Xcode, then open **/client/ios**. Click on the project's name in the top bar, then click "Edit scheme". In the modal, select "Release" for "Build configuration" (by default it's set to "Debug").
+Open Xcode, then open **/expo-updates-client/ios**. Click on the project's name in the top bar, then click "Edit scheme". In the modal, select "Release" for "Build configuration" (by default it's set to "Debug").
 
 Then, build the app. You should see it open in an iOS simulator.
 
 ### Make a change
 
-Let's make a change to the project in /client that we'll want to push as an update from our custom server to the "release" app. `cd` in to **/client**, then make a change in **App.js**. You can see the output of your changes by running `yarn ios` in **/client**.
+Let's make a change to the project in /expo-updates-client that we'll want to push as an update from our custom server to the "release" app. `cd` in to **/expo-updates-client**, then make a change in **App.js**. You can see the output of your changes by running `yarn ios` in **/expo-updates-client**.
 
-Once you've made a change you're happy with, inside of **/client**, run:
+Once you've made a change you're happy with, inside of **/expo-updates-client**, run:
 
 ```
 expo export --experimental-bundle
@@ -51,9 +51,9 @@ This will create a folder named **dist** inside of **/client** with an update.
 
 ### Load the update on the server
 
-Back in the parent folder of this custom server, we want to take the update we just made in **/client/dist** and load it into our server. We can accomplish this by copying the contents of **/client/dist** into **updates/1**. The **1** here stands for the runtime version.
+Back in the parent folder of this custom server, we want to take the update we just made in **/expo-updates-client/dist** and load it into our server. We can accomplish this by copying the contents of **/expo-updates-client/dist** into **updates/1**. The **1** here stands for the runtime version.
 
-There's also a convenience script in **package.json** named `yarn expo-publish`. It goes into **client**, exports an update, then places it in the correct spot in **updates**. To publish to another runtime version, you'll need to edit that script.
+There's also a convenience script in **package.json** named `yarn expo-publish`. It goes into **expo-updates-client**, exports an update, then places it in the correct spot in **updates**. To publish to another runtime version, you'll need to edit that script.
 
 ### Send an update
 

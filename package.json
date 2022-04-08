@@ -7,18 +7,22 @@
     "build": "next build",
     "start": "next start",
     "test": "jest",
-    "expo-publish": "cd client && expo export --experimental-bundle && cd ../ && rm -rf updates/1/ && cp -r client/dist/ updates/1",
-    "expo-publish-test": "cd client && expo export --experimental-bundle && cd ../ && rm -rf updates/test/ && cp -r client/dist/ updates/test"
+    "expo-publish": "cd expo-updates-client && expo export --experimental-bundle && cd ../ && rm -rf updates/1/ && cp -r expo-updates-client/dist/ updates/1",
+    "expo-publish-test": "cd expo-updates-client && expo export --experimental-bundle && cd ../ && rm -rf updates/test/ && cp -r expo-updates-client/dist/ updates/test"
   },
   "dependencies": {
+    "form-data": "^4.0.0",
     "mime": "^2.5.2",
     "next": "10.1.3",
     "react": "17.0.2",
-    "react-dom": "17.0.2"
+    "react-dom": "17.0.2",
+    "structured-headers": "^0.4.1"
   },
   "devDependencies": {
     "babel-jest": "^26.6.3",
+    "dicer": "^0.3.1",
     "jest": "^26.6.3",
-    "node-mocks-http": "^1.10.1"
+    "node-mocks-http": "^1.10.1",
+    "nullthrows": "^1.1.1"
   }
 }

@@ -1,14 +1,20 @@
 import path from 'path';
 import fs from 'fs';
+import { serializeDictionary } from 'structured-headers';
+import FormData from 'form-data';
+
 import {
   getAssetMetadataSync,
   getMetadataSync,
   convertSHA256HashToUUID,
+  convertToDictionaryItemsRepresentation,
+  signRSASHA256,
+  getPrivateKeyAsync,
 } from '../../common/helpers';
 
 export default async function manifestEndpoint(req, res) {
-  const platform = req.headers['expo-platform'];
-  const runtimeVersion = req.headers['expo-runtime-version'];
+  const platform = req.headers['expo-platform'] ?? req.query['platform'];
+  const runtimeVersion = req.headers['expo-runtime-version'] ?? req.query['runtime-version'];
   const updateBundlePath = `updates/${runtimeVersion}`;
 
   if (req.method !== 'GET') {
@@ -53,13 +59,46 @@ export default async function manifestEndpoint(req, res) {
       }),
     };
 
+    let signature = null;
+    const expectSignatureHeader = req.headers['expo-expect-signature'];
+    if (expectSignatureHeader) {
+      const privateKey = await getPrivateKeyAsync();
+      if (privateKey) {
+        const manifestString = JSON.stringify(manifest);
+        const hashSignature = signRSASHA256(manifestString, privateKey);
+        const dictionary = convertToDictionaryItemsRepresentation({ sig: hashSignature });
+        signature = serializeDictionary(dictionary);
+      }
+    }
+
+    const assetRequestHeaders = {};
+    [...manifest.assets, manifest.launchAsset].forEach((asset) => {
+      assetRequestHeaders[asset.key] = {
+        'test-header': 'test-header-value',
+      };
+    });
+
+    const form = new FormData();
+    form.append('manifest', JSON.stringify(manifest), {
+      contentType: 'application/json',
+      header: {
+        'content-type': 'application/json; charset=utf-8',
+        ...(signature ? { 'expo-signature': signature } : {}),
+      },
+    });
+    form.append('extensions', JSON.stringify({ assetRequestHeaders }), {
+      contentType: 'application/json',
+    });
+
     res.statusCode = 200;
     res.setHeader('expo-protocol-version', 0);
     res.setHeader('expo-sfv-version', 0);
     res.setHeader('cache-control', 'private, max-age=0');
-    res.setHeader('content-type', 'application/json; charset=utf-8');
-    res.json(manifest);
+    res.setHeader('content-type', `multipart/mixed; boundary=${form.getBoundary()}`);
+    res.write(form.getBuffer());
+    res.end();
   } catch (error) {
+    console.error(error);
     res.statusCode = 404;
     res.json({ error });
   }
