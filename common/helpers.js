@@ -54,7 +54,8 @@ export function getAssetMetadataSync({
 
   return {
     hash: assetHash,
-    key: `${keyHash}.${keyExtensionSuffix}`,
+    key: keyHash,
+    fileExtension: `.${keyExtensionSuffix}`,
     contentType,
     url: `${process.env.HOSTNAME}/api/assets?asset=${assetFilePath}&runtimeVersion=${runtimeVersion}&platform=${platform}`,
   };
