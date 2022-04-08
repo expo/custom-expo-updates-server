@@ -1,6 +1,6 @@
 # Custom Expo Updates server
 
-This repo contains an server that implements the [Expo Updates protocol](https://github.com/expo/expo/pull/12461).
+This repo contains an server that implements the [Expo Updates protocol](https://docs.expo.dev/technical-specs/expo-updates-0).
 
 ## Why
 
