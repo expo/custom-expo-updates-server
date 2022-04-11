@@ -32,10 +32,3 @@ yarn-error.log*
 
 # vercel
 .vercel
-
-client/node_modules
-# CocoaPods
-client/ios/Pods/
-
-# Expo
-client/.expo/*

@@ -1,10 +1,10 @@
 # Custom Expo Updates server
 
-This repo contains an server that implements the [Expo Updates protocol](https://docs.expo.dev/technical-specs/expo-updates-0).
+This repo contains a server and client that implement the [Expo Updates protocol specification](https://docs.expo.dev/technical-specs/expo-updates-0).
 
 ## Why
 
-Expo provides a service named EAS (Expo Application Services), which can host and serve updates for an Expo app using the expo-updates library. In some cases, you may need complete control of how updates are sent to your app. To accomplish this, it's possible to implement your own custom updates server that will provide update manifests and assets to your end-users' apps. This repo serves as an example of one way to implement the protocol above.
+Expo provides a service named EAS (Expo Application Services), which can host and serve updates for an Expo app using the expo-updates library. In some cases, you may need complete control of how updates are sent to your app, and one option for accomplishing this is to implement your own custom updates server that will provide update manifests and assets to your end-users' apps. This repo serves as an example of one way to implement the protocol above.
 
 ## Getting started
 
@@ -16,13 +16,13 @@ To understand this repo, it's important to understand some terminology around up
 - **Platform**: Type: "ios" or "android". Specifies which platform to to provide an update.
 - **Manifest**: Described in the protocol. The manifest is an object that describes assets and other details that an Expo app needs to know to load an update.
 
-### How this server works
+### How the `expo-update-server` works
 
 The flow for creating an update is as follows:
 
 1. Configure and build a "release" version of an app, then run it on a simulator or deploy to an app store.
 2. Run the project locally, make changes, then export the app as an update.
-3. In the server repo, we'll copy the update made in #2 to the **updates** directory, under a corresponding runtime version sub-directory.
+3. In the server repo, we'll copy the update made in #2 to the **expo-update-server/updates** directory, under a corresponding runtime version sub-directory.
 4. In the "release" app, force close and reopen the app to make a request for an update from the custom update server. The server will return a manifest that matches the requests platform and runtime version.
 5. Once the "release" app receives the manifest, it will then make requests for each asset, which will also be served from this server.
 6. Once the app has all the required assets it needs from the server, it will load the update.
@@ -47,13 +47,13 @@ Once you've made a change you're happy with, inside of **/expo-updates-client**,
 expo export --experimental-bundle
 ```
 
-This will create a folder named **dist** inside of **/client** with an update.
+This will create a folder named **dist** inside of **/expo-updates-client** with an update.
 
 ### Load the update on the server
 
-Back in the parent folder of this custom server, we want to take the update we just made in **/expo-updates-client/dist** and load it into our server. We can accomplish this by copying the contents of **/expo-updates-client/dist** into **updates/1**. The **1** here stands for the runtime version.
+Back in the parent folder of this custom server, we want to take the update we just made in **/expo-updates-client/dist** and load it into our server. We can accomplish this by copying the contents of **/expo-updates-client/dist** into **expo-update-server/updates/1**. The **1** here stands for the runtime version.
 
-There's also a convenience script in **package.json** named `yarn expo-publish`. It goes into **expo-updates-client**, exports an update, then places it in the correct spot in **updates**. To publish to another runtime version, you'll need to edit that script.
+There's also a convenience script in **expo-update-server/package.json** named `yarn expo-publish`. It goes into **expo-updates-client**, exports an update, then places it in the correct spot in **expo-update-server/updates**. To publish to another runtime version, you'll need to edit that script.
 
 ### Send an update
 
