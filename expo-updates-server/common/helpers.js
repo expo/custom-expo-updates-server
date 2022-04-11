@@ -1,6 +1,7 @@
 import fs from 'fs';
 import crypto from 'crypto';
 import mime from 'mime';
+import path from 'path';
 
 export function createHash(file, hashingAlgorithm) {
   return crypto.createHash(hashingAlgorithm).update(file).digest('hex');
@@ -31,7 +32,7 @@ export async function getPrivateKeyAsync() {
     return null;
   }
 
-  const pemBuffer = fs.readFileSync(privateKeyPath);
+  const pemBuffer = fs.readFileSync(path.resolve(privateKeyPath));
   return pemBuffer.toString('utf8');
 }
 
@@ -44,7 +45,7 @@ export function getAssetMetadataSync({
   platform,
 }) {
   const assetFilePath = `${updateBundlePath}/${filePath}`;
-  const asset = fs.readFileSync(assetFilePath, null);
+  const asset = fs.readFileSync(path.resolve(assetFilePath), null);
   const assetHash = createHash(asset, 'sha256');
   const keyHash = createHash(asset, 'md5');
   const keyExtensionSuffix = isLaunchAsset ? 'bundle' : ext;
@@ -64,7 +65,7 @@ export function getAssetMetadataSync({
 export function getMetadataSync({ updateBundlePath, runtimeVersion }) {
   try {
     const metadataPath = `${updateBundlePath}/metadata.json`;
-    const updateMetadataBuffer = fs.readFileSync(metadataPath, null);
+    const updateMetadataBuffer = fs.readFileSync(path.resolve(metadataPath), null);
     const metadataJson = JSON.parse(updateMetadataBuffer.toString('utf-8'));
     const metadataStat = fs.statSync(metadataPath);
 
