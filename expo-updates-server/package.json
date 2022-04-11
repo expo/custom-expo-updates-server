@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "lint": "eslint common pages",
     "test": "jest",
     "expo-publish": "cd expo-updates-client && expo export --experimental-bundle && cd ../expo-updates-server && rm -rf updates/1/ && cp -r expo-updates-client/dist/ updates/1",
     "expo-publish-test": "cd expo-updates-client && expo export --experimental-bundle && cd ../expo-updates-server && rm -rf updates/test/ && cp -r expo-updates-client/dist/ updates/test"
@@ -19,13 +20,19 @@
     "structured-headers": "^0.4.1"
   },
   "devDependencies": {
-    "@babel/runtime": "^7.17.9",
+    "@expo/multipart-body-parser": "^1.1.0",
+    "@types/jest": "^27.4.1",
+    "@types/mime": "^2.0.3",
     "@types/react": "^18.0.1",
-    "babel-jest": "^26.6.3",
-    "dicer": "^0.3.1",
-    "jest": "^26.6.3",
+    "@typescript-eslint/eslint-plugin": "^5.19.0",
+    "@typescript-eslint/parser": "^5.19.0",
+    "eslint": "^8.13.0",
+    "eslint-config-universe": "^11.0.0-beta.0",
+    "jest": "^27.5.1",
     "node-mocks-http": "^1.10.1",
     "nullthrows": "^1.1.1",
+    "prettier": "^2.6.2",
+    "ts-jest": "^27.1.4",
     "typescript": "^4.6.3"
   }
 }

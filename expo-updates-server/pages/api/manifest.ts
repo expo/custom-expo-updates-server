@@ -1,7 +1,5 @@
-import path from 'path';
-import fs from 'fs';
-import { serializeDictionary } from 'structured-headers';
 import FormData from 'form-data';
+import { serializeDictionary } from 'structured-headers';
 
 import {
   getAssetMetadataSync,
@@ -48,6 +46,7 @@ export default async function manifestEndpoint(req, res) {
           ext: asset.ext,
           runtimeVersion,
           platform,
+          isLaunchAsset: false,
         })
       ),
       launchAsset: getAssetMetadataSync({
@@ -56,6 +55,7 @@ export default async function manifestEndpoint(req, res) {
         isLaunchAsset: true,
         runtimeVersion,
         platform,
+        ext: null,
       }),
     };
 
