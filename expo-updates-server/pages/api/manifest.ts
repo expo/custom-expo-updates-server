@@ -1,4 +1,5 @@
 import FormData from 'form-data';
+import { NextApiRequest, NextApiResponse } from 'next';
 import { serializeDictionary } from 'structured-headers';
 
 import {
@@ -10,17 +11,14 @@ import {
   getPrivateKeyAsync,
 } from '../../common/helpers';
 
-export default async function manifestEndpoint(req, res) {
-  const platform = req.headers['expo-platform'] ?? req.query['platform'];
-  const runtimeVersion = req.headers['expo-runtime-version'] ?? req.query['runtime-version'];
-  const updateBundlePath = `updates/${runtimeVersion}`;
-
+export default async function manifestEndpoint(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
     res.statusCode = 405;
     res.json({ error: 'Expected GET.' });
     return;
   }
 
+  const platform = req.headers['expo-platform'] ?? req.query['platform'];
   if (platform !== 'ios' && platform !== 'android') {
     res.statusCode = 400;
     res.json({
@@ -28,6 +26,17 @@ export default async function manifestEndpoint(req, res) {
     });
     return;
   }
+
+  const runtimeVersion = req.headers['expo-runtime-version'] ?? req.query['runtime-version'];
+  if (!runtimeVersion || typeof runtimeVersion !== 'string') {
+    res.statusCode = 400;
+    res.json({
+      error: 'No runtimeVersion provided.',
+    });
+    return;
+  }
+
+  const updateBundlePath = `updates/${runtimeVersion}`;
 
   try {
     const { metadataJson, createdAt, id } = getMetadataSync({
@@ -63,12 +72,17 @@ export default async function manifestEndpoint(req, res) {
     const expectSignatureHeader = req.headers['expo-expect-signature'];
     if (expectSignatureHeader) {
       const privateKey = await getPrivateKeyAsync();
-      if (privateKey) {
-        const manifestString = JSON.stringify(manifest);
-        const hashSignature = signRSASHA256(manifestString, privateKey);
-        const dictionary = convertToDictionaryItemsRepresentation({ sig: hashSignature });
-        signature = serializeDictionary(dictionary);
+      if (!privateKey) {
+        res.statusCode = 400;
+        res.json({
+          error: 'Code signing requested but no key supplied when starting server.',
+        });
+        return;
       }
+      const manifestString = JSON.stringify(manifest);
+      const hashSignature = signRSASHA256(manifestString, privateKey);
+      const dictionary = convertToDictionaryItemsRepresentation({ sig: hashSignature });
+      signature = serializeDictionary(dictionary);
     }
 
     const assetRequestHeaders = {};
