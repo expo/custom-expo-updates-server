@@ -1,12 +1,11 @@
-import { createMocks } from 'node-mocks-http';
-import Dicer from 'dicer';
+import { createMocks, MockResponse } from 'node-mocks-http';
 import nullthrows from 'nullthrows';
-import { Stream } from 'stream';
 import { parseItem } from 'structured-headers';
+import {parseMultipartMixedResponseAsync, MultipartPart} from '@expo/multipart-body-parser';
 
 import handleManifest from '../pages/api/manifest';
 
-function isManifestMultipartPart(multipartPart, part) {
+function isManifestMultipartPart(multipartPart: MultipartPart, part: string) {
   const [, parameters] = parseItem(
     nullthrows(multipartPart.headers.get('content-disposition'))
   );
@@ -14,64 +13,12 @@ function isManifestMultipartPart(multipartPart, part) {
   return partName === part;
 }
 
-export async function getManifestPartAsync(response, part) {
-  const multipartParts = await parseMultipartMixedResponseAsync(response);
+export async function getManifestPartAsync(res: any, part: string) {
+  const multipartParts = await parseMultipartMixedResponseAsync(res.getHeader('content-type'), res._getBuffer());
   const manifestPart = multipartParts.find((it) =>
     isManifestMultipartPart(it, part)
   );
   return manifestPart;
-}
-
-async function parseMultipartMixedResponseAsync(res) {
-  const contentType = res.getHeader('content-type');
-  if (!contentType || typeof contentType != 'string') {
-    throw new Error(
-      'The multipart manifest response is missing the content-type header'
-    );
-  }
-
-  const boundaryRegex = /^multipart\/.+?; boundary=(?:"([^"]+)"|([^\s;]+))/i;
-  const matches = boundaryRegex.exec(contentType);
-  if (!matches) {
-    throw new Error(
-      'The content-type header in the HTTP response is not a multipart media type'
-    );
-  }
-  const boundary = matches[1] ?? matches[2];
-
-  const bufferStream = new Stream.PassThrough();
-  bufferStream.end(res._getBuffer());
-
-  return await new Promise((resolve, reject) => {
-    const parts = [];
-    bufferStream.pipe(
-      new Dicer({ boundary })
-        .on('part', (p) => {
-          const part = {
-            body: '',
-            headers: new Map(),
-          };
-
-          p.on('header', (headers) => {
-            for (const h in headers) {
-              part.headers.set(h, headers[h][0]);
-            }
-          });
-          p.on('data', (data) => {
-            part.body += data.toString();
-          });
-          p.on('end', () => {
-            parts.push(part);
-          });
-        })
-        .on('finish', () => {
-          resolve(parts);
-        })
-        .on('error', (error) => {
-          reject(error);
-        })
-    );
-  });
 }
 
 const env = process.env;

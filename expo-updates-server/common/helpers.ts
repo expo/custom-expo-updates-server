@@ -1,13 +1,14 @@
-import fs from 'fs';
 import crypto from 'crypto';
+import fs from 'fs';
 import mime from 'mime';
 import path from 'path';
+import { Dictionary } from 'structured-headers';
 
-export function createHash(file, hashingAlgorithm) {
+export function createHash(file: Buffer, hashingAlgorithm: string) {
   return crypto.createHash(hashingAlgorithm).update(file).digest('hex');
 }
 
-export function convertToDictionaryItemsRepresentation(obj) {
+export function convertToDictionaryItemsRepresentation(obj: { [key: string]: string }): Dictionary {
   return new Map(
     Object.entries(obj).map(([k, v]) => {
       return [k, [v, new Map()]];
@@ -15,13 +16,9 @@ export function convertToDictionaryItemsRepresentation(obj) {
   );
 }
 
-export function signRSASHA256(data, privateKey) {
+export function signRSASHA256(data: string, privateKey: string) {
   const sign = crypto.createSign('RSA-SHA256');
-  if (typeof data === 'string') {
-    sign.update(data, 'utf8');
-  } else {
-    sign.update(data);
-  }
+  sign.update(data, 'utf8');
   sign.end();
   return sign.sign(privateKey, 'base64');
 }
@@ -43,15 +40,20 @@ export function getAssetMetadataSync({
   isLaunchAsset,
   runtimeVersion,
   platform,
+}: {
+  updateBundlePath: string;
+  filePath: string;
+  ext: string | null;
+  isLaunchAsset: boolean;
+  runtimeVersion: string;
+  platform: string;
 }) {
   const assetFilePath = `${updateBundlePath}/${filePath}`;
   const asset = fs.readFileSync(path.resolve(assetFilePath), null);
   const assetHash = createHash(asset, 'sha256');
   const keyHash = createHash(asset, 'md5');
   const keyExtensionSuffix = isLaunchAsset ? 'bundle' : ext;
-  const contentType = isLaunchAsset
-    ? 'application/javascript'
-    : mime.getType(ext);
+  const contentType = isLaunchAsset ? 'application/javascript' : mime.getType(ext);
 
   return {
     hash: assetHash,
@@ -75,15 +77,13 @@ export function getMetadataSync({ updateBundlePath, runtimeVersion }) {
       id: createHash(updateMetadataBuffer, 'sha256'),
     };
   } catch (error) {
-    throw new Error(
-      `No update found with runtime version: ${runtimeVersion}. Error: ${error}`
-    );
+    throw new Error(`No update found with runtime version: ${runtimeVersion}. Error: ${error}`);
   }
 }
 
-export function convertSHA256HashToUUID(value) {
-  return `${value.slice(0, 8)}-${value.slice(8, 12)}-${value.slice(
-    12,
-    16
-  )}-${value.slice(16, 20)}-${value.slice(20, 32)}`;
+export function convertSHA256HashToUUID(value: string) {
+  return `${value.slice(0, 8)}-${value.slice(8, 12)}-${value.slice(12, 16)}-${value.slice(
+    16,
+    20
+  )}-${value.slice(20, 32)}`;
 }

@@ -1,6 +1,7 @@
 import fs from 'fs';
-import path from 'path';
 import mime from 'mime';
+import path from 'path';
+
 import { getMetadataSync } from '../../common/helpers';
 
 export default function assetsEndpoint(req, res) {
@@ -32,8 +33,7 @@ export default function assetsEndpoint(req, res) {
 
   const assetPath = path.resolve(assetName);
   const assetMetadata = metadataJson.fileMetadata[platform].assets.find(
-    (asset) =>
-      asset.path === assetName.replace(`updates/${runtimeVersion}/`, '')
+    (asset) => asset.path === assetName.replace(`updates/${runtimeVersion}/`, '')
   );
   const isLaunchAsset =
     metadataJson.fileMetadata[platform].bundle ===

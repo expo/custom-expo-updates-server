@@ -18,6 +18,12 @@ jobs:
       - name: Yarn
         run: yarn install --frozen-lockfile
         working-directory: ./expo-updates-server
+      - name: tsc
+        run: yarn tsc
+        working-directory: ./expo-updates-server
+      - name: Lint
+        run: yarn lint
+        working-directory: ./expo-updates-server
       - name: Test
         run: yarn test
         working-directory: ./expo-updates-server
