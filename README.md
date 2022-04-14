@@ -1,10 +1,12 @@
-# Custom Expo Updates server
+# Custom Expo Updates Server & Client
 
 This repo contains a server and client that implement the [Expo Updates protocol specification](https://docs.expo.dev/technical-specs/expo-updates-0).
 
 ## Why
 
-Expo provides a service named EAS (Expo Application Services), which can host and serve updates for an Expo app using the expo-updates library. In some cases, you may need complete control of how updates are sent to your app, and one option for accomplishing this is to implement your own custom updates server that will provide update manifests and assets to your end-users' apps. This repo serves as an example of one way to implement the protocol above.
+Expo provides a set of service named EAS (Expo Application Services), one of which is EAS Update which can host and serve updates for an Expo app using the [`expo-updates`](https://github.com/expo/expo/tree/main/packages/expo-updates) library.
+
+In some cases more control of how updates are sent to an app may be needed, and one option is to implement a custom updates server that adheres to the specification in order to serve update manifests and assets. This repo contains an example server implementation of the specification and a client app configured to use the example server.
 
 ## Getting started
 
@@ -12,7 +14,7 @@ Expo provides a service named EAS (Expo Application Services), which can host an
 
 To understand this repo, it's important to understand some terminology around updates:
 
-- **Runtime version**: Type: String. Runtime version specifies the version of the underlying native code your app is running. You'll want to update the runtime version of an update when it relies on new or changed native code, like when you update the Expo SDK, or add in any native modules into your apps. Failing to update an update's runtime version will cause your end-user's app to crash, if the update relies on native code the end-user is not running.
+- **Runtime version**: Type: String. Runtime version specifies the version of the underlying native code your app is running. You'll want to update the runtime version of an update when it relies on new or changed native code, like when you update the Expo SDK, or add in any native modules into your apps. Failing to update an update's runtime version will cause your end-user's app to crash if the update relies on native code the end-user is not running.
 - **Platform**: Type: "ios" or "android". Specifies which platform to to provide an update.
 - **Manifest**: Described in the protocol. The manifest is an object that describes assets and other details that an Expo app needs to know to load an update.
 
@@ -31,7 +33,7 @@ The flow for creating an update is as follows:
 
 ### Create a "release" app
 
-This server comes with an example Expo project located in **/expo-updates-client**. We can `cd` into that directory, run `yarn` and `npx pod-install` to install packages, and run it locally with `yarn ios`. This app is configured to query this custom server for updates on launch. In **/expo-updates-client/ios/expoupdatesclient/Supporting/Expo.plist**, you'll find a modified Plist that specifies the updates URL to point toward http://localhost:3000/api/manifest. Now we need to create a "release" version of our Expo project.
+The example Expo project configured for the server is located in **/expo-updates-client**. We can `cd` into that directory, run `yarn` and `npx pod-install` to install packages, and run it locally with `yarn ios`. This app is configured to query this custom server for updates on launch. In **/expo-updates-client/ios/expoupdatesclient/Supporting/Expo.plist**, you'll find a modified Plist that specifies the updates URL to point toward http://localhost:3000/api/manifest. Now we need to create a "release" version of our Expo project.
 
 Open Xcode, then open **/expo-updates-client/ios**. Click on the project's name in the top bar, then click "Edit scheme". In the modal, select "Release" for "Build configuration" (by default it's set to "Debug").
 
@@ -63,10 +65,6 @@ In the simulator running the "release" version of the app, force close the app a
 
 ## About this server
 
-This server was created with NextJS, and their API routes. You can find the API endpoints in **pages/api/manifest.js** and **pages/api/assets.js**.
+This server was created with NextJS. You can find the API endpoints in **pages/api/manifest.js** and **pages/api/assets.js**.
 
 We chose to make this example with NextJS so that you can run one command to get the API running, and also so that you could deploy this to Vercel to load updates from a real server. If you choose to deploy this to Vercel, you'll need to find the URL the endpoints exist at, then update the Expo.plist for iOS with the URL under the `EXUpdatesURL` key, then rebuild a "release" app to include the new URL.
-
-## Next steps
-
-This custom server is for explanatory purposes so that you can see how the update protocol works. We hope it helps you on your journey to running your own update server.
