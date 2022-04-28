@@ -81,7 +81,10 @@ export default async function manifestEndpoint(req: NextApiRequest, res: NextApi
       }
       const manifestString = JSON.stringify(manifest);
       const hashSignature = signRSASHA256(manifestString, privateKey);
-      const dictionary = convertToDictionaryItemsRepresentation({ sig: hashSignature });
+      const dictionary = convertToDictionaryItemsRepresentation({
+        sig: hashSignature,
+        keyid: 'main',
+      });
       signature = serializeDictionary(dictionary);
     }
 

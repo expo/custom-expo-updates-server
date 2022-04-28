@@ -43,8 +43,6 @@ ZA==&#xD;
     <key>EXUpdatesRuntimeVersion</key>
     <string>1</string>
     <key>EXUpdatesURL</key>
-    <string>http://172.20.10.2:3000/api/manifest</string>
-    <key>EXUpdatesUsesLegacyManifest</key>
-    <false/>
+    <string>http://192.168.64.1:3000/api/manifest</string>
   </dict>
 </plist>

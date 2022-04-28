@@ -1,11 +1,15 @@
-import crypto from 'crypto';
+import crypto, { BinaryToTextEncoding } from 'crypto';
 import fs from 'fs';
 import mime from 'mime';
 import path from 'path';
 import { Dictionary } from 'structured-headers';
 
-export function createHash(file: Buffer, hashingAlgorithm: string) {
-  return crypto.createHash(hashingAlgorithm).update(file).digest('hex');
+function createHash(file: Buffer, hashingAlgorithm: string, encoding: BinaryToTextEncoding) {
+  return crypto.createHash(hashingAlgorithm).update(file).digest(encoding);
+}
+
+function getBase64URLEncoding(base64EncodedString: string): string {
+  return base64EncodedString.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
 export function convertToDictionaryItemsRepresentation(obj: { [key: string]: string }): Dictionary {
@@ -50,14 +54,14 @@ export function getAssetMetadataSync({
 }) {
   const assetFilePath = `${updateBundlePath}/${filePath}`;
   const asset = fs.readFileSync(path.resolve(assetFilePath), null);
-  const assetHash = createHash(asset, 'sha256');
-  const keyHash = createHash(asset, 'md5');
+  const assetHash = getBase64URLEncoding(createHash(asset, 'sha256', 'base64'));
+  const key = createHash(asset, 'md5', 'hex');
   const keyExtensionSuffix = isLaunchAsset ? 'bundle' : ext;
   const contentType = isLaunchAsset ? 'application/javascript' : mime.getType(ext);
 
   return {
     hash: assetHash,
-    key: keyHash,
+    key,
     fileExtension: `.${keyExtensionSuffix}`,
     contentType,
     url: `${process.env.HOSTNAME}/api/assets?asset=${assetFilePath}&runtimeVersion=${runtimeVersion}&platform=${platform}`,
@@ -74,7 +78,7 @@ export function getMetadataSync({ updateBundlePath, runtimeVersion }) {
     return {
       metadataJson,
       createdAt: new Date(metadataStat.birthtime).toISOString(),
-      id: createHash(updateMetadataBuffer, 'sha256'),
+      id: createHash(updateMetadataBuffer, 'sha256', 'hex'),
     };
   } catch (error) {
     throw new Error(`No update found with runtime version: ${runtimeVersion}. Error: ${error}`);

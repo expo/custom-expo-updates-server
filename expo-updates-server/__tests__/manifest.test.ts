@@ -1,23 +1,22 @@
-import { createMocks, MockResponse } from 'node-mocks-http';
+import { parseMultipartMixedResponseAsync, MultipartPart } from '@expo/multipart-body-parser';
+import { createMocks } from 'node-mocks-http';
 import nullthrows from 'nullthrows';
 import { parseItem } from 'structured-headers';
-import {parseMultipartMixedResponseAsync, MultipartPart} from '@expo/multipart-body-parser';
 
 import handleManifest from '../pages/api/manifest';
 
 function isManifestMultipartPart(multipartPart: MultipartPart, part: string) {
-  const [, parameters] = parseItem(
-    nullthrows(multipartPart.headers.get('content-disposition'))
-  );
+  const [, parameters] = parseItem(nullthrows(multipartPart.headers.get('content-disposition')));
   const partName = parameters.get('name');
   return partName === part;
 }
 
 export async function getManifestPartAsync(res: any, part: string) {
-  const multipartParts = await parseMultipartMixedResponseAsync(res.getHeader('content-type'), res._getBuffer());
-  const manifestPart = multipartParts.find((it) =>
-    isManifestMultipartPart(it, part)
+  const multipartParts = await parseMultipartMixedResponseAsync(
+    res.getHeader('content-type'),
+    res._getBuffer()
   );
+  const manifestPart = multipartParts.find((it) => isManifestMultipartPart(it, part));
   return manifestPart;
 }
 
@@ -73,7 +72,7 @@ test.each([
   [
     'ios',
     {
-      hash: '99b36e8b0afe02000087a91b220650e56106d1fa672bbc77f481aae9c21af3fb',
+      hash: 'mbNuiwr-AgAAh6kbIgZQ5WEG0fpnK7x39IGq6cIa8_s',
       key: 'dacaa233e4886477facc9d5ca16952ad',
       fileExtension: '.bundle',
       contentType: 'application/javascript',
@@ -83,7 +82,7 @@ test.each([
   [
     'android',
     {
-      hash: '3712b3a9c1e3bf7f383fe916a113d9937b5ec0ccfe5a5f4002b2ff8fb00fa681',
+      hash: 'NxKzqcHjv384P-kWoRPZk3tewMz-Wl9AArL_j7APpoE',
       key: 'f1539de9a8bd655e7346639e6a6c2d2a',
       fileExtension: '.bundle',
       contentType: 'application/javascript',
@@ -94,7 +93,7 @@ test.each([
   process.env.PRIVATE_KEY_PATH = 'updates/test/privatekey.pem';
 
   const firstAssetExpectation = {
-    hash: 'cb65fafb5ed456fc3ed8a726cf4087d37b875184eba96f33f6d99104e6e2266d',
+    hash: 'y2X6-17UVvw-2Kcmz0CH03uHUYTrqW8z9tmRBObiJm0',
     key: '489ea2f19fa850b65653ab445637a181',
     fileExtension: '.jpg',
     contentType: 'image/jpeg',
