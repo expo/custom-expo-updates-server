@@ -1,25 +1,26 @@
 import fs from 'fs';
 import mime from 'mime';
+import { NextApiRequest, NextApiResponse } from 'next';
 import path from 'path';
 
 import { getMetadataSync } from '../../common/helpers';
 
-export default function assetsEndpoint(req, res) {
+export default function assetsEndpoint(req: NextApiRequest, res: NextApiResponse) {
   const { asset: assetName, runtimeVersion, platform } = req.query;
 
-  if (!assetName) {
+  if (!assetName || typeof assetName !== 'string') {
     res.statusCode = 400;
     res.json({ error: 'No asset name provided.' });
     return;
   }
 
-  if (!platform) {
+  if (platform !== 'ios' && platform !== 'android') {
     res.statusCode = 400;
     res.json({ error: 'No platform provided. Expected "ios" or "android".' });
     return;
   }
 
-  if (!runtimeVersion) {
+  if (!runtimeVersion || typeof runtimeVersion !== 'string') {
     res.statusCode = 400;
     res.json({ error: 'No runtimeVersion provided.' });
     return;

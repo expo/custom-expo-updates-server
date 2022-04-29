@@ -67,4 +67,6 @@ In the simulator running the "release" version of the app, force close the app a
 
 This server was created with NextJS. You can find the API endpoints in **pages/api/manifest.js** and **pages/api/assets.js**.
 
+The code signing keys and certificates were generated from using https://github.com/expo/code-signing-certificates.
+
 We chose to make this example with NextJS so that you can run one command to get the API running, and also so that you could deploy this to Vercel to load updates from a real server. If you choose to deploy this to Vercel, you'll need to find the URL the endpoints exist at, then update the Expo.plist for iOS with the URL under the `EXUpdatesURL` key, then rebuild a "release" app to include the new URL.
