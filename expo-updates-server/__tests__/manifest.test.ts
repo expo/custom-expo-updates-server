@@ -76,7 +76,7 @@ test.each([
       key: 'dacaa233e4886477facc9d5ca16952ad',
       fileExtension: '.bundle',
       contentType: 'application/javascript',
-      url: `${process.env.HOSTNAME}/api/assets?asset=updates/test/bundles/ios-dacaa233e4886477facc9d5ca16952ad.js&runtimeVersion=test&platform=ios`,
+      url: `${process.env.HOSTNAME}/api/assets?asset=updates/test/1/bundles/ios-dacaa233e4886477facc9d5ca16952ad.js&runtimeVersion=test&platform=ios`,
     },
   ],
   [
@@ -86,18 +86,18 @@ test.each([
       key: 'f1539de9a8bd655e7346639e6a6c2d2a',
       fileExtension: '.bundle',
       contentType: 'application/javascript',
-      url: `${process.env.HOSTNAME}/api/assets?asset=updates/test/bundles/android-f1539de9a8bd655e7346639e6a6c2d2a.js&runtimeVersion=test&platform=android`,
+      url: `${process.env.HOSTNAME}/api/assets?asset=updates/test/1/bundles/android-f1539de9a8bd655e7346639e6a6c2d2a.js&runtimeVersion=test&platform=android`,
     },
   ],
 ])('returns latest %p manifest', async (platform, launchAssetExpectation) => {
-  process.env.PRIVATE_KEY_PATH = 'updates/test/privatekey.pem';
+  process.env.PRIVATE_KEY_PATH = 'updates/test/1/privatekey.pem';
 
   const firstAssetExpectation = {
     hash: 'y2X6-17UVvw-2Kcmz0CH03uHUYTrqW8z9tmRBObiJm0',
     key: '489ea2f19fa850b65653ab445637a181',
     fileExtension: '.jpg',
     contentType: 'image/jpeg',
-    url: `${process.env.HOSTNAME}/api/assets?asset=updates/test/assets/489ea2f19fa850b65653ab445637a181&runtimeVersion=test&platform=${platform}`,
+    url: `${process.env.HOSTNAME}/api/assets?asset=updates/test/1/assets/489ea2f19fa850b65653ab445637a181&runtimeVersion=test&platform=${platform}`,
   };
   const { req, res } = createMocks({
     method: 'GET',
@@ -113,7 +113,7 @@ test.each([
 
   expect(res._getStatusCode()).toBe(200);
 
-  const { body, headers } = await getManifestPartAsync(res, 'manifest');
+  const { body, headers } = nullthrows(await getManifestPartAsync(res, 'manifest'));
   const data = JSON.parse(body);
 
   expect(data.id).toBe('5668cf5b-c7cc-1fc3-da9c-4b6548e9eb9c');

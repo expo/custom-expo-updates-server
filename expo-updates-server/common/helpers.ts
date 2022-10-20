@@ -1,5 +1,6 @@
 import crypto, { BinaryToTextEncoding } from 'crypto';
-import fs from 'fs';
+import fsSync from 'fs';
+import fs from 'fs/promises';
 import mime from 'mime';
 import path from 'path';
 import { Dictionary } from 'structured-headers';
@@ -33,47 +34,77 @@ export async function getPrivateKeyAsync() {
     return null;
   }
 
-  const pemBuffer = fs.readFileSync(path.resolve(privateKeyPath));
+  const pemBuffer = await fs.readFile(path.resolve(privateKeyPath));
   return pemBuffer.toString('utf8');
 }
 
-export function getAssetMetadataSync({
-  updateBundlePath,
-  filePath,
-  ext,
-  isLaunchAsset,
-  runtimeVersion,
-  platform,
-}: {
-  updateBundlePath: string;
-  filePath: string;
-  ext: string | null;
-  isLaunchAsset: boolean;
-  runtimeVersion: string;
-  platform: string;
-}) {
-  const assetFilePath = `${updateBundlePath}/${filePath}`;
-  const asset = fs.readFileSync(path.resolve(assetFilePath), null);
+export async function getLatestUpdateBundlePathForRuntimeVersionAsync(runtimeVersion: string) {
+  const updatesDirectoryForRuntimeVersion = `updates/${runtimeVersion}`;
+  if (!fsSync.existsSync(updatesDirectoryForRuntimeVersion)) {
+    throw new Error('Unsupported runtime version');
+  }
+
+  const filesInUpdatesDirectory = await fs.readdir(updatesDirectoryForRuntimeVersion);
+  const directoriesInUpdatesDirectory = (
+    await Promise.all(
+      filesInUpdatesDirectory.map(async (file) => {
+        const fileStat = await fs.stat(path.join(updatesDirectoryForRuntimeVersion, file));
+        return fileStat.isDirectory() ? file : null;
+      })
+    )
+  )
+    .filter(truthy)
+    .sort((a, b) => parseInt(b, 10) - parseInt(a, 10));
+  return path.join(updatesDirectoryForRuntimeVersion, directoriesInUpdatesDirectory[0]);
+}
+
+type GetAssetMetadataArg =
+  | {
+      updateBundlePath: string;
+      filePath: string;
+      ext: null;
+      isLaunchAsset: true;
+      runtimeVersion: string;
+      platform: string;
+    }
+  | {
+      updateBundlePath: string;
+      filePath: string;
+      ext: string;
+      isLaunchAsset: false;
+      runtimeVersion: string;
+      platform: string;
+    };
+
+export async function getAssetMetadataAsync(arg: GetAssetMetadataArg) {
+  const assetFilePath = `${arg.updateBundlePath}/${arg.filePath}`;
+  const asset = await fs.readFile(path.resolve(assetFilePath), null);
   const assetHash = getBase64URLEncoding(createHash(asset, 'sha256', 'base64'));
   const key = createHash(asset, 'md5', 'hex');
-  const keyExtensionSuffix = isLaunchAsset ? 'bundle' : ext;
-  const contentType = isLaunchAsset ? 'application/javascript' : mime.getType(ext);
+  const keyExtensionSuffix = arg.isLaunchAsset ? 'bundle' : arg.ext;
+  const contentType = arg.isLaunchAsset ? 'application/javascript' : mime.getType(arg.ext);
 
   return {
     hash: assetHash,
     key,
     fileExtension: `.${keyExtensionSuffix}`,
     contentType,
-    url: `${process.env.HOSTNAME}/api/assets?asset=${assetFilePath}&runtimeVersion=${runtimeVersion}&platform=${platform}`,
+    url: `${process.env.HOSTNAME}/api/assets?asset=${assetFilePath}&runtimeVersion=${arg.runtimeVersion}&platform=${arg.platform}`,
   };
 }
 
-export function getMetadataSync({ updateBundlePath, runtimeVersion }) {
+export async function getMetadataAsync({
+  updateBundlePath,
+  runtimeVersion,
+}: {
+  updateBundlePath: string;
+  runtimeVersion: string;
+}) {
   try {
     const metadataPath = `${updateBundlePath}/metadata.json`;
-    const updateMetadataBuffer = fs.readFileSync(path.resolve(metadataPath), null);
+    const updateMetadataBuffer = await fs.readFile(path.resolve(metadataPath), null);
     const metadataJson = JSON.parse(updateMetadataBuffer.toString('utf-8'));
-    const metadataStat = fs.statSync(metadataPath);
+    const metadataStat = await fs.stat(metadataPath);
 
     return {
       metadataJson,
@@ -90,4 +121,8 @@ export function convertSHA256HashToUUID(value: string) {
     16,
     20
   )}-${value.slice(20, 32)}`;
+}
+
+export function truthy<TValue>(value: TValue | null | undefined): value is TValue {
+  return !!value;
 }
