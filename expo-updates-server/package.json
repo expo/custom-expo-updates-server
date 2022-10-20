@@ -8,8 +8,8 @@
     "start": "next start",
     "lint": "eslint common pages",
     "test": "jest",
-    "expo-publish": "./scripts/publish.sh -d 1",
-    "expo-publish-test": "./scripts/publish.sh -d test"
+    "expo-publish": "./scripts/publish.sh -d 1/$(date +%s)",
+    "expo-publish-test": "./scripts/publish.sh -d test/$(date +%s)"
   },
   "dependencies": {
     "form-data": "^4.0.0",
