@@ -93,6 +93,21 @@ export async function getAssetMetadataAsync(arg: GetAssetMetadataArg) {
   };
 }
 
+export async function createRollbackMessageAsync(updateBundlePath: string) {
+  try {
+    const rollbackFilePath = `${updateBundlePath}/rollback`;
+    const rollbackFileStat = await fs.stat(rollbackFilePath);
+    return {
+      messageType: 'rollbackToEmbedded',
+      messagePayload: {
+        createdAt: new Date(rollbackFileStat.birthtime).toISOString(),
+      },
+    };
+  } catch (error) {
+    throw new Error(`No rollback found. Error: ${error}`);
+  }
+}
+
 export async function getMetadataAsync({
   updateBundlePath,
   runtimeVersion,

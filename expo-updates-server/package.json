@@ -3,13 +3,14 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "PRIVATE_KEY_PATH=code-signing-keys/private-key.pem next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "PRIVATE_KEY_PATH=code-signing-keys/private-key.pem next start",
     "lint": "eslint common pages",
     "test": "jest",
     "expo-publish": "cd ../expo-updates-client && expo export --experimental-bundle && cd ../expo-updates-server && cp -r ../expo-updates-client/dist/ updates/1/$(date +%s)",
-    "expo-publish-test": "cd ../expo-updates-client && expo export --experimental-bundle && cd ../expo-updates-server && cp -r ../expo-updates-client/dist/ updates/test/$(date +%s)"
+    "expo-publish-rollback": "mktouch() { mkdir -p $(dirname $1) && touch $1; }; cd ../expo-updates-server && mktouch updates/1/$(date +%s)/rollback",
+    "expo-publish-test": "cd ../expo-updates-client && expo export --experimental-bundle && cd ../expo-updates-server && cp -r ../expo-updates-client/dist/ updates/test/1"
   },
   "dependencies": {
     "form-data": "^4.0.0",

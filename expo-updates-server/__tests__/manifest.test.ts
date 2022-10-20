@@ -133,3 +133,31 @@ test.each([
 
   expect(headers.get('expo-signature')).toBeTruthy();
 });
+
+test.each([['ios'], ['android']])('returns rollback %p', async (platform) => {
+  process.env.PRIVATE_KEY_PATH = 'updates/test/1/privatekey.pem';
+
+  const { req, res } = createMocks({
+    method: 'GET',
+    headers: {
+      'expo-runtime-version': 'testrollback',
+      'expo-platform': platform,
+      'expo-channel-name': 'main',
+      'expo-expect-signature': 'true',
+      'expo-embedded-update-id': '123',
+    },
+  });
+
+  await handleManifest(req, res);
+
+  expect(res._getStatusCode()).toBe(200);
+
+  const { body, headers } = nullthrows(await getManifestPartAsync(res, 'message'));
+  const data = JSON.parse(body);
+  expect(data).toMatchObject({
+    messageType: 'rollbackToEmbedded',
+    messagePayload: { createdAt: '2022-10-20T23:05:53.529Z' },
+  });
+
+  expect(headers.get('expo-signature')).toBeTruthy();
+});
