@@ -35,11 +35,6 @@ ZA==
     <true/>
     <key>EXUpdatesLaunchWaitMs</key>
     <integer>30000</integer>
-    <key>EXUpdatesRequestHeaders</key>
-    <dict>
-      <key>expo-channel-name</key>
-      <string>main</string>
-    </dict>
     <key>EXUpdatesRuntimeVersion</key>
     <string>1</string>
     <key>EXUpdatesURL</key>
