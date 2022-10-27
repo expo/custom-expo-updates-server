@@ -46,7 +46,7 @@ Let's make a change to the project in /expo-updates-client that we'll want to pu
 Once you've made a change you're happy with, inside of **/expo-updates-client**, run:
 
 ```
-expo export --experimental-bundle
+npx expo export
 ```
 
 This will create a folder named **dist** inside of **/expo-updates-client** with an update.
