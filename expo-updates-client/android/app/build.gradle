@@ -87,6 +87,8 @@ project.ext.react = [
     hermesCommand: new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + "/sdks/hermesc/%OS-BIN%/hermesc",
     cliPath: "${reactNativeRoot}/cli.js",
     composeSourceMapsPath: "${reactNativeRoot}/scripts/compose-source-maps.js",
+    bundleInDebug: true,
+    devDisabledInDebug: true
 ]
 
 apply from: new File(reactNativeRoot, "react.gradle")
