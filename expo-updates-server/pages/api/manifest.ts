@@ -66,6 +66,8 @@ export default async function manifestEndpoint(req: NextApiRequest, res: NextApi
         platform,
         ext: null,
       }),
+      metadata: {},
+      extra: {},
     };
 
     let signature = null;

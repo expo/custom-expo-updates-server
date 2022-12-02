@@ -118,6 +118,8 @@ test.each([
 
   expect(data.id).toBe('5668cf5b-c7cc-1fc3-da9c-4b6548e9eb9c');
   expect(data.runtimeVersion).toBe('test');
+  expect(data.metadata).toEqual({});
+  expect(data.extra).toEqual({});
 
   const launchAsset = data.launchAsset;
   expect(launchAsset.hash).toBe(launchAssetExpectation.hash);
