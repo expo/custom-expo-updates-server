@@ -9,6 +9,7 @@ import {
   convertToDictionaryItemsRepresentation,
   signRSASHA256,
   getPrivateKeyAsync,
+  getExpoConfigSync,
 } from '../../common/helpers';
 
 export default async function manifestEndpoint(req: NextApiRequest, res: NextApiResponse) {
@@ -43,6 +44,10 @@ export default async function manifestEndpoint(req: NextApiRequest, res: NextApi
       updateBundlePath,
       runtimeVersion,
     });
+    const expoConfig = getExpoConfigSync({
+      updateBundlePath,
+      runtimeVersion,
+    });
     const platformSpecificMetadata = metadataJson.fileMetadata[platform];
     const manifest = {
       id: convertSHA256HashToUUID(id),
@@ -67,7 +72,9 @@ export default async function manifestEndpoint(req: NextApiRequest, res: NextApi
         ext: null,
       }),
       metadata: {},
-      extra: {},
+      extra: {
+        expoClient: expoConfig,
+      },
     };
 
     let signature = null;

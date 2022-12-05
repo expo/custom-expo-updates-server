@@ -72,32 +72,32 @@ test.each([
   [
     'ios',
     {
-      hash: 'mbNuiwr-AgAAh6kbIgZQ5WEG0fpnK7x39IGq6cIa8_s',
-      key: 'dacaa233e4886477facc9d5ca16952ad',
+      hash: 'aRlpVHrYvXJ4OZOOtUOojMlFLus6ZkyVK2a38PzyN9E',
+      key: 'c9bfd652a7fbd202192b12116522277d',
       fileExtension: '.bundle',
       contentType: 'application/javascript',
-      url: `${process.env.HOSTNAME}/api/assets?asset=updates/test/bundles/ios-dacaa233e4886477facc9d5ca16952ad.js&runtimeVersion=test&platform=ios`,
+      url: `${process.env.HOSTNAME}/api/assets?asset=updates/test/bundles/ios-c9bfd652a7fbd202192b12116522277d.js&runtimeVersion=test&platform=ios`,
     },
   ],
   [
     'android',
     {
-      hash: 'NxKzqcHjv384P-kWoRPZk3tewMz-Wl9AArL_j7APpoE',
-      key: 'f1539de9a8bd655e7346639e6a6c2d2a',
+      hash: '-JXlfof61fxpCaGE-DzW7TIS9KqdhLgncfokxnqS3MI',
+      key: 'b8ee8494e0cf548b34bfafc25ae5c144',
       fileExtension: '.bundle',
       contentType: 'application/javascript',
-      url: `${process.env.HOSTNAME}/api/assets?asset=updates/test/bundles/android-f1539de9a8bd655e7346639e6a6c2d2a.js&runtimeVersion=test&platform=android`,
+      url: `${process.env.HOSTNAME}/api/assets?asset=updates/test/bundles/android-b8ee8494e0cf548b34bfafc25ae5c144.js&runtimeVersion=test&platform=android`,
     },
   ],
 ])('returns latest %p manifest', async (platform, launchAssetExpectation) => {
-  process.env.PRIVATE_KEY_PATH = 'updates/test/privatekey.pem';
+  process.env.PRIVATE_KEY_PATH = 'code-signing-keys/test-private-key.pem';
 
   const firstAssetExpectation = {
-    hash: 'y2X6-17UVvw-2Kcmz0CH03uHUYTrqW8z9tmRBObiJm0',
-    key: '489ea2f19fa850b65653ab445637a181',
-    fileExtension: '.jpg',
-    contentType: 'image/jpeg',
-    url: `${process.env.HOSTNAME}/api/assets?asset=updates/test/assets/489ea2f19fa850b65653ab445637a181&runtimeVersion=test&platform=${platform}`,
+    hash: 'JCcs2u_4LMX6zazNmCpvBbYMRQRwS7-UwZpjiGWYgLs',
+    key: '4f1cb2cac2370cd5050681232e8575a8',
+    fileExtension: '.png',
+    contentType: 'image/png',
+    url: `${process.env.HOSTNAME}/api/assets?asset=updates/test/assets/4f1cb2cac2370cd5050681232e8575a8&runtimeVersion=test&platform=${platform}`,
   };
   const { req, res } = createMocks({
     method: 'GET',
@@ -116,10 +116,10 @@ test.each([
   const { body, headers } = await getManifestPartAsync(res, 'manifest');
   const data = JSON.parse(body);
 
-  expect(data.id).toBe('5668cf5b-c7cc-1fc3-da9c-4b6548e9eb9c');
+  expect(data.id).toBe('59c721f4-b9e9-650b-d21b-481b26fb7351');
   expect(data.runtimeVersion).toBe('test');
   expect(data.metadata).toEqual({});
-  expect(data.extra).toEqual({});
+  expect(data.extra).toMatchSnapshot();
 
   const launchAsset = data.launchAsset;
   expect(launchAsset.hash).toBe(launchAssetExpectation.hash);
