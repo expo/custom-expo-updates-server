@@ -31,35 +31,35 @@ The flow for creating an update is as follows:
 
 ## The setup
 
+Note: The app is configured to load updates from the server running at http://localhost:3000. If you prefer to load them from a different base URL (for example, in an Android emulator):
+1. Update `.env.local` in the server.
+2. Update `updates.url` in `app.json` and then run `npx expo prebuild` to sync the changes with the generated native code.
+
 ### Create a "release" app
 
-The example Expo project configured for the server is located in **/expo-updates-client**. We can `cd` into that directory, run `yarn` and `npx pod-install` to install packages, and run it locally with `yarn ios`. This app is configured to query this custom server for updates on launch. In **/expo-updates-client/ios/expoupdatesclient/Supporting/Expo.plist**, you'll find a modified Plist that specifies the updates URL to point toward http://localhost:3000/api/manifest. Now we need to create a "release" version of our Expo project.
+The example Expo project configured for the server is located in **/expo-updates-client**.
 
-Open Xcode, then open **/expo-updates-client/ios**. Click on the project's name in the top bar, then click "Edit scheme". In the modal, select "Release" for "Build configuration" (by default it's set to "Debug").
+#### iOS
+
+Run `yarn` and `npx pod-install` to install packages, and run it locally with `yarn ios`. In **/expo-updates-client/ios/expoupdatesclient/Supporting/Expo.plist**, you'll find a modified Plist that specifies the updates URL to point toward http://localhost:3000/api/manifest.
+
+This app is configured to query this custom server for updates on launch, but only in the "release" version. To create this version, open Xcode, then open **/expo-updates-client/ios**. Click on the project's name in the top bar, then click "Edit scheme". In the modal, select "Release" for "Build configuration" (by default it's set to "Debug").
 
 Then, build the app. You should see it open in an iOS simulator.
 
+#### Android
+
+Run `yarn` and then run `yarn android --variant release`. The `AndroidManifest.xml` specifies the updates URL to point toward http://localhost:3000/api/manifest.
+
 ### Make a change
 
-Let's make a change to the project in /expo-updates-client that we'll want to push as an update from our custom server to the "release" app. `cd` in to **/expo-updates-client**, then make a change in **App.js**. You can see the output of your changes by running `yarn ios` in **/expo-updates-client**.
+Let's make a change to the project in /expo-updates-client that we'll want to push as an over-the-air update from our custom server to the "release" app. `cd` in to **/expo-updates-client**, then make a change in **App.js**.
 
-Once you've made a change you're happy with, inside of **/expo-updates-client**, run:
-
-```
-npx expo export
-```
-
-This will create a folder named **dist** inside of **/expo-updates-client** with an update.
-
-### Load the update on the server
-
-Back in the parent folder of this custom server, we want to take the update we just made in **/expo-updates-client/dist** and load it into our server. We can accomplish this by copying the contents of **/expo-updates-client/dist** into **expo-update-server/updates/1**. The **1** here stands for the runtime version.
-
-There's also a convenience script in **expo-update-server/package.json** named `yarn expo-publish`. It goes into **expo-updates-client**, exports an update, then places it in the correct spot in **expo-update-server/updates**. To publish to another runtime version, you'll need to edit that script.
+Once you've made a change you're happy with, inside of **/expo-updates-server**, run `yarn expo-publish`. Under the hood, this script runs `npx expo export` in the client, copies the exported app to the server, and then copies the Expo config to the server as well.
 
 ### Send an update
 
-Now we're ready to run the update server. Run `yarn dev` or `npm run dev` in the parent folder of this repo to start the server.
+Now we're ready to run the update server. Run `yarn dev` in the server folder of this repo to start the server.
 
 In the simulator running the "release" version of the app, force close the app and re-open it. It should make a request to /api/manifest, then requests to /api/assets. After the app loads, it should show any changes you made locally.
 

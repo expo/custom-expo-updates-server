@@ -1,4 +1,5 @@
 import { createMocks } from 'node-mocks-http';
+
 import handleAssets from '../pages/api/assets';
 
 test('returns asset file', async () => {
@@ -6,7 +7,7 @@ test('returns asset file', async () => {
     method: 'GET',
     query: {
       runtimeVersion: 'test',
-      asset: 'updates/test/assets/489ea2f19fa850b65653ab445637a181',
+      asset: 'updates/test/assets/4f1cb2cac2370cd5050681232e8575a8',
       platform: 'ios',
     },
   });
@@ -14,7 +15,7 @@ test('returns asset file', async () => {
   handleAssets(req, res);
 
   expect(res._getStatusCode()).toBe(200);
-  expect(res._getHeaders()['content-type']).toBe('image/jpeg');
+  expect(res._getHeaders()['content-type']).toBe('image/png');
 });
 
 test('returns launch asset file', async () => {
@@ -22,7 +23,7 @@ test('returns launch asset file', async () => {
     method: 'GET',
     query: {
       runtimeVersion: 'test',
-      asset: 'updates/test/bundles/ios-dacaa233e4886477facc9d5ca16952ad.js',
+      asset: 'updates/test/bundles/ios-c9bfd652a7fbd202192b12116522277d.js',
       platform: 'ios',
     },
   });

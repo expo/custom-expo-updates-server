@@ -8,8 +8,8 @@
     "start": "next start",
     "lint": "eslint common pages",
     "test": "jest",
-    "expo-publish": "cd ../expo-updates-client && expo export --experimental-bundle && cd ../expo-updates-server && rm -rf updates/1/ && cp -r ../expo-updates-client/dist/ updates/1",
-    "expo-publish-test": "cd ../expo-updates-client && expo export --experimental-bundle && cd ../expo-updates-server && rm -rf updates/test/ && cp -r ../expo-updates-client/dist/ updates/test"
+    "expo-publish": "./scripts/publish.sh -d 1",
+    "expo-publish-test": "./scripts/publish.sh -d test"
   },
   "dependencies": {
     "form-data": "^4.0.0",
@@ -20,6 +20,7 @@
     "structured-headers": "^0.4.1"
   },
   "devDependencies": {
+    "@expo/config": "^7.0.3",
     "@expo/multipart-body-parser": "^1.1.0",
     "@types/jest": "^27.4.1",
     "@types/mime": "^2.0.3",
