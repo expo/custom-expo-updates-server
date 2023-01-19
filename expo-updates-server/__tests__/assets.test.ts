@@ -7,12 +7,12 @@ test('returns asset file', async () => {
     method: 'GET',
     query: {
       runtimeVersion: 'test',
-      asset: 'updates/test/assets/4f1cb2cac2370cd5050681232e8575a8',
+      asset: 'updates/test/1/assets/4f1cb2cac2370cd5050681232e8575a8',
       platform: 'ios',
     },
   });
 
-  handleAssets(req, res);
+  await handleAssets(req, res);
 
   expect(res._getStatusCode()).toBe(200);
   expect(res._getHeaders()['content-type']).toBe('image/png');
@@ -23,12 +23,12 @@ test('returns launch asset file', async () => {
     method: 'GET',
     query: {
       runtimeVersion: 'test',
-      asset: 'updates/test/bundles/ios-c9bfd652a7fbd202192b12116522277d.js',
+      asset: 'updates/test/1/bundles/ios-9d01842d6ee1224f7188971c5d397115.js',
       platform: 'ios',
     },
   });
 
-  handleAssets(req, res);
+  await handleAssets(req, res);
 
   expect(res._getStatusCode()).toBe(200);
   expect(res._getHeaders()['content-type']).toBe('application/javascript');
@@ -44,7 +44,7 @@ test('returns 404 when asset does not exist', async () => {
     },
   });
 
-  handleAssets(req, res);
+  await handleAssets(req, res);
 
   expect(res._getStatusCode()).toBe(404);
 });
@@ -59,7 +59,7 @@ test('returns 400 with no asset name', async () => {
     },
   });
 
-  handleAssets(req, res);
+  await handleAssets(req, res);
 
   expect(res._getStatusCode()).toBe(400);
 });
@@ -74,7 +74,7 @@ test('returns 400 with no runtime version', async () => {
     },
   });
 
-  handleAssets(req, res);
+  await handleAssets(req, res);
 
   expect(res._getStatusCode()).toBe(400);
 });
@@ -89,7 +89,7 @@ test('returns 400 with no platform', async () => {
     },
   });
 
-  handleAssets(req, res);
+  await handleAssets(req, res);
 
   expect(res._getStatusCode()).toBe(400);
 });

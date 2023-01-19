@@ -3,13 +3,14 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { serializeDictionary } from 'structured-headers';
 
 import {
-  getAssetMetadataSync,
-  getMetadataSync,
+  getAssetMetadataAsync,
+  getMetadataAsync,
   convertSHA256HashToUUID,
   convertToDictionaryItemsRepresentation,
   signRSASHA256,
   getPrivateKeyAsync,
-  getExpoConfigSync,
+  getExpoConfigAsync,
+  getLatestUpdateBundlePathForRuntimeVersionAsync,
 } from '../../common/helpers';
 
 export default async function manifestEndpoint(req: NextApiRequest, res: NextApiResponse) {
@@ -37,14 +38,23 @@ export default async function manifestEndpoint(req: NextApiRequest, res: NextApi
     return;
   }
 
-  const updateBundlePath = `updates/${runtimeVersion}`;
+  let updateBundlePath: string;
+  try {
+    updateBundlePath = await getLatestUpdateBundlePathForRuntimeVersionAsync(runtimeVersion);
+  } catch (error: any) {
+    res.statusCode = 404;
+    res.json({
+      error: error.message,
+    });
+    return;
+  }
 
   try {
-    const { metadataJson, createdAt, id } = getMetadataSync({
+    const { metadataJson, createdAt, id } = await getMetadataAsync({
       updateBundlePath,
       runtimeVersion,
     });
-    const expoConfig = getExpoConfigSync({
+    const expoConfig = await getExpoConfigAsync({
       updateBundlePath,
       runtimeVersion,
     });
@@ -53,17 +63,19 @@ export default async function manifestEndpoint(req: NextApiRequest, res: NextApi
       id: convertSHA256HashToUUID(id),
       createdAt,
       runtimeVersion,
-      assets: platformSpecificMetadata.assets.map((asset) =>
-        getAssetMetadataSync({
-          updateBundlePath,
-          filePath: asset.path,
-          ext: asset.ext,
-          runtimeVersion,
-          platform,
-          isLaunchAsset: false,
-        })
+      assets: await Promise.all(
+        (platformSpecificMetadata.assets as any[]).map((asset: any) =>
+          getAssetMetadataAsync({
+            updateBundlePath,
+            filePath: asset.path,
+            ext: asset.ext,
+            runtimeVersion,
+            platform,
+            isLaunchAsset: false,
+          })
+        )
       ),
-      launchAsset: getAssetMetadataSync({
+      launchAsset: await getAssetMetadataAsync({
         updateBundlePath,
         filePath: platformSpecificMetadata.bundle,
         isLaunchAsset: true,
@@ -97,7 +109,7 @@ export default async function manifestEndpoint(req: NextApiRequest, res: NextApi
       signature = serializeDictionary(dictionary);
     }
 
-    const assetRequestHeaders = {};
+    const assetRequestHeaders: { [key: string]: object } = {};
     [...manifest.assets, manifest.launchAsset].forEach((asset) => {
       assetRequestHeaders[asset.key] = {
         'test-header': 'test-header-value',

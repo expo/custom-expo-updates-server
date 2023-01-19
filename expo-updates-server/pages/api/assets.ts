@@ -1,11 +1,15 @@
 import fs from 'fs';
 import mime from 'mime';
 import { NextApiRequest, NextApiResponse } from 'next';
+import nullthrows from 'nullthrows';
 import path from 'path';
 
-import { getMetadataSync } from '../../common/helpers';
+import {
+  getLatestUpdateBundlePathForRuntimeVersionAsync,
+  getMetadataAsync,
+} from '../../common/helpers';
 
-export default function assetsEndpoint(req: NextApiRequest, res: NextApiResponse) {
+export default async function assetsEndpoint(req: NextApiRequest, res: NextApiResponse) {
   const { asset: assetName, runtimeVersion, platform } = req.query;
 
   if (!assetName || typeof assetName !== 'string') {
@@ -26,19 +30,28 @@ export default function assetsEndpoint(req: NextApiRequest, res: NextApiResponse
     return;
   }
 
-  const updateBundlePath = `updates/${runtimeVersion}`;
-  const { metadataJson } = getMetadataSync({
+  let updateBundlePath: string;
+  try {
+    updateBundlePath = await getLatestUpdateBundlePathForRuntimeVersionAsync(runtimeVersion);
+  } catch (error: any) {
+    res.statusCode = 404;
+    res.json({
+      error: error.message,
+    });
+    return;
+  }
+
+  const { metadataJson } = await getMetadataAsync({
     updateBundlePath,
     runtimeVersion,
   });
 
   const assetPath = path.resolve(assetName);
   const assetMetadata = metadataJson.fileMetadata[platform].assets.find(
-    (asset) => asset.path === assetName.replace(`updates/${runtimeVersion}/`, '')
+    (asset: any) => asset.path === assetName.replace(`${updateBundlePath}/`, '')
   );
   const isLaunchAsset =
-    metadataJson.fileMetadata[platform].bundle ===
-    assetName.replace(`updates/${runtimeVersion}/`, '');
+    metadataJson.fileMetadata[platform].bundle === assetName.replace(`${updateBundlePath}/`, '');
 
   if (!fs.existsSync(assetPath)) {
     res.statusCode = 404;
@@ -52,10 +65,11 @@ export default function assetsEndpoint(req: NextApiRequest, res: NextApiResponse
     res.statusCode = 200;
     res.setHeader(
       'content-type',
-      isLaunchAsset ? 'application/javascript' : mime.getType(assetMetadata.ext)
+      isLaunchAsset ? 'application/javascript' : nullthrows(mime.getType(assetMetadata.ext))
     );
     res.end(asset);
   } catch (error) {
+    console.log(error);
     res.statusCode = 500;
     res.json({ error });
   }

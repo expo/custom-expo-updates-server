@@ -72,32 +72,32 @@ test.each([
   [
     'ios',
     {
-      hash: 'aRlpVHrYvXJ4OZOOtUOojMlFLus6ZkyVK2a38PzyN9E',
-      key: 'c9bfd652a7fbd202192b12116522277d',
+      hash: '4nGjshgRoD62YxnJAnZBWllEzCBrQR2zQ_2ei8glL6s',
+      key: '9d01842d6ee1224f7188971c5d397115',
       fileExtension: '.bundle',
       contentType: 'application/javascript',
-      url: `${process.env.HOSTNAME}/api/assets?asset=updates/test/bundles/ios-c9bfd652a7fbd202192b12116522277d.js&runtimeVersion=test&platform=ios`,
+      url: `${process.env.HOSTNAME}/api/assets?asset=updates/test/1/bundles/ios-9d01842d6ee1224f7188971c5d397115.js&runtimeVersion=test&platform=ios`,
     },
   ],
   [
     'android',
     {
-      hash: '-JXlfof61fxpCaGE-DzW7TIS9KqdhLgncfokxnqS3MI',
-      key: 'b8ee8494e0cf548b34bfafc25ae5c144',
+      hash: 't3kWQ00Lhn5qCGGhNNMxiD_pcTO_4d7I_1zO3S5Me5k',
+      key: '82adadb1fb6e489d04ad95fd79670deb',
       fileExtension: '.bundle',
       contentType: 'application/javascript',
-      url: `${process.env.HOSTNAME}/api/assets?asset=updates/test/bundles/android-b8ee8494e0cf548b34bfafc25ae5c144.js&runtimeVersion=test&platform=android`,
+      url: `${process.env.HOSTNAME}/api/assets?asset=updates/test/1/bundles/android-82adadb1fb6e489d04ad95fd79670deb.js&runtimeVersion=test&platform=android`,
     },
   ],
 ])('returns latest %p manifest', async (platform, launchAssetExpectation) => {
-  process.env.PRIVATE_KEY_PATH = 'code-signing-keys/test-private-key.pem';
+  process.env.PRIVATE_KEY_PATH = 'updates/test/1/privatekey.pem';
 
   const firstAssetExpectation = {
     hash: 'JCcs2u_4LMX6zazNmCpvBbYMRQRwS7-UwZpjiGWYgLs',
     key: '4f1cb2cac2370cd5050681232e8575a8',
-    fileExtension: '.png',
+    fileExtension: '.jpg',
     contentType: 'image/png',
-    url: `${process.env.HOSTNAME}/api/assets?asset=updates/test/assets/4f1cb2cac2370cd5050681232e8575a8&runtimeVersion=test&platform=${platform}`,
+    url: `${process.env.HOSTNAME}/api/assets?asset=updates/test/1/assets/4f1cb2cac2370cd5050681232e8575a8&runtimeVersion=test&platform=${platform}`,
   };
   const { req, res } = createMocks({
     method: 'GET',
@@ -113,10 +113,10 @@ test.each([
 
   expect(res._getStatusCode()).toBe(200);
 
-  const { body, headers } = await getManifestPartAsync(res, 'manifest');
+  const { body, headers } = nullthrows(await getManifestPartAsync(res, 'manifest'));
   const data = JSON.parse(body);
 
-  expect(data.id).toBe('59c721f4-b9e9-650b-d21b-481b26fb7351');
+  expect(data.id).toBe('b15ed6d8-f39b-04ad-a248-fa3b95fd7e0e');
   expect(data.runtimeVersion).toBe('test');
   expect(data.metadata).toEqual({});
   expect(data.extra).toMatchSnapshot();
