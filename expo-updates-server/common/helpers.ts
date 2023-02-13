@@ -5,6 +5,8 @@ import mime from 'mime';
 import path from 'path';
 import { Dictionary } from 'structured-headers';
 
+export class NoUpdateAvailableError extends Error {}
+
 function createHash(file: Buffer, hashingAlgorithm: string, encoding: BinaryToTextEncoding) {
   return crypto.createHash(hashingAlgorithm).update(file).digest(encoding);
 }
@@ -90,6 +92,27 @@ export async function getAssetMetadataAsync(arg: GetAssetMetadataArg) {
     fileExtension: `.${keyExtensionSuffix}`,
     contentType,
     url: `${process.env.HOSTNAME}/api/assets?asset=${assetFilePath}&runtimeVersion=${arg.runtimeVersion}&platform=${arg.platform}`,
+  };
+}
+
+export async function createRollBackDirectiveAsync(updateBundlePath: string) {
+  try {
+    const rollbackFilePath = `${updateBundlePath}/rollback`;
+    const rollbackFileStat = await fs.stat(rollbackFilePath);
+    return {
+      type: 'rollBackToEmbedded',
+      parameters: {
+        commitTime: new Date(rollbackFileStat.birthtime).toISOString(),
+      },
+    };
+  } catch (error) {
+    throw new Error(`No rollback found. Error: ${error}`);
+  }
+}
+
+export async function createNoUpdateAvailableDirectiveAsync() {
+  return {
+    type: 'noUpdateAvailable',
   };
 }
 
