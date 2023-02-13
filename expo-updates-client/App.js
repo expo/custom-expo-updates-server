@@ -5,7 +5,7 @@ import Constants from 'expo-constants';
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app 6!</Text>
+      <Text>Open up App.js to start working on your app 3!</Text>
       <Text>{Constants.expoConfig.name}</Text>
       <Image source={require('./assets/favicon.png')} />
       <StatusBar style="auto" />
