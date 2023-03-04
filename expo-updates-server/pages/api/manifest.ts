@@ -24,6 +24,16 @@ export default async function manifestEndpoint(req: NextApiRequest, res: NextApi
     return;
   }
 
+  const protocolVersionMaybeArray = req.headers['expo-protocol-version'];
+  if (protocolVersionMaybeArray && Array.isArray(protocolVersionMaybeArray)) {
+    res.statusCode = 400;
+    res.json({
+      error: 'Unsupported protocol version. Expected either 0 or 1.',
+    });
+    return;
+  }
+  const protocolVersion = parseInt(protocolVersionMaybeArray ?? '0', 10);
+
   const platform = req.headers['expo-platform'] ?? req.query['platform'];
   if (platform !== 'ios' && platform !== 'android') {
     res.statusCode = 400;
@@ -58,13 +68,20 @@ export default async function manifestEndpoint(req: NextApiRequest, res: NextApi
   try {
     try {
       if (updateType === UpdateType.NORMAL_UPDATE) {
-        await putUpdateInResponseAsync(req, res, updateBundlePath, runtimeVersion, platform);
+        await putUpdateInResponseAsync(
+          req,
+          res,
+          updateBundlePath,
+          runtimeVersion,
+          platform,
+          protocolVersion
+        );
       } else if (updateType === UpdateType.ROLLBACK) {
-        await putRollBackInResponseAsync(req, res, updateBundlePath);
+        await putRollBackInResponseAsync(req, res, updateBundlePath, protocolVersion);
       }
     } catch (maybeNoUpdateAvailableError) {
       if (maybeNoUpdateAvailableError instanceof NoUpdateAvailableError) {
-        await putNoUpdateAvailableInResponseAsync(req, res);
+        await putNoUpdateAvailableInResponseAsync(req, res, protocolVersion);
         return;
       }
       throw maybeNoUpdateAvailableError;
@@ -91,14 +108,18 @@ async function putUpdateInResponseAsync(
   res: NextApiResponse,
   updateBundlePath: string,
   runtimeVersion: string,
-  platform: string
+  platform: string,
+  protocolVersion: number
 ): Promise<void> {
   const currentUpdateId = req.headers['expo-current-update-id'];
   const { metadataJson, createdAt, id } = await getMetadataAsync({
     updateBundlePath,
     runtimeVersion,
   });
-  if (currentUpdateId === id) {
+
+  // NoUpdateAvailable directive only supported on protocol version 1
+  // for protocol version 0, serve most recent update as normal
+  if (currentUpdateId === id && protocolVersion === 1) {
     throw new NoUpdateAvailableError();
   }
 
@@ -177,7 +198,7 @@ async function putUpdateInResponseAsync(
   });
 
   res.statusCode = 200;
-  res.setHeader('expo-protocol-version', 1);
+  res.setHeader('expo-protocol-version', protocolVersion);
   res.setHeader('expo-sfv-version', 0);
   res.setHeader('cache-control', 'private, max-age=0');
   res.setHeader('content-type', `multipart/mixed; boundary=${form.getBoundary()}`);
@@ -188,8 +209,13 @@ async function putUpdateInResponseAsync(
 async function putRollBackInResponseAsync(
   req: NextApiRequest,
   res: NextApiResponse,
-  updateBundlePath: string
+  updateBundlePath: string,
+  protocolVersion: number
 ): Promise<void> {
+  if (protocolVersion === 0) {
+    throw new Error('Rollbacks not supported on protocol version 0');
+  }
+
   const embeddedUpdateId = req.headers['expo-embedded-update-id'];
   if (!embeddedUpdateId || typeof embeddedUpdateId !== 'string') {
     throw new Error('Invalid Expo-Embedded-Update-ID request header specified.');
@@ -242,8 +268,13 @@ async function putRollBackInResponseAsync(
 
 async function putNoUpdateAvailableInResponseAsync(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
+  protocolVersion: number
 ): Promise<void> {
+  if (protocolVersion === 0) {
+    throw new Error('NoUpdateAvailable directive not available in protocol version 0');
+  }
+
   const directive = await createNoUpdateAvailableDirectiveAsync();
 
   let signature = null;
