@@ -3,6 +3,9 @@ apps/*/credentials.json
 apps/*/build
 packages/*/build
 
+ios/
+android/
+
 apps/*/dist
 
 .env
@@ -64,3 +67,6 @@ xcuserdata
 
 # VSCode
 .history/
+
+android/
+ios/

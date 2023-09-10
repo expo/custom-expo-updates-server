@@ -1,0 +1,36 @@
+{
+  "name": "custom-expo-updates",
+  "version": "1.0.0",
+  "description": "Custom Expo Updates Client and Server",
+  "keywords": ["expo", "updates"],
+  "license": "MIT",
+  "scripts": {
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "test": "turbo test",
+    "build": "turbo build",
+    "clean": "pnpm clean:modules && pnpm clean:apps && pnpm install",
+    "clean:modules": "rm -rf node_modules && rm -rf apps/*/node_modules && rm -rf packages/*/node_modules",
+    "clean:apps": "rm -rf apps/*/ios && rm -rf apps/*/android && rm -rf apps/*/.expo",
+    "clean:sim": "xcrun simctl erase all"
+  },
+  "devDependencies": {
+    "turbo": "^1.10.7",
+    "typescript": "^5.1.3"
+  },
+  "pnpm": {
+    "peerDependencyRules": {
+      "ignoreMissing": [
+        "@babel/*",
+        "expo-modules-*",
+        "typescript"
+      ]
+    }
+  },
+  "prettier": {
+    "printWidth": 100,
+    "tabWidth": 2,
+    "singleQuote": true,
+    "trailingComma": "es5"
+  }
+}
