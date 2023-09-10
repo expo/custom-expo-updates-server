@@ -10,6 +10,18 @@ In some cases more control of how updates are sent to an app may be needed, and 
 
 ## Getting started
 
+1) Clone the repository `git clone git@github.com:expo/custom-expo-updates-server.git`
+2) Install dependencies: `pnpm install`
+3) Run the client and server: `pnpm build`
+
+The ios simulator should open and load the app. You should see a screen that says "Hello from Expo Updates!".
+
+4) Edit `apps/client/App.js` and change the text to "Hello from Expo Updates! I've been updated!".
+5) Run `pnpm expo-publish` to publish the update to the server.
+6) Click the "Fetch update" button in the app to fetch the update from the server.
+
+The ios simulator should update and the screen should say "Hello from Expo Updates! I've been updated!".
+
 ### Updates overview
 
 To understand this repo, it's important to understand some terminology around updates:
@@ -37,27 +49,40 @@ Note: The app is configured to load updates from the server running at http://lo
 
 ### Create a "release" app
 
-The example Expo project configured for the server is located in **/expo-updates-client**.
+The example Expo project configured for the server is located in **/apps/client**.
+
+Expo updates are configured in app.json.
+
+```
+    "updates": {
+      "url": "http://localhost:3000/api/manifest",
+      "enabled": true,
+      "fallbackToCacheTimeout": 30000,
+      "codeSigningCertificate": "./code-signing/certificate.pem",
+      "codeSigningMetadata": {
+        "keyid": "main",
+        "alg": "rsa-v1_5-sha256"
+      }
+    },
+```
+
+Running `npx expo prebuild` will configure expo-updates and install the necessary native libraries.
 
 #### iOS
 
-Run `yarn` and `npx pod-install` to install packages, and run it locally with `yarn ios`. In **/expo-updates-client/ios/expoupdatesclient/Supporting/Expo.plist**, you'll find a modified Plist that specifies the updates URL to point toward http://localhost:3000/api/manifest.
-
-This app is configured to query this custom server for updates on launch, but only in the "release" version. To create this version, open Xcode, then open **/expo-updates-client/ios**. Click on the project's name in the top bar, then click "Edit scheme". In the modal, select "Release" for "Build configuration" (by default it's set to "Debug").
-
-Then, build the app. You should see it open in an iOS simulator.
+To create an iOS "release" version of the app, `npx expo run:ios -d --configuration Release`. This will create a release build that can be run in a simulator to test updates.
 
 #### Android
 
-Run `yarn` and then run `yarn android --variant release`. The `AndroidManifest.xml` specifies the updates URL to point toward http://localhost:3000/api/manifest.
+To create an Android "release" version of the app, `npx expo run:android -d --configuration Release`. This will create a release build that can be run in a simulator to test updates.
 
 You may need to add `android:usesCleartextTraffic="true"` to the `AndroidManifest.xml` applicaiton element.
 
 ### Make a change
 
-Let's make a change to the project in /expo-updates-client that we'll want to push as an over-the-air update from our custom server to the "release" app. `cd` in to **/expo-updates-client**, then make a change in **App.js**.
+Let's make a change to the project in /apps/client that we'll want to push as an over-the-air update from our custom server to the "release" app. `cd` in to **/apps/client**, then make a change in **App.js**.
 
-Once you've made a change you're happy with, inside of **/expo-updates-server**, run `yarn expo-publish`. Under the hood, this script runs `npx expo export` in the client, copies the exported app to the server, and then copies the Expo config to the server as well.
+Once you've made a change you're happy with, inside of **/apps/server**, run `pnpm expo-publish`. Under the hood, this script runs `npx expo export` in the client, copies the exported app to the server, and then copies the Expo config to the server as well.
 
 ### Send an update
 

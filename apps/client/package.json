@@ -3,9 +3,13 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "build": "expo prebuild",
     "start": "expo start --dev-client",
+    "dev": "pnpm ios:release",
     "android": "expo run:android",
     "ios": "expo run:ios",
+    "ios:release": "expo run:ios -d 'iPhone 14' --configuration Release",
+    "android:release": "expo run:android -d --configuration Release",
     "web": "expo start --web",
     "eject": "expo eject"
   },

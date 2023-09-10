@@ -21,7 +21,12 @@
       "persistent": true
     },
     "clean:modules": {},
-    "clean:apps": {
+    "clean:apps": {},
+    "expo-publish": {
+      "cache": false,
+      "persistent": true
+    },
+    "expo-publish-rollback": {
       "cache": false,
       "persistent": true
     }

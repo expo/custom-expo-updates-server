@@ -12,7 +12,9 @@
     "clean": "pnpm clean:modules && pnpm clean:apps && pnpm install",
     "clean:modules": "rm -rf node_modules && rm -rf apps/*/node_modules && rm -rf packages/*/node_modules",
     "clean:apps": "rm -rf apps/*/ios && rm -rf apps/*/android && rm -rf apps/*/.expo",
-    "clean:sim": "xcrun simctl erase all"
+    "clean:sim": "xcrun simctl erase all",
+    "expo-publish": "turbo expo-publish --filter=server",
+    "expo-publish-rollback": "turbo expo-publish-rollback --filter=server"
   },
   "devDependencies": {
     "turbo": "^1.10.7",
