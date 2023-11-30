@@ -9,15 +9,15 @@
     "eject": "expo eject"
   },
   "dependencies": {
-    "expo": "~48.0.6",
-    "expo-constants": "~14.2.1",
-    "expo-splash-screen": "~0.18.1",
-    "expo-status-bar": "~1.4.4",
-    "expo-updates": "~0.16.3",
+    "expo": "^50.0.0-canary-20231129-c0ec023",
+    "expo-constants": "0.0.1-canary-20231129-c0ec023",
+    "expo-splash-screen": "0.0.1-canary-20231129-c0ec023",
+    "expo-status-bar": "0.0.1-canary-20231129-c0ec023",
+    "expo-updates": "0.0.1-canary-20231129-c0ec023",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-native": "0.71.3",
-    "react-native-web": "~0.18.10"
+    "react-native": "0.73.0-rc.6",
+    "react-native-web": "~0.19.6"
   },
   "devDependencies": {
     "@babel/core": "^7.19.3"
