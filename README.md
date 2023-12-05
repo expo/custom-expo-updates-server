@@ -51,6 +51,8 @@ Then, build the app. You should see it open in an iOS simulator.
 
 Run `yarn` and then run `yarn android --variant release`. The `AndroidManifest.xml` specifies the updates URL to point toward http://localhost:3000/api/manifest.
 
+You may need to add `android:usesCleartextTraffic="true"` to the `AndroidManifest.xml` applicaiton element.
+
 ### Make a change
 
 Let's make a change to the project in /expo-updates-client that we'll want to push as an over-the-air update from our custom server to the "release" app. `cd` in to **/expo-updates-client**, then make a change in **App.js**.
