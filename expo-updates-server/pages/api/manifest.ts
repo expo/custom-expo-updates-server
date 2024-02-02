@@ -117,9 +117,11 @@ async function putUpdateInResponseAsync(
     runtimeVersion,
   });
 
+  const updateIdHash = convertSHA256HashToUUID(id);
+
   // NoUpdateAvailable directive only supported on protocol version 1
   // for protocol version 0, serve most recent update as normal
-  if (currentUpdateId === id && protocolVersion === 1) {
+  if (currentUpdateId === updateIdHash && protocolVersion === 1) {
     throw new NoUpdateAvailableError();
   }
 
@@ -129,7 +131,7 @@ async function putUpdateInResponseAsync(
   });
   const platformSpecificMetadata = metadataJson.fileMetadata[platform];
   const manifest = {
-    id: convertSHA256HashToUUID(id),
+    id: updateIdHash,
     createdAt,
     runtimeVersion,
     assets: await Promise.all(
