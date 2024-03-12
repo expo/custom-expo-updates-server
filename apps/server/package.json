@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "PRIVATE_KEY_PATH=code-signing-keys/private-key.pem next dev",
+    "dev": "PRIVATE_KEY_PATH=../../packages/code-signing/private-key.pem next dev",
     "build": "next build",
-    "start": "PRIVATE_KEY_PATH=code-signing-keys/private-key.pem next start",
+    "start": "PRIVATE_KEY_PATH=../../packages/code-signing/private-key.pem next start",
     "lint": "eslint common pages",
     "test": "jest",
     "expo-publish": "./scripts/publish.sh -d 1/$(date +%s)",

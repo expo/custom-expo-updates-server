@@ -14,6 +14,7 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "@expo/metro-runtime": "~3.1.3",
     "expo": "^50.0.0-canary-20231205-250b31f",
     "expo-constants": "0.0.1-canary-20231205-250b31f",
     "expo-status-bar": "0.0.1-canary-20231205-250b31f",

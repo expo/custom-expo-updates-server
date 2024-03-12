@@ -63,7 +63,7 @@ export default async function manifestEndpoint(req: NextApiRequest, res: NextApi
     return;
   }
 
-  console.log('****', {runtimeVersion, platform, protocolVersion, updateBundlePath})
+  // console.log('****', {runtimeVersion, platform, protocolVersion, updateBundlePath})
 
   const updateType = await getTypeOfUpdateAsync(updateBundlePath);
 

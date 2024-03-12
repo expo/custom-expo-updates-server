@@ -13,6 +13,7 @@ importers:
   apps/client:
     specifiers:
       '@babel/core': ^7.19.3
+      '@expo/metro-runtime': ~3.1.3
       expo: ^50.0.0-canary-20231205-250b31f
       expo-constants: 0.0.1-canary-20231205-250b31f
       expo-status-bar: 0.0.1-canary-20231205-250b31f
@@ -22,6 +23,7 @@ importers:
       react-native: 0.73.0-rc.8
       react-native-web: ~0.19.6
     dependencies:
+      '@expo/metro-runtime': 3.1.3_react-native@0.73.0-rc.8
       expo: 50.0.11_@babel+core@7.22.17
       expo-constants: 0.0.1-canary-20231205-250b31f_expo@50.0.11
       expo-status-bar: 0.0.1-canary-20231205-250b31f
@@ -2293,6 +2295,14 @@ packages:
       sucrase: 3.34.0
     transitivePeerDependencies:
       - supports-color
+    dev: false
+
+  /@expo/metro-runtime/3.1.3_react-native@0.73.0-rc.8:
+    resolution: {integrity: sha512-u1CaQJJlSgvxBB5NJ6YMVvSDTTRzjT71dHpEBnKPZhpFv5ebVry52FZ2sEeEEA6mHG5zGxWXmHImW3hNKHh8EA==}
+    peerDependencies:
+      react-native: '*'
+    dependencies:
+      react-native: 0.73.0-rc.8_hacns74q6cnbpnyxjhjewhoyy4
     dev: false
 
   /@expo/multipart-body-parser/1.1.0:
