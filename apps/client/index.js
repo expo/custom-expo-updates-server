@@ -1,8 +1,10 @@
-import { registerRootComponent } from 'expo';
+// eslint-disable-next-line
+import ReactNativeFeatureFlags from 'react-native/Libraries/ReactNative/ReactNativeFeatureFlags';
+import 'expo-router/entry';
 
-import App from './App';
+// enable the JS-side of the w3c PointerEvent implementation
+ReactNativeFeatureFlags.shouldEmitW3CPointerEvents = () => true;
 
-// registerRootComponent calls AppRegistry.registerComponent('main', () => App);
-// It also ensures that whether you load the app in Expo Go or in a native build,
-// the environment is set up appropriately
-registerRootComponent(App);
+// enable hover events in Pressibility to be backed by the PointerEvent implementation.
+// shouldEmitW3CPointerEvents should also be true
+ReactNativeFeatureFlags.shouldPressibilityUseW3CPointerEventsForHover = () => true;

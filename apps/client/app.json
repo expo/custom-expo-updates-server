@@ -37,7 +37,17 @@
       "package": "com.test.expoupdatesclient"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
-    }
+      "favicon": "./assets/favicon.png",
+      "output": "server",
+      "bundler": "metro",
+    },
+    "plugins": [
+      [
+        "expo-router",
+        {
+          "origin": "http://localhost:3000",
+        }
+      ]
+    ],
   }
 }
