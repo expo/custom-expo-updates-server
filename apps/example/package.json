@@ -16,7 +16,8 @@
     "eject": "expo eject",
     "expo-publish": "./scripts/publish.sh -d 1/$(date +%s)",
     "expo-publish-rollback": "mktouch() { mkdir -p $(dirname $1) && touch $1; }; cd ../expo-updates-server && mktouch updates/1/$(date +%s)/rollback",
-    "expo-publish-test": "./scripts/publish.sh -d test/$(date +%s)"
+    "expo-publish-test": "./scripts/publish.sh -d test/$(date +%s)",
+    "example": "pnpm build && pnpm export && pnpm serve && pnpm ios:release"
   },
   "dependencies": {
     "custom-expo-updates": "*",

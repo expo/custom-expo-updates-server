@@ -17,7 +17,7 @@
       "url": "http://localhost:3000/api/manifest",
       "enabled": true,
       "fallbackToCacheTimeout": 30000,
-      "codeSigningCertificate": "./code-signing/certificate.pem",
+      "codeSigningCertificate": "code-signing/certificate.pem",
       "codeSigningMetadata": {
         "keyid": "main",
         "alg": "rsa-v1_5-sha256"
