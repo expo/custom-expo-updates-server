@@ -91,7 +91,6 @@ describe.each([['0'], ['1']])('protocol version %p', (protocolVersion) => {
       },
     ],
   ])('returns latest %p manifest', async (platform, launchAssetExpectation) => {
-
     const firstAssetExpectation = {
       hash: 'JCcs2u_4LMX6zazNmCpvBbYMRQRwS7-UwZpjiGWYgLs',
       key: '4f1cb2cac2370cd5050681232e8575a8',
@@ -139,7 +138,6 @@ describe.each([['0'], ['1']])('protocol version %p', (protocolVersion) => {
 });
 
 test.each([['ios'], ['android']])('returns rollback %p', async (platform) => {
-
   const { req, res } = createMocks({
     method: 'GET',
     headers: {
@@ -167,7 +165,6 @@ test.each([['ios'], ['android']])('returns rollback %p', async (platform) => {
 });
 
 test.each([['ios'], ['android']])('throws for rollback %p for protocol 0', async (platform) => {
-
   const { req, res } = createMocks({
     method: 'GET',
     headers: {

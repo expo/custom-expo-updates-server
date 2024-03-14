@@ -1,10 +1,9 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Image, Button } from 'react-native';
 import Constants from 'expo-constants';
+import { StatusBar } from 'expo-status-bar';
 import * as Updates from 'expo-updates';
+import { StyleSheet, Text, View, Image, Button } from 'react-native';
 
 export default function App() {
-
   async function onFetchUpdateAsync() {
     try {
       const update = await Updates.checkForUpdateAsync();

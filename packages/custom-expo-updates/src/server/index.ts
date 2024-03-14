@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 
-import manifestEndpoint from './api/manifest';
 import assetsEndpoint from './api/assets';
+import manifestEndpoint from './api/manifest';
 
 const UpdatesMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   if (req.path.startsWith('/api/assets')) {

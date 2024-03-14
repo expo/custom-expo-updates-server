@@ -1,8 +1,7 @@
+import { Request, Response, NextFunction } from 'express';
 import fs from 'fs';
 import mime from 'mime';
-import { Request, Response, NextFunction } from 'express';
 import nullthrows from 'nullthrows';
-import path from 'path';
 
 import {
   getMetadataAsync,
@@ -10,7 +9,11 @@ import {
   getLatestUpdateBundlePathForRuntimeVersionAsync,
 } from '../common/helpers';
 
-export default async function assetsEndpoint(req: Request, res: Response, next: NextFunction = ()=>{}) {
+export default async function assetsEndpoint(
+  req: Request,
+  res: Response,
+  next: NextFunction = () => {}
+) {
   const { asset: assetName, runtimeVersion, platform } = req.query;
 
   if (!assetName || typeof assetName !== 'string') {
@@ -73,5 +76,4 @@ export default async function assetsEndpoint(req: Request, res: Response, next: 
     res.statusCode = 500;
     res.json({ error });
   }
-
 }

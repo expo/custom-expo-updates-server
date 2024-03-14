@@ -1,6 +1,6 @@
+import { Request, Response, NextFunction } from 'express';
 import FormData from 'form-data';
 import fs from 'fs/promises';
-import { Request, Response, NextFunction } from 'express';
 import { serializeDictionary } from 'structured-headers';
 
 import {
@@ -18,8 +18,11 @@ import {
   getAssetPathAsync,
 } from '../common/helpers';
 
-export default async function manifestEndpoint(req: Request, res: Response, next: NextFunction = ()=>{}) {
-
+export default async function manifestEndpoint(
+  req: Request,
+  res: Response,
+  next: NextFunction = () => {}
+) {
   if (req.method !== 'GET') {
     res.statusCode = 405;
     res.json({ error: 'Expected GET.' });

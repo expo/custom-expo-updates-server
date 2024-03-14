@@ -40,10 +40,11 @@ export async function getPrivateKeyAsync() {
   return pemBuffer.toString('utf8');
 }
 
-export const addSlashIfNeeded = (str: string) => str.endsWith('/') ? str : str + '/';
+export const addSlashIfNeeded = (str: string) => (str.endsWith('/') ? str : str + '/');
 export const updatesPath = () => addSlashIfNeeded(process.env.UPDATES_ASSET_PATH ?? 'updates');
-export const getAssetPathAsync = async (assetPath: string) => `${updatesPath()}${assetPath}`
-export const resolveAsset = async (assetPath: string) => path.resolve(await getAssetPathAsync(assetPath));
+export const getAssetPathAsync = async (assetPath: string) => `${updatesPath()}${assetPath}`;
+export const resolveAsset = async (assetPath: string) =>
+  path.resolve(await getAssetPathAsync(assetPath));
 
 export async function getLatestUpdateBundlePathForRuntimeVersionAsync(runtimeVersion: string) {
   const updatesDirectoryForRuntimeVersion = await getAssetPathAsync(runtimeVersion);

@@ -7,6 +7,7 @@
   "rules": {
     "handle-callback-err": "off"
   },
+  "ignorePatterns": ["*.js", "**/dist/*.js"],
   "overrides": [
     {
       "files": [
