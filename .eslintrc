@@ -1,0 +1,23 @@
+{
+  "root": true,
+  "extends": [
+    "universe/node",
+    "universe/shared/typescript-analysis"
+  ],
+  "rules": {
+    "handle-callback-err": "off"
+  },
+  "ignorePatterns": ["*.js", "**/dist/*.js"],
+  "overrides": [
+    {
+      "files": [
+        "*.ts",
+        "*.tsx",
+        "*.d.ts"
+      ],
+      "parserOptions": {
+        "project": "./tsconfig.json"
+      }
+    }
+  ]
+}
