@@ -42,7 +42,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var fs_1 = __importDefault(require("fs"));
 var mime_1 = __importDefault(require("mime"));
 var nullthrows_1 = __importDefault(require("nullthrows"));
-var path_1 = __importDefault(require("path"));
 var helpers_1 = require("../common/helpers");
 function assetsEndpoint(req, res, next) {
     if (next === void 0) { next = function () { }; }
@@ -87,7 +86,9 @@ function assetsEndpoint(req, res, next) {
                     })];
                 case 5:
                     metadataJson = (_b.sent()).metadataJson;
-                    assetPath = path_1.default.resolve(assetName);
+                    return [4 /*yield*/, (0, helpers_1.getAssetPathAsync)(assetName)];
+                case 6:
+                    assetPath = _b.sent();
                     assetMetadata = metadataJson.fileMetadata[platform].assets.find(function (asset) { return asset.path === assetName.replace("".concat(updateBundlePath, "/"), ''); });
                     isLaunchAsset = metadataJson.fileMetadata[platform].bundle === assetName.replace("".concat(updateBundlePath, "/"), '');
                     if (!fs_1.default.existsSync(assetPath)) {

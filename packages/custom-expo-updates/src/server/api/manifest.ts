@@ -15,6 +15,7 @@ import {
   createRollBackDirectiveAsync,
   NoUpdateAvailableError,
   createNoUpdateAvailableDirectiveAsync,
+  getAssetPathAsync,
 } from '../common/helpers';
 
 export default async function manifestEndpoint(req: Request, res: Response, next: NextFunction = ()=>{}) {
@@ -88,7 +89,6 @@ export default async function manifestEndpoint(req: Request, res: Response, next
       throw maybeNoUpdateAvailableError;
     }
   } catch (error) {
-    // console.error(error);
     res.statusCode = 404;
     res.json({ error });
   }
@@ -100,6 +100,7 @@ enum UpdateType {
 }
 
 async function getTypeOfUpdateAsync(updateBundlePath: string): Promise<UpdateType> {
+  updateBundlePath = await getAssetPathAsync(updateBundlePath);
   const directoryContents = await fs.readdir(updateBundlePath);
   return directoryContents.includes('rollback') ? UpdateType.ROLLBACK : UpdateType.NORMAL_UPDATE;
 }

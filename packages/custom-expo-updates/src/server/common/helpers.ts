@@ -40,9 +40,14 @@ export async function getPrivateKeyAsync() {
   return pemBuffer.toString('utf8');
 }
 
+export const addSlashIfNeeded = (str: string) => str.endsWith('/') ? str : str + '/';
+export const updatesPath = () => addSlashIfNeeded(process.env.UPDATES_ASSET_PATH ?? 'updates');
+export const getAssetPathAsync = async (assetPath: string) => `${updatesPath()}${assetPath}`
+export const resolveAsset = async (assetPath: string) => path.resolve(await getAssetPathAsync(assetPath));
+
 export async function getLatestUpdateBundlePathForRuntimeVersionAsync(runtimeVersion: string) {
-  const updatesDirectoryForRuntimeVersion = `updates/${runtimeVersion}`;
-  if (!fsSync.existsSync(updatesDirectoryForRuntimeVersion)) {
+  const updatesDirectoryForRuntimeVersion = await getAssetPathAsync(runtimeVersion);
+  if (!fsSync.existsSync(path.resolve(updatesDirectoryForRuntimeVersion))) {
     throw new Error('Unsupported runtime version');
   }
 
@@ -57,7 +62,7 @@ export async function getLatestUpdateBundlePathForRuntimeVersionAsync(runtimeVer
   )
     .filter(truthy)
     .sort((a, b) => parseInt(b, 10) - parseInt(a, 10));
-  return path.join(updatesDirectoryForRuntimeVersion, directoriesInUpdatesDirectory[0]);
+  return path.join(runtimeVersion, directoriesInUpdatesDirectory[0]);
 }
 
 type GetAssetMetadataArg =
@@ -79,8 +84,9 @@ type GetAssetMetadataArg =
     };
 
 export async function getAssetMetadataAsync(arg: GetAssetMetadataArg) {
-  const assetFilePath = `${arg.updateBundlePath}/${arg.filePath}`;
-  const asset = await fs.readFile(path.resolve(assetFilePath), null);
+  const assetPath = `${arg.updateBundlePath}/${arg.filePath}`;
+  const absoluteAssetPath = await resolveAsset(assetPath);
+  const asset = await fs.readFile(absoluteAssetPath, null);
   const assetHash = getBase64URLEncoding(createHash(asset, 'sha256', 'base64'));
   const key = createHash(asset, 'md5', 'hex');
   const keyExtensionSuffix = arg.isLaunchAsset ? 'bundle' : arg.ext;
@@ -91,13 +97,13 @@ export async function getAssetMetadataAsync(arg: GetAssetMetadataArg) {
     key,
     fileExtension: `.${keyExtensionSuffix}`,
     contentType,
-    url: `${process.env.HOSTNAME}/api/assets?asset=${assetFilePath}&runtimeVersion=${arg.runtimeVersion}&platform=${arg.platform}`,
+    url: `${process.env.HOSTNAME}/api/assets?asset=${assetPath}&runtimeVersion=${arg.runtimeVersion}&platform=${arg.platform}`,
   };
 }
 
 export async function createRollBackDirectiveAsync(updateBundlePath: string) {
   try {
-    const rollbackFilePath = `${updateBundlePath}/rollback`;
+    const rollbackFilePath = await resolveAsset(`${updateBundlePath}/rollback`);
     const rollbackFileStat = await fs.stat(rollbackFilePath);
     return {
       type: 'rollBackToEmbedded',
@@ -124,7 +130,7 @@ export async function getMetadataAsync({
   runtimeVersion: string;
 }) {
   try {
-    const metadataPath = `${updateBundlePath}/metadata.json`;
+    const metadataPath = await resolveAsset(`${updateBundlePath}/metadata.json`);
     const updateMetadataBuffer = await fs.readFile(path.resolve(metadataPath), null);
     const metadataJson = JSON.parse(updateMetadataBuffer.toString('utf-8'));
     const metadataStat = await fs.stat(metadataPath);
@@ -153,7 +159,7 @@ export async function getExpoConfigAsync({
   runtimeVersion: string;
 }): Promise<any> {
   try {
-    const expoConfigPath = `${updateBundlePath}/expoConfig.json`;
+    const expoConfigPath = await resolveAsset(`${updateBundlePath}/expoConfig.json`);
     const expoConfigBuffer = await fs.readFile(path.resolve(expoConfigPath), null);
     const expoConfigJson = JSON.parse(expoConfigBuffer.toString('utf-8'));
     return expoConfigJson;

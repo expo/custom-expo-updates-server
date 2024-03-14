@@ -147,7 +147,6 @@ function manifestEndpoint(req, res, next) {
                 case 15: return [3 /*break*/, 17];
                 case 16:
                     error_2 = _c.sent();
-                    // console.error(error);
                     res.statusCode = 404;
                     res.json({ error: error_2 });
                     return [3 /*break*/, 17];
@@ -167,8 +166,11 @@ function getTypeOfUpdateAsync(updateBundlePath) {
         var directoryContents;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, promises_1.default.readdir(updateBundlePath)];
+                case 0: return [4 /*yield*/, (0, helpers_1.getAssetPathAsync)(updateBundlePath)];
                 case 1:
+                    updateBundlePath = _a.sent();
+                    return [4 /*yield*/, promises_1.default.readdir(updateBundlePath)];
+                case 2:
                     directoryContents = _a.sent();
                     return [2 /*return*/, directoryContents.includes('rollback') ? UpdateType.ROLLBACK : UpdateType.NORMAL_UPDATE];
             }

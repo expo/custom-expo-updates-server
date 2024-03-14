@@ -54,7 +54,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.truthy = exports.convertSHA256HashToUUID = exports.getExpoConfigAsync = exports.getMetadataAsync = exports.createNoUpdateAvailableDirectiveAsync = exports.createRollBackDirectiveAsync = exports.getAssetMetadataAsync = exports.getLatestUpdateBundlePathForRuntimeVersionAsync = exports.getPrivateKeyAsync = exports.signRSASHA256 = exports.convertToDictionaryItemsRepresentation = exports.NoUpdateAvailableError = void 0;
+exports.truthy = exports.convertSHA256HashToUUID = exports.getExpoConfigAsync = exports.getMetadataAsync = exports.createNoUpdateAvailableDirectiveAsync = exports.createRollBackDirectiveAsync = exports.getAssetMetadataAsync = exports.getLatestUpdateBundlePathForRuntimeVersionAsync = exports.resolveAsset = exports.getAssetPathAsync = exports.updatesPath = exports.addSlashIfNeeded = exports.getPrivateKeyAsync = exports.signRSASHA256 = exports.convertToDictionaryItemsRepresentation = exports.NoUpdateAvailableError = void 0;
 var crypto_1 = __importDefault(require("crypto"));
 var fs_1 = __importDefault(require("fs"));
 var promises_1 = __importDefault(require("fs/promises"));
@@ -107,19 +107,37 @@ function getPrivateKeyAsync() {
     });
 }
 exports.getPrivateKeyAsync = getPrivateKeyAsync;
+var addSlashIfNeeded = function (str) { return str.endsWith('/') ? str : str + '/'; };
+exports.addSlashIfNeeded = addSlashIfNeeded;
+var updatesPath = function () { var _a; return (0, exports.addSlashIfNeeded)((_a = process.env.UPDATES_ASSET_PATH) !== null && _a !== void 0 ? _a : 'updates'); };
+exports.updatesPath = updatesPath;
+var getAssetPathAsync = function (assetPath) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
+    return [2 /*return*/, "".concat((0, exports.updatesPath)()).concat(assetPath)];
+}); }); };
+exports.getAssetPathAsync = getAssetPathAsync;
+var resolveAsset = function (assetPath) { return __awaiter(void 0, void 0, void 0, function () { var _a, _b; return __generator(this, function (_c) {
+    switch (_c.label) {
+        case 0:
+            _b = (_a = path_1.default).resolve;
+            return [4 /*yield*/, (0, exports.getAssetPathAsync)(assetPath)];
+        case 1: return [2 /*return*/, _b.apply(_a, [_c.sent()])];
+    }
+}); }); };
+exports.resolveAsset = resolveAsset;
 function getLatestUpdateBundlePathForRuntimeVersionAsync(runtimeVersion) {
     return __awaiter(this, void 0, void 0, function () {
         var updatesDirectoryForRuntimeVersion, filesInUpdatesDirectory, directoriesInUpdatesDirectory;
         var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0:
-                    updatesDirectoryForRuntimeVersion = "updates/".concat(runtimeVersion);
-                    if (!fs_1.default.existsSync(updatesDirectoryForRuntimeVersion)) {
+                case 0: return [4 /*yield*/, (0, exports.getAssetPathAsync)(runtimeVersion)];
+                case 1:
+                    updatesDirectoryForRuntimeVersion = _a.sent();
+                    if (!fs_1.default.existsSync(path_1.default.resolve(updatesDirectoryForRuntimeVersion))) {
                         throw new Error('Unsupported runtime version');
                     }
                     return [4 /*yield*/, promises_1.default.readdir(updatesDirectoryForRuntimeVersion)];
-                case 1:
+                case 2:
                     filesInUpdatesDirectory = _a.sent();
                     return [4 /*yield*/, Promise.all(filesInUpdatesDirectory.map(function (file) { return __awaiter(_this, void 0, void 0, function () {
                             var fileStat;
@@ -132,11 +150,11 @@ function getLatestUpdateBundlePathForRuntimeVersionAsync(runtimeVersion) {
                                 }
                             });
                         }); }))];
-                case 2:
+                case 3:
                     directoriesInUpdatesDirectory = (_a.sent())
                         .filter(truthy)
                         .sort(function (a, b) { return parseInt(b, 10) - parseInt(a, 10); });
-                    return [2 /*return*/, path_1.default.join(updatesDirectoryForRuntimeVersion, directoriesInUpdatesDirectory[0])];
+                    return [2 /*return*/, path_1.default.join(runtimeVersion, directoriesInUpdatesDirectory[0])];
             }
         });
     });
@@ -144,13 +162,16 @@ function getLatestUpdateBundlePathForRuntimeVersionAsync(runtimeVersion) {
 exports.getLatestUpdateBundlePathForRuntimeVersionAsync = getLatestUpdateBundlePathForRuntimeVersionAsync;
 function getAssetMetadataAsync(arg) {
     return __awaiter(this, void 0, void 0, function () {
-        var assetFilePath, asset, assetHash, key, keyExtensionSuffix, contentType;
+        var assetPath, absoluteAssetPath, asset, assetHash, key, keyExtensionSuffix, contentType;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    assetFilePath = "".concat(arg.updateBundlePath, "/").concat(arg.filePath);
-                    return [4 /*yield*/, promises_1.default.readFile(path_1.default.resolve(assetFilePath), null)];
+                    assetPath = "".concat(arg.updateBundlePath, "/").concat(arg.filePath);
+                    return [4 /*yield*/, (0, exports.resolveAsset)(assetPath)];
                 case 1:
+                    absoluteAssetPath = _a.sent();
+                    return [4 /*yield*/, promises_1.default.readFile(absoluteAssetPath, null)];
+                case 2:
                     asset = _a.sent();
                     assetHash = getBase64URLEncoding(createHash(asset, 'sha256', 'base64'));
                     key = createHash(asset, 'md5', 'hex');
@@ -161,7 +182,7 @@ function getAssetMetadataAsync(arg) {
                             key: key,
                             fileExtension: ".".concat(keyExtensionSuffix),
                             contentType: contentType,
-                            url: "".concat(process.env.HOSTNAME, "/api/assets?asset=").concat(assetFilePath, "&runtimeVersion=").concat(arg.runtimeVersion, "&platform=").concat(arg.platform),
+                            url: "".concat(process.env.HOSTNAME, "/api/assets?asset=").concat(assetPath, "&runtimeVersion=").concat(arg.runtimeVersion, "&platform=").concat(arg.platform),
                         }];
             }
         });
@@ -174,10 +195,12 @@ function createRollBackDirectiveAsync(updateBundlePath) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    _a.trys.push([0, 2, , 3]);
-                    rollbackFilePath = "".concat(updateBundlePath, "/rollback");
-                    return [4 /*yield*/, promises_1.default.stat(rollbackFilePath)];
+                    _a.trys.push([0, 3, , 4]);
+                    return [4 /*yield*/, (0, exports.resolveAsset)("".concat(updateBundlePath, "/rollback"))];
                 case 1:
+                    rollbackFilePath = _a.sent();
+                    return [4 /*yield*/, promises_1.default.stat(rollbackFilePath)];
+                case 2:
                     rollbackFileStat = _a.sent();
                     return [2 /*return*/, {
                             type: 'rollBackToEmbedded',
@@ -185,10 +208,10 @@ function createRollBackDirectiveAsync(updateBundlePath) {
                                 commitTime: new Date(rollbackFileStat.birthtime).toISOString(),
                             },
                         }];
-                case 2:
+                case 3:
                     error_1 = _a.sent();
                     throw new Error("No rollback found. Error: ".concat(error_1));
-                case 3: return [2 /*return*/];
+                case 4: return [2 /*return*/];
             }
         });
     });
@@ -211,24 +234,26 @@ function getMetadataAsync(_a) {
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    _b.trys.push([0, 3, , 4]);
-                    metadataPath = "".concat(updateBundlePath, "/metadata.json");
-                    return [4 /*yield*/, promises_1.default.readFile(path_1.default.resolve(metadataPath), null)];
+                    _b.trys.push([0, 4, , 5]);
+                    return [4 /*yield*/, (0, exports.resolveAsset)("".concat(updateBundlePath, "/metadata.json"))];
                 case 1:
+                    metadataPath = _b.sent();
+                    return [4 /*yield*/, promises_1.default.readFile(path_1.default.resolve(metadataPath), null)];
+                case 2:
                     updateMetadataBuffer = _b.sent();
                     metadataJson = JSON.parse(updateMetadataBuffer.toString('utf-8'));
                     return [4 /*yield*/, promises_1.default.stat(metadataPath)];
-                case 2:
+                case 3:
                     metadataStat = _b.sent();
                     return [2 /*return*/, {
                             metadataJson: metadataJson,
                             createdAt: new Date(metadataStat.birthtime).toISOString(),
                             id: createHash(updateMetadataBuffer, 'sha256', 'hex'),
                         }];
-                case 3:
+                case 4:
                     error_2 = _b.sent();
                     throw new Error("No update found with runtime version: ".concat(runtimeVersion, ". Error: ").concat(error_2));
-                case 4: return [2 /*return*/];
+                case 5: return [2 /*return*/];
             }
         });
     });
@@ -247,17 +272,19 @@ function getExpoConfigAsync(_a) {
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    _b.trys.push([0, 2, , 3]);
-                    expoConfigPath = "".concat(updateBundlePath, "/expoConfig.json");
-                    return [4 /*yield*/, promises_1.default.readFile(path_1.default.resolve(expoConfigPath), null)];
+                    _b.trys.push([0, 3, , 4]);
+                    return [4 /*yield*/, (0, exports.resolveAsset)("".concat(updateBundlePath, "/expoConfig.json"))];
                 case 1:
+                    expoConfigPath = _b.sent();
+                    return [4 /*yield*/, promises_1.default.readFile(path_1.default.resolve(expoConfigPath), null)];
+                case 2:
                     expoConfigBuffer = _b.sent();
                     expoConfigJson = JSON.parse(expoConfigBuffer.toString('utf-8'));
                     return [2 /*return*/, expoConfigJson];
-                case 2:
+                case 3:
                     error_3 = _b.sent();
                     throw new Error("No expo config json found with runtime version: ".concat(runtimeVersion, ". Error: ").concat(error_3));
-                case 3: return [2 /*return*/];
+                case 4: return [2 /*return*/];
             }
         });
     });

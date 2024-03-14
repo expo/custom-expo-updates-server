@@ -6,6 +6,7 @@ import path from 'path';
 
 import {
   getMetadataAsync,
+  getAssetPathAsync,
   getLatestUpdateBundlePathForRuntimeVersionAsync,
 } from '../common/helpers';
 
@@ -46,7 +47,7 @@ export default async function assetsEndpoint(req: Request, res: Response, next: 
     runtimeVersion,
   });
 
-  const assetPath = path.resolve(assetName);
+  const assetPath = await getAssetPathAsync(assetName);
   const assetMetadata = metadataJson.fileMetadata[platform].assets.find(
     (asset: any) => asset.path === assetName.replace(`${updateBundlePath}/`, '')
   );
