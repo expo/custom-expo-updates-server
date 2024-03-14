@@ -7,7 +7,7 @@ test('returns asset file', async () => {
     method: 'GET',
     query: {
       runtimeVersion: 'test',
-      asset: 'updates/test/1/assets/4f1cb2cac2370cd5050681232e8575a8',
+      asset: 'test/1/assets/4f1cb2cac2370cd5050681232e8575a8',
       platform: 'ios',
     },
   });
@@ -23,7 +23,7 @@ test('returns launch asset file', async () => {
     method: 'GET',
     query: {
       runtimeVersion: 'test',
-      asset: 'updates/test/1/bundles/ios-9d01842d6ee1224f7188971c5d397115.js',
+      asset: 'test/1/bundles/ios-9d01842d6ee1224f7188971c5d397115.js',
       platform: 'ios',
     },
   });
@@ -38,7 +38,7 @@ test('returns 404 when asset does not exist', async () => {
   const { req, res } = createMocks({
     method: 'GET',
     query: {
-      asset: 'updates/1/assets/does-not-exist.png',
+      asset: '1/assets/does-not-exist.png',
       runtimeVersion: 'test',
       platform: 'ios',
     },
@@ -68,7 +68,7 @@ test('returns 400 with no runtime version', async () => {
   const { req, res } = createMocks({
     method: 'GET',
     query: {
-      asset: 'updates/1/assets/does-not-exist.png',
+      asset: '1/assets/does-not-exist.png',
       runtimeVersion: undefined,
       platform: 'ios',
     },
@@ -83,7 +83,7 @@ test('returns 400 with no platform', async () => {
   const { req, res } = createMocks({
     method: 'GET',
     query: {
-      asset: 'updates/1/assets/does-not-exist.png',
+      asset: '1/assets/does-not-exist.png',
       runtimeVersion: 'test',
       platform: undefined,
     },
