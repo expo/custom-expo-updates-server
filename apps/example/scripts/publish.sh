@@ -1,3 +1,5 @@
+source .env
+
 while getopts d: flag
 do
     case "${flag}" in
@@ -6,7 +8,7 @@ do
 done
 
 expo export --experimental-bundle;
-rm -rf ./.updates/$directory/
-cp -r dist/ ./updates/$directory
+rm -rf $UPDATES_ASSET_PATH/$directory/
+cp -r dist/ $UPDATES_ASSET_PATH/$directory
 
-node ./scripts/exportClientExpoConfig.js > ./updates/$directory/expoConfig.json;
+node ./scripts/exportClientExpoConfig.js > $UPDATES_ASSET_PATH/$directory/expoConfig.json;
