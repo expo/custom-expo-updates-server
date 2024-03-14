@@ -1,0 +1,54 @@
+{
+  "expo": {
+    "name": "expo-updates-example",
+    "slug": "expo-updates-example",
+    "scheme": "expoupdatesexample",
+    "owner": "anonymous",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "runtimeVersion": "1",
+    "updates": {
+      "url": "http://localhost:3000/api/manifest",
+      "enabled": true,
+      "fallbackToCacheTimeout": 30000,
+      "codeSigningCertificate": "./code-signing/certificate.pem",
+      "codeSigningMetadata": {
+        "keyid": "main",
+        "alg": "rsa-v1_5-sha256"
+      }
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.test.expo-updates-client"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "package": "com.test.expoupdatesclient"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "output": "server",
+      "bundler": "metro",
+    },
+    "plugins": [
+      [
+        "expo-router",
+        {
+          "origin": "http://localhost:3000",
+        }
+      ]
+    ],
+  }
+}

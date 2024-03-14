@@ -1,5 +1,5 @@
 {
-  "name": "custom-expo-updates",
+  "name": "custom-expo-updates-server",
   "version": "1.0.0",
   "description": "Custom Expo Updates Client and Server",
   "keywords": ["expo", "updates"],

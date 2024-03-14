@@ -16,14 +16,14 @@ jobs:
         with:
           node-version: 14.x
       - name: Yarn
-        run: yarn install --frozen-lockfile
-        working-directory: ./apps/server
+        run: yarn install
+        working-directory: ./packages/custom-expo-updates
       - name: tsc
         run: yarn tsc
-        working-directory: ./apps/server
+        working-directory: ./packages/custom-expo-updates
       - name: Lint
         run: yarn lint
-        working-directory: ./apps/server
+        working-directory: ./packages/custom-expo-updates
       - name: Test
         run: yarn test
-        working-directory: ./apps/server
+        working-directory: ./packages/custom-expo-updates

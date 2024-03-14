@@ -1,0 +1,197 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`protocol version "0" returns latest "android" manifest 1`] = `
+{
+  "expoClient": {
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#FFFFFF",
+        "foregroundImage": "./assets/adaptive-icon.png",
+      },
+      "package": "com.test.expoupdatesclient",
+    },
+    "assetBundlePatterns": [
+      "**/*",
+    ],
+    "currentFullName": "@anonymous/expo-updates-client",
+    "icon": "./assets/icon.png",
+    "ios": {
+      "bundleIdentifier": "com.test.expo-updates-client",
+      "supportsTablet": true,
+    },
+    "name": "expo-updates-client",
+    "orientation": "portrait",
+    "originalFullName": "@anonymous/expo-updates-client",
+    "owner": "anonymous",
+    "platforms": [
+      "ios",
+      "android",
+      "web",
+    ],
+    "runtimeVersion": "1",
+    "sdkVersion": "47.0.0",
+    "slug": "expo-updates-client",
+    "splash": {
+      "backgroundColor": "#ffffff",
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+    },
+    "updates": {
+      "enabled": true,
+      "fallbackToCacheTimeout": 30000,
+      "url": "http://localhost:3000/api/manifest",
+    },
+    "version": "1.0.0",
+    "web": {
+      "favicon": "./assets/favicon.png",
+    },
+  },
+}
+`;
+
+exports[`protocol version "0" returns latest "ios" manifest 1`] = `
+{
+  "expoClient": {
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#FFFFFF",
+        "foregroundImage": "./assets/adaptive-icon.png",
+      },
+      "package": "com.test.expoupdatesclient",
+    },
+    "assetBundlePatterns": [
+      "**/*",
+    ],
+    "currentFullName": "@anonymous/expo-updates-client",
+    "icon": "./assets/icon.png",
+    "ios": {
+      "bundleIdentifier": "com.test.expo-updates-client",
+      "supportsTablet": true,
+    },
+    "name": "expo-updates-client",
+    "orientation": "portrait",
+    "originalFullName": "@anonymous/expo-updates-client",
+    "owner": "anonymous",
+    "platforms": [
+      "ios",
+      "android",
+      "web",
+    ],
+    "runtimeVersion": "1",
+    "sdkVersion": "47.0.0",
+    "slug": "expo-updates-client",
+    "splash": {
+      "backgroundColor": "#ffffff",
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+    },
+    "updates": {
+      "enabled": true,
+      "fallbackToCacheTimeout": 30000,
+      "url": "http://localhost:3000/api/manifest",
+    },
+    "version": "1.0.0",
+    "web": {
+      "favicon": "./assets/favicon.png",
+    },
+  },
+}
+`;
+
+exports[`protocol version "1" returns latest "android" manifest 1`] = `
+{
+  "expoClient": {
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#FFFFFF",
+        "foregroundImage": "./assets/adaptive-icon.png",
+      },
+      "package": "com.test.expoupdatesclient",
+    },
+    "assetBundlePatterns": [
+      "**/*",
+    ],
+    "currentFullName": "@anonymous/expo-updates-client",
+    "icon": "./assets/icon.png",
+    "ios": {
+      "bundleIdentifier": "com.test.expo-updates-client",
+      "supportsTablet": true,
+    },
+    "name": "expo-updates-client",
+    "orientation": "portrait",
+    "originalFullName": "@anonymous/expo-updates-client",
+    "owner": "anonymous",
+    "platforms": [
+      "ios",
+      "android",
+      "web",
+    ],
+    "runtimeVersion": "1",
+    "sdkVersion": "47.0.0",
+    "slug": "expo-updates-client",
+    "splash": {
+      "backgroundColor": "#ffffff",
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+    },
+    "updates": {
+      "enabled": true,
+      "fallbackToCacheTimeout": 30000,
+      "url": "http://localhost:3000/api/manifest",
+    },
+    "version": "1.0.0",
+    "web": {
+      "favicon": "./assets/favicon.png",
+    },
+  },
+}
+`;
+
+exports[`protocol version "1" returns latest "ios" manifest 1`] = `
+{
+  "expoClient": {
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#FFFFFF",
+        "foregroundImage": "./assets/adaptive-icon.png",
+      },
+      "package": "com.test.expoupdatesclient",
+    },
+    "assetBundlePatterns": [
+      "**/*",
+    ],
+    "currentFullName": "@anonymous/expo-updates-client",
+    "icon": "./assets/icon.png",
+    "ios": {
+      "bundleIdentifier": "com.test.expo-updates-client",
+      "supportsTablet": true,
+    },
+    "name": "expo-updates-client",
+    "orientation": "portrait",
+    "originalFullName": "@anonymous/expo-updates-client",
+    "owner": "anonymous",
+    "platforms": [
+      "ios",
+      "android",
+      "web",
+    ],
+    "runtimeVersion": "1",
+    "sdkVersion": "47.0.0",
+    "slug": "expo-updates-client",
+    "splash": {
+      "backgroundColor": "#ffffff",
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+    },
+    "updates": {
+      "enabled": true,
+      "fallbackToCacheTimeout": 30000,
+      "url": "http://localhost:3000/api/manifest",
+    },
+    "version": "1.0.0",
+    "web": {
+      "favicon": "./assets/favicon.png",
+    },
+  },
+}
+`;

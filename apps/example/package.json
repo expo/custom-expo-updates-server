@@ -1,0 +1,43 @@
+{
+  "name": "@custom-expo-updates-server/example",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "expo prebuild",
+    "export": "expo export",
+    "serve": "node server.js",
+    "start": "expo start --dev-client",
+    "dev": "pnpm ios:release",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "ios:release": "expo run:ios -d --configuration Release",
+    "android:release": "expo run:android -d --configuration Release",
+    "web": "expo start --web",
+    "eject": "expo eject",
+    "expo-publish": "./scripts/publish.sh -d 1/$(date +%s)",
+    "expo-publish-rollback": "mktouch() { mkdir -p $(dirname $1) && touch $1; }; cd ../expo-updates-server && mktouch updates/1/$(date +%s)/rollback",
+    "expo-publish-test": "./scripts/publish.sh -d test/$(date +%s)"
+  },
+  "dependencies": {
+    "custom-expo-updates": "*",
+    "expo": "^50.0.11",
+    "expo-constants": "15.4.5",
+    "expo-linking": "~6.2.2",
+    "expo-router": "~3.4.8",
+    "expo-status-bar": "1.11.1",
+    "expo-updates": "0.24.11",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-native": "0.73.4",
+    "react-native-safe-area-context": "^4.8.2",
+    "react-native-screens": "~3.29.0",
+    "react-native-web": "~0.19.6"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.19.3",
+    "compression": "^1.7.4",
+    "express": "^4.18.3",
+    "morgan": "^1.10.0"
+  },
+  "private": true
+}
