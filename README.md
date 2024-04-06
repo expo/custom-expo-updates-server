@@ -15,7 +15,7 @@ In some cases more control of how updates are sent to an app may be needed, and 
 To understand this repo, it's important to understand some terminology around updates:
 
 - **Runtime version**: Type: String. Runtime version specifies the version of the underlying native code your app is running. You'll want to update the runtime version of an update when it relies on new or changed native code, like when you update the Expo SDK, or add in any native modules into your apps. Failing to update an update's runtime version will cause your end-user's app to crash if the update relies on native code the end-user is not running.
-- **Platform**: Type: "ios" or "android". Specifies which platform to to provide an update.
+- **Platform**: Type: "ios" or "android". Specifies which platform to provide an update.
 - **Manifest**: Described in the protocol. The manifest is an object that describes assets and other details that an Expo app needs to know to load an update.
 
 ### How the `expo-update-server` works
