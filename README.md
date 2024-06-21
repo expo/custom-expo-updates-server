@@ -33,7 +33,7 @@ The flow for creating an update is as follows:
 
 Note: The app is configured to load updates from the server running at http://localhost:3000. If you prefer to load them from a different base URL (for example, in an Android emulator):
 1. Update `.env.local` in the server.
-2. Update `updates.url` in `app.json` and then run `npx expo prebuild` to sync the changes with the generated native code.
+2. Update `updates.url` in `app.json` and re-run the build steps below.
 
 ### Create a "release" app
 
@@ -41,17 +41,11 @@ The example Expo project configured for the server is located in **/expo-updates
 
 #### iOS
 
-Run `yarn` and `npx pod-install` to install packages, and run it locally with `yarn ios`. In **/expo-updates-client/ios/expoupdatesclient/Supporting/Expo.plist**, you'll find a modified Plist that specifies the updates URL to point toward http://localhost:3000/api/manifest.
-
-This app is configured to query this custom server for updates on launch, but only in the "release" version. To create this version, open Xcode, then open **/expo-updates-client/ios**. Click on the project's name in the top bar, then click "Edit scheme". In the modal, select "Release" for "Build configuration" (by default it's set to "Debug").
-
-Then, build the app. You should see it open in an iOS simulator.
+Run `yarn` and `yarn ios --configuration Release`.
 
 #### Android
 
-Run `yarn` and then run `yarn android --variant release`. The `AndroidManifest.xml` specifies the updates URL to point toward http://localhost:3000/api/manifest.
-
-You may need to add `android:usesCleartextTraffic="true"` to the `AndroidManifest.xml` applicaiton element.
+Run `yarn` and then run `yarn android --variant release`.
 
 ### Make a change
 
