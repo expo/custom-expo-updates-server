@@ -119,7 +119,7 @@ async function putUpdateInResponseAsync(
 
   // NoUpdateAvailable directive only supported on protocol version 1
   // for protocol version 0, serve most recent update as normal
-  if (currentUpdateId === id && protocolVersion === 1) {
+  if (currentUpdateId === convertSHA256HashToUUID(id) && protocolVersion === 1) {
     throw new NoUpdateAvailableError();
   }
 
