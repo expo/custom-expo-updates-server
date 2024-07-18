@@ -1,4 +1,5 @@
 import fs from 'fs';
+import fsPromises from 'fs/promises';
 import mime from 'mime';
 import { NextApiRequest, NextApiResponse } from 'next';
 import nullthrows from 'nullthrows';
@@ -60,7 +61,7 @@ export default async function assetsEndpoint(req: NextApiRequest, res: NextApiRe
   }
 
   try {
-    const asset = fs.readFileSync(assetPath, null);
+    const asset = await fsPromises.readFile(assetPath, null);
 
     res.statusCode = 200;
     res.setHeader(
