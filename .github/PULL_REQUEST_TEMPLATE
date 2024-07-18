@@ -1,0 +1,5 @@
+<!--
+Important note: This repo exists to provide a basic demonstration of how the expo-updates protocol can be translated to code. It is not designed to be complete, stable, or performant enough to use as a full-fledged backend for expo-updates. Any pull requests that add new features will likely be closed; instead, feel free to fork the repository to add new features.
+
+If submitting a pull request for a bug fix, please describe the bug and how this PR fixes it.
+-->
