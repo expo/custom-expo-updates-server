@@ -11,6 +11,12 @@ import {
 } from '../../common/helpers';
 
 export default async function assetsEndpoint(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== 'GET' && req.method !== 'HEAD') {
+    res.setHeader('Allow', 'GET, HEAD');
+    res.status(405).end();
+    return;
+  }
+
   const { asset: assetName, runtimeVersion, platform } = req.query;
 
   if (!assetName || typeof assetName !== 'string') {
@@ -54,22 +60,33 @@ export default async function assetsEndpoint(req: NextApiRequest, res: NextApiRe
   const isLaunchAsset =
     metadataJson.fileMetadata[platform].bundle === assetName.replace(`${updateBundlePath}/`, '');
 
-  if (!fs.existsSync(assetPath)) {
-    res.statusCode = 404;
-    res.json({ error: `Asset "${assetName}" does not exist.` });
-    return;
-  }
-
   try {
-    const asset = await fsPromises.readFile(assetPath, null);
+    const stats = await fsPromises.stat(assetPath);
+    const contentType = isLaunchAsset
+      ? 'application/javascript'
+      : nullthrows(
+          mime.getType(assetMetadata.ext),
+          `Could not determine mime type for ${assetMetadata.ext}`
+        );
 
     res.statusCode = 200;
-    res.setHeader(
-      'content-type',
-      isLaunchAsset ? 'application/javascript' : nullthrows(mime.getType(assetMetadata.ext))
-    );
+    res.setHeader('content-type', contentType);
+    res.setHeader('content-length', stats.size.toString());
+
+    if (req.method === 'HEAD') {
+      res.end();
+      return;
+    }
+
+    // GET request
+    const asset = await fsPromises.readFile(assetPath, null);
     res.end(asset);
-  } catch (error) {
+  } catch (error: any) {
+    if (error.code === 'ENOENT') {
+      res.statusCode = 404;
+      res.json({ error: `Asset "${assetName}" does not exist.` });
+      return;
+    }
     console.log(error);
     res.statusCode = 500;
     res.json({ error });

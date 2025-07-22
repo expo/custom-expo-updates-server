@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "expo-updates-client",
-    "slug": "expo-updates-client",
+    "name": "Expo APIs",
+    "slug": "native-component-list",
     "owner": "anonymous",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -12,9 +12,11 @@
       "backgroundColor": "#ffffff"
     },
     "runtimeVersion": "1",
+    "platforms": ["android", "ios"],
     "updates": {
       "url": "http://localhost:3000/api/manifest",
       "enabled": true,
+      "checkAutomatically": "NEVER",
       "fallbackToCacheTimeout": 30000,
       "codeSigningCertificate": "./code-signing/certificate.pem",
       "codeSigningMetadata": {
@@ -22,19 +24,17 @@
         "alg": "rsa-v1_5-sha256"
       }
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.test.expo-updates-client"
+      "bundleIdentifier": "host.exp.nclexp"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.test.expoupdatesclient"
+      "package": "host.exp.nclexp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
