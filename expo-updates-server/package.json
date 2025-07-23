@@ -14,12 +14,12 @@
     "expo-publish-test": "./scripts/publish.sh -d test/$(date +%s)"
   },
   "dependencies": {
-    "eslint-config-next": "13",
+    "eslint-config-next": "^14.2.30",
     "form-data": "^4.0.0",
     "mime": "^2.5.2",
-    "next": "13",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
+    "next": "^14.2.30",
+    "react": "18",
+    "react-dom": "18",
     "structured-headers": "^0.4.1"
   },
   "devDependencies": {
