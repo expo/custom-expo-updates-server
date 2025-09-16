@@ -9,13 +9,13 @@
     "eject": "expo eject"
   },
   "dependencies": {
-    "expo": "^52.0.18",
-    "expo-build-properties": "~0.13.1",
-    "expo-constants": "~17.0.3",
-    "expo-status-bar": "~2.0.0",
-    "expo-updates": "~0.26.10",
-    "react": "18.3.1",
-    "react-native": "0.76.5"
+    "expo": "^54.0.0",
+    "expo-build-properties": "~1.0.8",
+    "expo-constants": "~18.0.9",
+    "expo-status-bar": "~3.0.8",
+    "expo-updates": "~29.0.10",
+    "react": "19.1.0",
+    "react-native": "0.81.4"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0"
