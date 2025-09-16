@@ -13,6 +13,14 @@ import {
 export default async function assetsEndpoint(req: NextApiRequest, res: NextApiResponse) {
   const { asset: assetName, runtimeVersion, platform } = req.query;
 
+  if (req.headers['expo-allow-diff'] === 'true') {
+    // generate diff from current-update-id to requested-update-id
+
+    // return diff;
+    res.setHeader('content-type', 'application/hermes+diff');
+    res.end(diffBytes);
+  }
+
   if (!assetName || typeof assetName !== 'string') {
     res.statusCode = 400;
     res.json({ error: 'No asset name provided.' });
