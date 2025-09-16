@@ -49,7 +49,7 @@ export default async function assetsEndpoint(req: NextApiRequest, res: NextApiRe
 
   const assetPath = path.resolve(assetName);
   const assetMetadata = metadataJson.fileMetadata[platform].assets.find(
-    (asset: any) => asset.path === assetName.replace(`${updateBundlePath}/`, '')
+    (asset: any) => asset.path === assetName.replace(`${updateBundlePath}/`, ''),
   );
   const isLaunchAsset =
     metadataJson.fileMetadata[platform].bundle === assetName.replace(`${updateBundlePath}/`, '');
@@ -66,7 +66,7 @@ export default async function assetsEndpoint(req: NextApiRequest, res: NextApiRe
     res.statusCode = 200;
     res.setHeader(
       'content-type',
-      isLaunchAsset ? 'application/javascript' : nullthrows(mime.getType(assetMetadata.ext))
+      isLaunchAsset ? 'application/javascript' : nullthrows(mime.getType(assetMetadata.ext)),
     );
     res.end(asset);
   } catch (error) {

@@ -1,4 +1,4 @@
-import crypto, { BinaryToTextEncoding } from 'crypto';
+import crypto, { BinaryLike, BinaryToTextEncoding } from 'crypto';
 import fsSync from 'fs';
 import fs from 'fs/promises';
 import mime from 'mime';
@@ -7,7 +7,7 @@ import { Dictionary } from 'structured-headers';
 
 export class NoUpdateAvailableError extends Error {}
 
-function createHash(file: Buffer, hashingAlgorithm: string, encoding: BinaryToTextEncoding) {
+function createHash(file: BinaryLike, hashingAlgorithm: string, encoding: BinaryToTextEncoding) {
   return crypto.createHash(hashingAlgorithm).update(file).digest(encoding);
 }
 
@@ -19,7 +19,7 @@ export function convertToDictionaryItemsRepresentation(obj: { [key: string]: str
   return new Map(
     Object.entries(obj).map(([k, v]) => {
       return [k, [v, new Map()]];
-    })
+    }),
   );
 }
 
@@ -52,7 +52,7 @@ export async function getLatestUpdateBundlePathForRuntimeVersionAsync(runtimeVer
       filesInUpdatesDirectory.map(async (file) => {
         const fileStat = await fs.stat(path.join(updatesDirectoryForRuntimeVersion, file));
         return fileStat.isDirectory() ? file : null;
-      })
+      }),
     )
   )
     .filter(truthy)
@@ -159,7 +159,7 @@ export async function getExpoConfigAsync({
     return expoConfigJson;
   } catch (error) {
     throw new Error(
-      `No expo config json found with runtime version: ${runtimeVersion}. Error: ${error}`
+      `No expo config json found with runtime version: ${runtimeVersion}. Error: ${error}`,
     );
   }
 }
@@ -167,7 +167,7 @@ export async function getExpoConfigAsync({
 export function convertSHA256HashToUUID(value: string) {
   return `${value.slice(0, 8)}-${value.slice(8, 12)}-${value.slice(12, 16)}-${value.slice(
     16,
-    20
+    20,
   )}-${value.slice(20, 32)}`;
 }
 
