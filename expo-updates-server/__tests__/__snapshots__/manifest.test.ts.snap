@@ -1,21 +1,21 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`protocol version "0" returns latest "android" manifest 1`] = `
-Object {
-  "expoClient": Object {
-    "android": Object {
-      "adaptiveIcon": Object {
+{
+  "expoClient": {
+    "android": {
+      "adaptiveIcon": {
         "backgroundColor": "#FFFFFF",
         "foregroundImage": "./assets/adaptive-icon.png",
       },
       "package": "com.test.expoupdatesclient",
     },
-    "assetBundlePatterns": Array [
+    "assetBundlePatterns": [
       "**/*",
     ],
     "currentFullName": "@anonymous/expo-updates-client",
     "icon": "./assets/icon.png",
-    "ios": Object {
+    "ios": {
       "bundleIdentifier": "com.test.expo-updates-client",
       "supportsTablet": true,
     },
@@ -23,7 +23,7 @@ Object {
     "orientation": "portrait",
     "originalFullName": "@anonymous/expo-updates-client",
     "owner": "anonymous",
-    "platforms": Array [
+    "platforms": [
       "ios",
       "android",
       "web",
@@ -31,18 +31,18 @@ Object {
     "runtimeVersion": "1",
     "sdkVersion": "47.0.0",
     "slug": "expo-updates-client",
-    "splash": Object {
+    "splash": {
       "backgroundColor": "#ffffff",
       "image": "./assets/splash.png",
       "resizeMode": "contain",
     },
-    "updates": Object {
+    "updates": {
       "enabled": true,
       "fallbackToCacheTimeout": 30000,
       "url": "http://localhost:3000/api/manifest",
     },
     "version": "1.0.0",
-    "web": Object {
+    "web": {
       "favicon": "./assets/favicon.png",
     },
   },
@@ -50,21 +50,21 @@ Object {
 `;
 
 exports[`protocol version "0" returns latest "ios" manifest 1`] = `
-Object {
-  "expoClient": Object {
-    "android": Object {
-      "adaptiveIcon": Object {
+{
+  "expoClient": {
+    "android": {
+      "adaptiveIcon": {
         "backgroundColor": "#FFFFFF",
         "foregroundImage": "./assets/adaptive-icon.png",
       },
       "package": "com.test.expoupdatesclient",
     },
-    "assetBundlePatterns": Array [
+    "assetBundlePatterns": [
       "**/*",
     ],
     "currentFullName": "@anonymous/expo-updates-client",
     "icon": "./assets/icon.png",
-    "ios": Object {
+    "ios": {
       "bundleIdentifier": "com.test.expo-updates-client",
       "supportsTablet": true,
     },
@@ -72,7 +72,7 @@ Object {
     "orientation": "portrait",
     "originalFullName": "@anonymous/expo-updates-client",
     "owner": "anonymous",
-    "platforms": Array [
+    "platforms": [
       "ios",
       "android",
       "web",
@@ -80,18 +80,18 @@ Object {
     "runtimeVersion": "1",
     "sdkVersion": "47.0.0",
     "slug": "expo-updates-client",
-    "splash": Object {
+    "splash": {
       "backgroundColor": "#ffffff",
       "image": "./assets/splash.png",
       "resizeMode": "contain",
     },
-    "updates": Object {
+    "updates": {
       "enabled": true,
       "fallbackToCacheTimeout": 30000,
       "url": "http://localhost:3000/api/manifest",
     },
     "version": "1.0.0",
-    "web": Object {
+    "web": {
       "favicon": "./assets/favicon.png",
     },
   },
@@ -99,21 +99,21 @@ Object {
 `;
 
 exports[`protocol version "1" returns latest "android" manifest 1`] = `
-Object {
-  "expoClient": Object {
-    "android": Object {
-      "adaptiveIcon": Object {
+{
+  "expoClient": {
+    "android": {
+      "adaptiveIcon": {
         "backgroundColor": "#FFFFFF",
         "foregroundImage": "./assets/adaptive-icon.png",
       },
       "package": "com.test.expoupdatesclient",
     },
-    "assetBundlePatterns": Array [
+    "assetBundlePatterns": [
       "**/*",
     ],
     "currentFullName": "@anonymous/expo-updates-client",
     "icon": "./assets/icon.png",
-    "ios": Object {
+    "ios": {
       "bundleIdentifier": "com.test.expo-updates-client",
       "supportsTablet": true,
     },
@@ -121,7 +121,7 @@ Object {
     "orientation": "portrait",
     "originalFullName": "@anonymous/expo-updates-client",
     "owner": "anonymous",
-    "platforms": Array [
+    "platforms": [
       "ios",
       "android",
       "web",
@@ -129,18 +129,18 @@ Object {
     "runtimeVersion": "1",
     "sdkVersion": "47.0.0",
     "slug": "expo-updates-client",
-    "splash": Object {
+    "splash": {
       "backgroundColor": "#ffffff",
       "image": "./assets/splash.png",
       "resizeMode": "contain",
     },
-    "updates": Object {
+    "updates": {
       "enabled": true,
       "fallbackToCacheTimeout": 30000,
       "url": "http://localhost:3000/api/manifest",
     },
     "version": "1.0.0",
-    "web": Object {
+    "web": {
       "favicon": "./assets/favicon.png",
     },
   },
@@ -148,21 +148,21 @@ Object {
 `;
 
 exports[`protocol version "1" returns latest "ios" manifest 1`] = `
-Object {
-  "expoClient": Object {
-    "android": Object {
-      "adaptiveIcon": Object {
+{
+  "expoClient": {
+    "android": {
+      "adaptiveIcon": {
         "backgroundColor": "#FFFFFF",
         "foregroundImage": "./assets/adaptive-icon.png",
       },
       "package": "com.test.expoupdatesclient",
     },
-    "assetBundlePatterns": Array [
+    "assetBundlePatterns": [
       "**/*",
     ],
     "currentFullName": "@anonymous/expo-updates-client",
     "icon": "./assets/icon.png",
-    "ios": Object {
+    "ios": {
       "bundleIdentifier": "com.test.expo-updates-client",
       "supportsTablet": true,
     },
@@ -170,7 +170,7 @@ Object {
     "orientation": "portrait",
     "originalFullName": "@anonymous/expo-updates-client",
     "owner": "anonymous",
-    "platforms": Array [
+    "platforms": [
       "ios",
       "android",
       "web",
@@ -178,18 +178,18 @@ Object {
     "runtimeVersion": "1",
     "sdkVersion": "47.0.0",
     "slug": "expo-updates-client",
-    "splash": Object {
+    "splash": {
       "backgroundColor": "#ffffff",
       "image": "./assets/splash.png",
       "resizeMode": "contain",
     },
-    "updates": Object {
+    "updates": {
       "enabled": true,
       "fallbackToCacheTimeout": 30000,
       "url": "http://localhost:3000/api/manifest",
     },
     "version": "1.0.0",
-    "web": Object {
+    "web": {
       "favicon": "./assets/favicon.png",
     },
   },
