@@ -1,3 +1,4 @@
+import spawnAsync from '@expo/spawn-async';
 import crypto, { BinaryLike, BinaryToTextEncoding } from 'crypto';
 import fsSync from 'fs';
 import fs from 'fs/promises';
@@ -58,6 +59,80 @@ export async function getLatestUpdateBundlePathForRuntimeVersionAsync(runtimeVer
     .filter(truthy)
     .sort((a, b) => parseInt(b, 10) - parseInt(a, 10));
   return path.join(updatesDirectoryForRuntimeVersion, directoriesInUpdatesDirectory[0]);
+}
+
+export async function getUpdateBundlePathsForRuntimeVersionAsync(runtimeVersion: string) {
+  const updatesDirectoryForRuntimeVersion = `updates/${runtimeVersion}`;
+  if (!fsSync.existsSync(updatesDirectoryForRuntimeVersion)) {
+    throw new Error('Unsupported runtime version');
+  }
+
+  const filesInUpdatesDirectory = await fs.readdir(updatesDirectoryForRuntimeVersion);
+  const directoriesInUpdatesDirectory = (
+    await Promise.all(
+      filesInUpdatesDirectory.map(async (file) => {
+        const fileStat = await fs.stat(path.join(updatesDirectoryForRuntimeVersion, file));
+        return fileStat.isDirectory() ? file : null;
+      }),
+    )
+  )
+    .filter(truthy)
+    .sort((a, b) => parseInt(b, 10) - parseInt(a, 10));
+  return directoriesInUpdatesDirectory.map((dir) =>
+    path.join(updatesDirectoryForRuntimeVersion, dir),
+  );
+}
+
+export async function getLaunchAssetPathsByUpdateIdAsync(
+  runtimeVersion: string,
+  updateBundlePaths: string[],
+  platform: string,
+): Promise<{ [updateId: string]: string }> {
+  const updateIdLaunchAssetPairs = (
+    await Promise.all(
+      updateBundlePaths.map((updateBundlePath) =>
+        getUpdateIdAndLaunchAssetPathAsync(runtimeVersion, updateBundlePath, platform),
+      ),
+    )
+  ).filter((x) => !!x);
+  return Object.fromEntries(updateIdLaunchAssetPairs);
+}
+
+async function getUpdateIdAndLaunchAssetPathAsync(
+  runtimeVersion: string,
+  updateBundlePath: string,
+  platform: string,
+): Promise<[string, string] | null> {
+  try {
+    const { metadataJson, id } = await getMetadataAsync({
+      updateBundlePath,
+      runtimeVersion,
+    });
+    const platformSpecificMetadata = metadataJson.fileMetadata[platform];
+    const filePath = platformSpecificMetadata.bundle;
+    return [convertSHA256HashToUUID(id), `${updateBundlePath}/${filePath}`];
+  } catch (error) {
+    console.log('Error getting launch asset path:', error);
+    return null;
+  }
+}
+
+export async function generatePatchAsync(
+  patchPath: string,
+  oldFilePath: string,
+  newFilePath: string,
+): Promise<{ path: string; size: number }> {
+  const { status } = await spawnAsync('bsdiff', [oldFilePath, newFilePath, patchPath], {
+    timeout: 10_000, // milliseconds (10s)
+  });
+  if (status !== 0) {
+    throw new Error(`Failed to generate patch: bsdiff exited with status ${status}`);
+  }
+
+  const { size } = await fs.stat(patchPath);
+
+  console.log(`Patch generated successfully: ${patchPath}, Size: ${size} bytes`);
+  return { path: patchPath, size };
 }
 
 type GetAssetMetadataArg =
