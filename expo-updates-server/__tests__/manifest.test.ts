@@ -1,23 +1,18 @@
-import { parseMultipartMixedResponseAsync, MultipartPart } from '@expo/multipart-body-parser';
+import {
+  parseMultipartMixedResponseAsync,
+  isMultipartPartWithName,
+} from '@expo/multipart-body-parser';
 import { createMocks } from 'node-mocks-http';
 import nullthrows from 'nullthrows';
-import { parseItem } from 'structured-headers';
 
 import handleManifest from '../pages/api/manifest';
 
-function isManifestMultipartPart(multipartPart: MultipartPart, part: string) {
-  const [, parameters] = parseItem(nullthrows(multipartPart.headers.get('content-disposition')));
-  const partName = parameters.get('name');
-  return partName === part;
-}
-
-export async function getManifestPartAsync(res: any, part: string) {
+export async function getManifestPartAsync(res: any, partName: string) {
   const multipartParts = await parseMultipartMixedResponseAsync(
     res.getHeader('content-type'),
-    res._getBuffer()
+    res._getBuffer(),
   );
-  const manifestPart = multipartParts.find((it) => isManifestMultipartPart(it, part));
-  return manifestPart;
+  return multipartParts.find((part) => isMultipartPartWithName(part, partName));
 }
 
 const env = process.env;
