@@ -1,3 +1,4 @@
+import accepts from 'accepts';
 import fs from 'fs';
 import fsPromises from 'fs/promises';
 import mime from 'mime';
@@ -34,11 +35,12 @@ export default async function assetsEndpoint(req: NextApiRequest, res: NextApiRe
     return;
   }
 
-  const enableDiff = req.headers['expo-enable-diff'];
+  const accept = accepts(req);
+  const acceptsBsdiff = accept.type(['application/vnd.bsdiff']) === 'application/vnd.bsdiff';
   const currentUpdateId = req.headers['expo-current-update-id'];
   const requestedUpdateId = req.headers['expo-requested-update-id'];
   if (
-    enableDiff &&
+    acceptsBsdiff &&
     typeof currentUpdateId === 'string' &&
     typeof requestedUpdateId === 'string' &&
     currentUpdateId !== requestedUpdateId
