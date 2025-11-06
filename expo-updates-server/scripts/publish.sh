@@ -9,6 +9,7 @@ cd ../expo-updates-client
 npx expo export
 cd ../expo-updates-server
 rm -rf updates/$directory/
+mkdir -p "updates/$directory"
 cp -r ../expo-updates-client/dist/ updates/$directory
 
 node ./scripts/exportClientExpoConfig.js > updates/$directory/expoConfig.json
