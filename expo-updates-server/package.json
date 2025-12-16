@@ -15,7 +15,7 @@
   "dependencies": {
     "form-data": "^4.0.4",
     "mime": "^2.5.2",
-    "next": "15.5.3",
+    "next": "15.5.9",
     "react": "19.1.1",
     "react-dom": "19.1.1",
     "structured-headers": "^0.4.1"
