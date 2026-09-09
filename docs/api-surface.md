@@ -140,29 +140,36 @@ SDK 57 launch-asset requests can include:
 - `Expo-Requested-Update-ID`
 - `Accept-Encoding: zstd, br, gzip`
 
-When the requested asset is a launch bundle and a smaller precomputed patch
-exists from the current update, the server validates the patch size and the
-SHA-256 hashes of the patch, base bundle, and target bundle. It then returns:
+When the requested asset is a launch bundle, the server first looks for a
+precomputed patch. If none exists for a known eligible base/target pair and
+on-demand generation is enabled, it creates and verifies a BSDIFF40 patch in a
+bounded worker, atomically stores the result in a content-addressed cache, and
+reuses it on later requests. It validates the patch size and the SHA-256 hashes
+of the patch, base bundle, and target bundle before returning:
 
 - status `226 IM Used`
 - `Content-Type: application/vnd.bsdiff`
 - `IM: bsdiff`
 - `Expo-Base-Update-ID`
+- `Expo-Patch-Source: precomputed`, `on-demand-generated`, or `on-demand-cache`
 - a patch-specific ETag
 - `Cache-Control: private, max-age=31536000, immutable`
 - no content encoding
 
 The server returns the normal full asset with status `200` when the base is
-unknown, the requested update does not match the URL update, no patch exists,
-or the patch is not smaller than the target. Stale or corrupt configured patch
-metadata is a server error instead of an unsafe fallback.
+unknown, the requested update does not match the URL update, generation is
+disabled or exceeds configured limits, or the patch is not smaller than the
+target. Inefficient generated results are negatively cached. Stale or corrupt
+configured patch metadata is a server error; corrupt derived cache entries are
+discarded and regenerated.
 
 ### `GET /api/artifacts`
 
 When `EXPO_UPDATES_ARTIFACT_VIEW_ENABLED=true`, returns the local catalog,
-ordered update/rollback operations, launch-bundle sizes, generated patch sizes,
-and code-signing availability. `/artifacts` renders the same report as a
-minimal browser view. Both routes are disabled by default.
+ordered update/rollback operations, launch-bundle sizes, precomputed patch
+sizes, on-demand cache counts/bytes, and code-signing availability.
+`/artifacts` renders the same report as a minimal browser view. Both routes are
+disabled by default.
 
 ## Server metadata/store API
 

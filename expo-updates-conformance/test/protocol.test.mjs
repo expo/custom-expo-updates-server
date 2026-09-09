@@ -610,6 +610,57 @@ test("ASSET-004 handles bsdiff negotiation", async () => {
   assert.equal(wrongTarget.headers.im, undefined);
 });
 
+test("ASSET-004B generates and reuses eligible bsdiff patches on demand", async () => {
+  const { manifest } = await jsonManifest();
+  const target = await request(manifest.launchAsset.url);
+  const headers = {
+    "A-IM": "bsdiff",
+    "Expo-Current-Update-ID": config.fixtures.previewUpdateId,
+    "Expo-Requested-Update-ID": config.fixtures.updateId,
+  };
+  const first = await request(manifest.launchAsset.url, { headers });
+  if (!config.expectOnDemandBsdiffPatch) {
+    assert.equal(first.status, 200);
+    return;
+  }
+
+  assert.equal(first.status, 226);
+  assert.match(
+    first.headers["expo-patch-source"],
+    /^on-demand-(generated|cache)$/,
+  );
+  assert.ok(first.body.length < target.body.length);
+
+  const baseUrl = new URL(manifest.launchAsset.url);
+  baseUrl.searchParams.set("updateId", config.fixtures.previewUpdateId);
+  baseUrl.searchParams.set(
+    "asset",
+    config.fixtures.previewIosLaunchAssetPath,
+  );
+  const base = await request(baseUrl);
+  assert.equal(base.status, 200);
+  const tempDirectory = fs.mkdtempSync(
+    path.join(os.tmpdir(), "expo-bsdiff-on-demand-test-"),
+  );
+  try {
+    const basePath = path.join(tempDirectory, "base");
+    const patchPath = path.join(tempDirectory, "update.bsdiff");
+    const resultPath = path.join(tempDirectory, "result");
+    fs.writeFileSync(basePath, base.body);
+    fs.writeFileSync(patchPath, first.body);
+    bsdiff.patchSync(basePath, resultPath, patchPath);
+    assert.deepEqual(fs.readFileSync(resultPath), target.body);
+  } finally {
+    fs.rmSync(tempDirectory, { recursive: true, force: true });
+  }
+
+  const second = await request(manifest.launchAsset.url, { headers });
+  assert.equal(second.status, 226);
+  assert.equal(second.headers["expo-patch-source"], "on-demand-cache");
+  assert.equal(second.headers.etag, first.headers.etag);
+  assert.deepEqual(second.body, first.body);
+});
+
 test("ASSET-005 enforces update, platform, and path isolation", async (t) => {
   const { manifest } = await jsonManifest();
   const launchUrl = new URL(manifest.launchAsset.url);

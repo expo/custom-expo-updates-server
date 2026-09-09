@@ -11,10 +11,15 @@ import {
   ProtocolError,
 } from '../../common/helpers';
 import {
+  getOrCreateOnDemandLaunchAssetPatchAsync,
+  type ResolvedLaunchAssetPatch,
+} from '../../common/onDemandPatches';
+import {
   getStoredAsset,
   getStoredLaunchAssetPatch,
   getUpdateByIdAsync,
   type Platform,
+  type StoredLaunchAssetPatch,
   UpdateStorageError,
 } from '../../common/storage';
 
@@ -117,15 +122,28 @@ export default async function assetsEndpoint(req: NextApiRequest, res: NextApiRe
         const baseBundle = baseUpdate?.exportMetadata?.fileMetadata[platform]?.bundle;
         if (baseUpdate && baseBundle) {
           const baseAsset = getStoredAsset(baseUpdate, platform, baseBundle);
+          const baseBody = await fs.readFile(baseAsset.absolutePath);
           const configuredPatch = getStoredLaunchAssetPatch(update, platform, baseUpdateId);
-          if (configuredPatch) {
-            const baseBody = await fs.readFile(baseAsset.absolutePath);
-            const patchBody = await fs.readFile(configuredPatch.absolutePath);
+          const patch:
+            (StoredLaunchAssetPatch & { source?: ResolvedLaunchAssetPatch['source'] }) | undefined =
+            configuredPatch ??
+            (await getOrCreateOnDemandLaunchAssetPatchAsync({
+              runtimeVersion,
+              platform,
+              baseUpdate,
+              targetUpdate: update,
+              baseAsset,
+              targetAsset: asset,
+              baseBody,
+              targetBody: rawBody,
+            }));
+          if (patch) {
+            const patchBody = await fs.readFile(patch.absolutePath);
             if (
-              configuredPatch.size !== patchBody.length ||
-              configuredPatch.patchHash !== sha256Base64Url(patchBody) ||
-              configuredPatch.baseAssetHash !== sha256Base64Url(baseBody) ||
-              configuredPatch.targetAssetHash !== hash
+              patch.size !== patchBody.length ||
+              patch.patchHash !== sha256Base64Url(patchBody) ||
+              patch.baseAssetHash !== sha256Base64Url(baseBody) ||
+              patch.targetAssetHash !== hash
             ) {
               throw new UpdateStorageError(
                 `Launch asset patch metadata is stale for update ${update.id}.`,
@@ -133,7 +151,7 @@ export default async function assetsEndpoint(req: NextApiRequest, res: NextApiRe
               );
             }
             if (patchBody.length < rawBody.length) {
-              const patchEtag = `"sha256-${configuredPatch.patchHash}"`;
+              const patchEtag = `"sha256-${patch.patchHash}"`;
               res.setHeader('cache-control', PATCH_CACHE_CONTROL);
               res.setHeader('content-type', 'application/vnd.bsdiff');
               res.setHeader('etag', patchEtag);
@@ -141,6 +159,7 @@ export default async function assetsEndpoint(req: NextApiRequest, res: NextApiRe
               res.setHeader('x-content-type-options', 'nosniff');
               res.setHeader('im', 'bsdiff');
               res.setHeader('expo-base-update-id', baseUpdateId);
+              res.setHeader('expo-patch-source', patch.source ?? 'precomputed');
               if (getRequestHeader(req, 'if-none-match') === patchEtag) {
                 res.status(304).end();
                 return;

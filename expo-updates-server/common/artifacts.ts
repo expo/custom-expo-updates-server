@@ -1,6 +1,8 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
+import { getOnDemandPatchCacheReportAsync } from './onDemandPatches';
+
 type CatalogRecord = {
   kind: 'update' | 'rollback';
   state: 'active' | 'disabled';
@@ -140,11 +142,13 @@ export async function getArtifactReportAsync() {
   return {
     schemaVersion: 1,
     generatedAt: new Date().toISOString(),
+    onDemandPatchCache: await getOnDemandPatchCacheReportAsync(),
     operations: [
       'resolve fingerprint runtime',
       'export real Expo bundle',
       'publish update to channel catalog',
       'precompute BSDIFF40 launch-asset deltas',
+      'generate and cache missing eligible BSDIFF40 deltas on demand',
       'sign manifest or directive on request',
       'serve full immutable asset or validated 226 bsdiff variant',
       'publish rollBackToEmbedded directive',

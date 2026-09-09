@@ -85,6 +85,14 @@ serves a patch only when the base update is known, the target matches, every
 recorded hash and size matches the stored bytes, and the patch remains smaller
 than the full target. Otherwise it serves the immutable full bundle.
 
+Precomputed patches are preferred. A missing eligible pair can be generated on
+demand under a deterministic key derived from runtime, platform, update IDs,
+and base/target hashes. Generation uses bounded concurrency, per-process
+single-flight work, cross-process lock files, atomic cache writes, a maximum
+asset size, and a timeout. The generated patch is applied once and compared
+byte-for-byte with the target before it becomes cacheable. Inefficient results
+are represented by negative cache metadata.
+
 ## Future database mapping
 
 A DynamoDB implementation can use:

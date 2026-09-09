@@ -141,6 +141,11 @@
       "requirement": "bsdiff patch or full-asset fallback"
     },
     {
+      "id": "ASSET-004B",
+      "area": "asset",
+      "requirement": "on-demand bsdiff generation, application, and persistent cache reuse"
+    },
+    {
       "id": "ASSET-005",
       "area": "security",
       "requirement": "Update, platform, query, and path isolation"

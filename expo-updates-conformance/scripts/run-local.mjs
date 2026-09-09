@@ -1,6 +1,8 @@
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
+import fs from 'node:fs/promises';
 import net from 'node:net';
+import os from 'node:os';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
@@ -66,6 +68,9 @@ async function waitForServer(url, child) {
 
 const port = await availablePort();
 const baseUrl = `http://127.0.0.1:${port}`;
+const patchCacheDirectory = await fs.mkdtemp(
+  path.join(os.tmpdir(), 'expo-updates-on-demand-cache-'),
+);
 const requireFromServer = createRequire(path.join(serverDirectory, 'package.json'));
 const nextBinary = requireFromServer.resolve('next/dist/bin/next');
 const server = spawn(
@@ -74,7 +79,11 @@ const server = spawn(
   {
     cwd: serverDirectory,
     detached: process.platform !== 'win32',
-    env: process.env,
+    env: {
+      ...process.env,
+      BSDIFF_ON_DEMAND_ENABLED: 'true',
+      BSDIFF_ON_DEMAND_CACHE_DIRECTORY: patchCacheDirectory,
+    },
     stdio: 'inherit',
   },
 );
@@ -92,6 +101,7 @@ try {
         EXPO_UPDATES_CONFORMANCE_BASE_URL: baseUrl,
         EXPO_UPDATES_CONFORMANCE_CERTIFICATE_PATH: clientCertificate,
         EXPO_UPDATES_CONFORMANCE_EXPECT_SIGNING: 'true',
+        EXPO_UPDATES_CONFORMANCE_EXPECT_ON_DEMAND_BSDIFF_PATCH: 'true',
       },
       stdio: 'inherit',
     },
@@ -109,6 +119,7 @@ try {
     terminateProcessGroup(server, 'SIGKILL');
     await once(server, 'exit');
   }
+  await fs.rm(patchCacheDirectory, { recursive: true, force: true });
 }
 
 process.exitCode = exitCode;

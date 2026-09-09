@@ -21,6 +21,7 @@
 /.local/
 updates/catalog.json.lock
 updates/catalog.json.*.tmp
+updates/.cache/
 
 # Locally published update payloads. Keep only protocol fixtures in Git.
 /updates/*

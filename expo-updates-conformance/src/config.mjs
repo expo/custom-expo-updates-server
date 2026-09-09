@@ -35,6 +35,10 @@ export const config = {
     'EXPO_UPDATES_CONFORMANCE_EXPECT_BSDIFF_PATCH',
     false,
   ),
+  expectOnDemandBsdiffPatch: environmentBoolean(
+    'EXPO_UPDATES_CONFORMANCE_EXPECT_ON_DEMAND_BSDIFF_PATCH',
+    false,
+  ),
   fixtures: {
     runtime: process.env.EXPO_UPDATES_CONFORMANCE_RUNTIME ?? 'test',
     updateId:
@@ -54,6 +58,9 @@ export const config = {
     previewUpdateId:
       process.env.EXPO_UPDATES_CONFORMANCE_PREVIEW_UPDATE_ID ??
       '66666666-6666-4666-8666-666666666666',
+    previewIosLaunchAssetPath:
+      process.env.EXPO_UPDATES_CONFORMANCE_PREVIEW_IOS_LAUNCH_ASSET_PATH ??
+      'bundles/ios-preview.js',
     rollbackRuntime:
       process.env.EXPO_UPDATES_CONFORMANCE_ROLLBACK_RUNTIME ?? 'testrollback',
     rollbackPreviewUpdateId:

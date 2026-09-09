@@ -150,7 +150,9 @@ It also adds:
 - Zstandard/Brotli/gzip negotiation
 - `nosniff`
 - precomputed BSDIFF40 launch-bundle patches with hash validation and
-  full-asset fallback
+  full-asset fallback;
+- bounded on-demand BSDIFF40 generation, reconstruction validation,
+  content-addressed reuse, and negative caching
 - path traversal prevention
 
 ### Publishing

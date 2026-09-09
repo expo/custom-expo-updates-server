@@ -113,6 +113,7 @@ test('returns and applies a smaller bsdiff launch-asset patch', async () => {
   expect(res.getHeader('expo-base-update-id')).toBe('55555555-5555-4555-8555-555555555555');
   expect(res.getHeader('content-type')).toBe('application/vnd.bsdiff');
   expect(res.getHeader('cache-control')).toMatch(/^private,/);
+  expect(res.getHeader('expo-patch-source')).toBe('precomputed');
 
   const tempDirectory = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-bsdiff-jest-'));
   try {
@@ -129,6 +130,55 @@ test('returns and applies a smaller bsdiff launch-asset patch', async () => {
       fs.readFileSync(path.join('updates', 'test', '1', IOS_BUNDLE_PATH)),
     );
   } finally {
+    fs.rmSync(tempDirectory, { recursive: true, force: true });
+  }
+});
+
+test('generates and reuses a missing eligible bsdiff patch on demand', async () => {
+  const tempDirectory = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-bsdiff-demand-'));
+  const updatesDirectory = path.join(tempDirectory, 'updates');
+  const cacheDirectory = path.join(tempDirectory, 'cache');
+  const previousUpdatesDirectory = process.env.UPDATES_DIRECTORY;
+  const previousCacheDirectory = process.env.BSDIFF_ON_DEMAND_CACHE_DIRECTORY;
+  try {
+    fs.cpSync('updates', updatesDirectory, { recursive: true });
+    const metadataPath = path.join(updatesDirectory, 'test', '1', 'server.json');
+    const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
+    delete metadata.launchAssetPatches.ios['55555555-5555-4555-8555-555555555555'];
+    fs.writeFileSync(metadataPath, `${JSON.stringify(metadata, null, 2)}\n`);
+    process.env.UPDATES_DIRECTORY = updatesDirectory;
+    process.env.BSDIFF_ON_DEMAND_CACHE_DIRECTORY = cacheDirectory;
+
+    const requestOptions = {
+      headers: {
+        'a-im': 'bsdiff',
+        'expo-current-update-id': '55555555-5555-4555-8555-555555555555',
+        'expo-requested-update-id': UPDATE_ID,
+      },
+      query: { asset: IOS_BUNDLE_PATH },
+    };
+    const first = createAssetRequest(requestOptions);
+    await handleAssets(first.req, first.res);
+    expect(first.res._getStatusCode()).toBe(226);
+    expect(first.res.getHeader('expo-patch-source')).toBe('on-demand-generated');
+
+    const second = createAssetRequest(requestOptions);
+    await handleAssets(second.req, second.res);
+    expect(second.res._getStatusCode()).toBe(226);
+    expect(second.res.getHeader('expo-patch-source')).toBe('on-demand-cache');
+    expect(second.res._getBuffer()).toEqual(first.res._getBuffer());
+    expect(second.res.getHeader('etag')).toBe(first.res.getHeader('etag'));
+  } finally {
+    if (previousUpdatesDirectory === undefined) {
+      delete process.env.UPDATES_DIRECTORY;
+    } else {
+      process.env.UPDATES_DIRECTORY = previousUpdatesDirectory;
+    }
+    if (previousCacheDirectory === undefined) {
+      delete process.env.BSDIFF_ON_DEMAND_CACHE_DIRECTORY;
+    } else {
+      process.env.BSDIFF_ON_DEMAND_CACHE_DIRECTORY = previousCacheDirectory;
+    }
     fs.rmSync(tempDirectory, { recursive: true, force: true });
   }
 });

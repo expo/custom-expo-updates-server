@@ -11,7 +11,7 @@ It includes:
 - signed manifests and directives
 - update, no-update, and rollback responses
 - immutable, update-scoped assets with caching, compression, and BSDIFF40 launch
-  bundle delivery
+  bundle delivery, including bounded on-demand generation and persistent reuse
 - a file-backed channel/build catalog with active and disabled records
 - exact fingerprint, platform, channel, and extra-parameter update selection
 - a local artifact report and browser view for update, patch, and rollback state
@@ -170,6 +170,13 @@ npm run patches:backfill -- --runtime-version 57 --channel main
 Only patches smaller than 90% of the target launch bundle are retained by
 default. Set `BSDIFF_MAX_PATCH_RATIO` to change that threshold.
 
+If a client requests a valid base/target pair without a precomputed patch, the
+server generates the BSDIFF40 patch in a bounded worker thread, verifies that
+it reconstructs the target, and stores it in a content-addressed cache.
+Concurrent requests for the same pair share one generation job. Inefficient
+results are negatively cached so they continue using the full bundle without
+repeating the work.
+
 ## Configuration
 
 `npm run setup` creates ignored local signing files:
@@ -190,6 +197,11 @@ Server variables:
 | `CODE_SIGNING_KEY_ID` | `keyid` in the `expo-signature` dictionary | `main` |
 | `UPDATES_DIRECTORY` | Update storage root | `expo-updates-server/updates` |
 | `BSDIFF_MAX_PATCH_RATIO` | Largest retained patch/target size ratio | `0.9` |
+| `BSDIFF_ON_DEMAND_ENABLED` | Generate eligible missing patches on request | `true` |
+| `BSDIFF_ON_DEMAND_CACHE_DIRECTORY` | Content-addressed generated patch cache | `<updates>/.cache/bsdiff` |
+| `BSDIFF_ON_DEMAND_MAX_ASSET_BYTES` | Maximum base or target size accepted for generation | `67108864` |
+| `BSDIFF_ON_DEMAND_MAX_CONCURRENCY` | Maximum simultaneous generator workers | `2` |
+| `BSDIFF_ON_DEMAND_TIMEOUT_MS` | Generation/lock wait limit | `30000` |
 | `EXPO_UPDATES_ARTIFACT_VIEW_ENABLED` | Expose local `/artifacts` and `/api/artifacts` | `false` unless configured |
 
 Client build variables:
