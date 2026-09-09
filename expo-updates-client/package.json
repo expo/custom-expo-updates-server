@@ -3,22 +3,27 @@
   "version": "1.0.0",
   "scripts": {
     "start": "expo start --dev-client",
-    "android": "expo run:android",
-    "ios": "expo run:ios",
+    "android": "EXPO_UPDATES_URL=http://10.0.2.2:3000/api/manifest expo run:android",
+    "android:release": "EXPO_UPDATES_URL=http://10.0.2.2:3000/api/manifest expo run:android --variant release",
+    "ios": "EXPO_UPDATES_URL=http://localhost:3000/api/manifest expo run:ios",
+    "ios:release": "EXPO_UPDATES_URL=http://localhost:3000/api/manifest expo run:ios --configuration Release",
     "web": "expo start --web",
-    "eject": "expo eject"
+    "export": "expo export --platform all",
+    "config": "expo config --type public",
+    "doctor": "npx expo-doctor"
   },
   "dependencies": {
-    "expo": "^54.0.0",
-    "expo-build-properties": "~1.0.8",
-    "expo-constants": "~18.0.9",
-    "expo-status-bar": "~3.0.8",
-    "expo-updates": "~29.0.10",
-    "react": "19.1.0",
-    "react-native": "0.81.4"
+    "expo": "~57.0.21",
+    "expo-build-properties": "~57.0.17",
+    "expo-constants": "~57.0.17",
+    "expo-status-bar": "~57.0.1",
+    "expo-updates": "~57.0.21",
+    "react": "19.2.3",
+    "react-native": "0.86.3"
   },
   "devDependencies": {
-    "@babel/core": "^7.24.0"
+    "@babel/core": "^7.28.4",
+    "@expo/fingerprint": "~0.20.12"
   },
   "private": true
 }

@@ -1,0 +1,13 @@
+{
+  "id": "44444444-4444-4444-8444-444444444444",
+  "groupId": "44444444-4444-4444-8444-444444444440",
+  "createdAt": "2026-09-09T00:00:00.000Z",
+  "runtimeVersion": "testcohort",
+  "channel": "main",
+  "extraParams": {
+    "cohort": "beta"
+  },
+  "metadata": {
+    "fixture": "cohort"
+  }
+}

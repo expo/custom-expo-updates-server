@@ -1,1 +1,1 @@
-process.env.HOSTNAME = 'http://localhost:3000';
+process.env.UPDATES_SERVER_URL = 'http://localhost:3000';

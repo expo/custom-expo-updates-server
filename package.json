@@ -1,0 +1,33 @@
+{
+  "name": "custom-expo-updates-local",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "npm@10.9.8",
+  "workspaces": [
+    "expo-updates-client",
+    "expo-updates-server",
+    "expo-updates-conformance"
+  ],
+  "overrides": {
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
+  },
+  "scripts": {
+    "setup": "node scripts/setup-local.mjs",
+    "dev": "npm run dev --workspace custom-expo-updates-server",
+    "build": "npm run build --workspace custom-expo-updates-server",
+    "test": "npm run test:client-config && npm run test:unit && npm run test:api",
+    "test:client-config": "node scripts/test-client-config.mjs",
+    "test:unit": "npm run test --workspace custom-expo-updates-server",
+    "test:api": "npm run setup && node expo-updates-conformance/scripts/run-local.mjs",
+    "test:api:remote": "npm run test --workspace expo-updates-conformance",
+    "lint": "npm run lint --workspace custom-expo-updates-server",
+    "typecheck": "npm run typecheck --workspace custom-expo-updates-server",
+    "validate": "npm run lint && npm run typecheck && npm run test && npm run build",
+    "client:ios": "npm run ios:release --workspace expo-updates-client",
+    "client:android": "npm run android:release --workspace expo-updates-client",
+    "client:doctor": "npm run doctor --workspace expo-updates-client",
+    "publish:update": "node expo-updates-server/scripts/publish-update.mjs",
+    "publish:rollback": "node expo-updates-server/scripts/publish-rollback.mjs"
+  }
+}

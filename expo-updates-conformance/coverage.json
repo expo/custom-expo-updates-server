@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "description": "Portable black-box Expo Updates protocol test cases.",
+  "fixtureContract": {
+    "normal": {
+      "runtime": "test",
+      "updateId": "11111111-1111-4111-8111-111111111111",
+      "oldUpdateId": "55555555-5555-4555-8555-555555555555",
+      "disabledUpdateId": "77777777-7777-4777-8777-777777777777",
+      "channel": "main",
+      "platforms": ["android", "ios"],
+      "requiresAsset": true
+    },
+    "preview": {
+      "runtime": "test",
+      "updateId": "66666666-6666-4666-8666-666666666666",
+      "channel": "preview"
+    },
+    "rollback": {
+      "runtime": "testrollback",
+      "commitTime": "2022-10-20T21:00:00.000Z",
+      "previewUpdateId": "99999999-9999-4999-8999-999999999999",
+      "previewChannel": "preview"
+    },
+    "fingerprint": {
+      "runtime": "0123456789abcdef0123456789abcdef01234567",
+      "updateId": "33333333-3333-4333-8333-333333333333"
+    },
+    "cohort": {
+      "runtime": "testcohort",
+      "updateId": "44444444-4444-4444-8444-444444444444",
+      "extraParams": {
+        "cohort": "beta"
+      }
+    }
+  },
+  "cases": [
+    { "id": "MANIFEST-001", "area": "manifest", "requirement": "Protocol 1 Expo JSON manifest" },
+    { "id": "MANIFEST-002", "area": "manifest", "requirement": "application/json representation" },
+    { "id": "MANIFEST-003", "area": "manifest", "requirement": "Multipart manifest and extensions" },
+    { "id": "MANIFEST-004", "area": "negotiation", "requirement": "Accept quality and wildcard negotiation" },
+    { "id": "MANIFEST-005", "area": "negotiation", "requirement": "Unsupported representation rejection" },
+    { "id": "MANIFEST-006", "area": "validation", "requirement": "Method, protocol, platform, and runtime validation" },
+    { "id": "MANIFEST-007", "area": "selection", "requirement": "Channel build list, latest active selection, disabled records, and channel isolation" },
+    { "id": "MANIFEST-008", "area": "selection", "requirement": "Exact fingerprint runtime matching" },
+    { "id": "MANIFEST-009", "area": "selection", "requirement": "Expo-Extra-Params structured-field targeting" },
+    { "id": "MANIFEST-010", "area": "headers", "requirement": "Manifest filters and server-defined headers" },
+    { "id": "MANIFEST-011", "area": "signing", "requirement": "Cryptographic manifest signature verification" },
+    { "id": "DIRECTIVE-001", "area": "directive", "requirement": "noUpdateAvailable" },
+    { "id": "DIRECTIVE-002", "area": "directive", "requirement": "Multipart requirement for directives" },
+    { "id": "DIRECTIVE-003", "area": "directive", "requirement": "rollBackToEmbedded" },
+    { "id": "DIRECTIVE-004", "area": "directive", "requirement": "Rollback edge cases and channel-isolated rollback state" },
+    { "id": "COMPAT-001", "area": "compatibility", "requirement": "Protocol 0 query compatibility" },
+    { "id": "ASSET-001", "area": "asset", "requirement": "Immutable scoped asset response" },
+    { "id": "ASSET-002", "area": "asset", "requirement": "HEAD, ETag, and 304" },
+    { "id": "ASSET-003", "area": "asset", "requirement": "gzip, Brotli, and Zstandard negotiation" },
+    { "id": "ASSET-004", "area": "asset", "requirement": "bsdiff patch or full-asset fallback" },
+    { "id": "ASSET-005", "area": "security", "requirement": "Update, platform, query, and path isolation" },
+    { "id": "ASSET-006", "area": "validation", "requirement": "Asset method validation" },
+    { "id": "API-001", "area": "portability", "requirement": "Configurable origin, path, fixture identifiers, and request headers" }
+  ]
+}

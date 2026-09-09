@@ -18,6 +18,18 @@
 # misc
 .DS_Store
 *.pem
+/.local/
+updates/catalog.json.lock
+updates/catalog.json.*.tmp
+
+# Locally published update payloads. Keep only protocol fixtures in Git.
+/updates/*
+!/updates/catalog.json
+!/updates/1/
+!/updates/test/
+!/updates/testrollback/
+!/updates/testcohort/
+!/updates/0123456789abcdef0123456789abcdef01234567/
 
 # debug
 npm-debug.log*
@@ -25,7 +37,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
-# .env.local
+.env.local
 .env.development.local
 .env.test.local
 .env.production.local

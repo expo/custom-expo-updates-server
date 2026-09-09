@@ -1,0 +1,13 @@
+{
+  "name": "expo-updates-conformance",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test --test-concurrency=1 test/*.test.mjs"
+  },
+  "dependencies": {
+    "@expo/multipart-body-parser": "^2.0.0",
+    "structured-headers": "^0.4.1"
+  }
+}

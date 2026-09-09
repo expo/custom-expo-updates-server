@@ -6,52 +6,46 @@ export default function Home() {
   return (
     <div className={styles.container}>
       <Head>
-        <title>Create Next App</title>
+        <title>Custom Expo Updates Server</title>
+        <meta name="description" content="Local Expo SDK 57 custom updates protocol server" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
+        <p className={styles.eyebrow}>LOCAL PROTOCOL SERVER</p>
+        <h1 className={styles.title}>Expo Updates SDK 57</h1>
 
         <p className={styles.description}>
-          Get started by editing <code className={styles.code}>pages/index.js</code>
+          The server is running. Publish an update, then use a release build of the diagnostic app
+          to check, fetch, and reload it.
         </p>
 
         <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
+          <section className={styles.card}>
+            <h2>Manifest endpoint</h2>
+            <code>/api/manifest</code>
+            <p>Protocols 1 and 0, signing, channels, cohorts, and directives.</p>
+          </section>
 
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
+          <section className={styles.card}>
+            <h2>Asset endpoint</h2>
+            <code>/api/assets</code>
+            <p>Immutable update assets, ETags, HEAD, and compression.</p>
+          </section>
 
-          <a href="https://github.com/vercel/next.js/tree/master/examples" className={styles.card}>
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
+          <section className={styles.card}>
+            <h2>Runtime</h2>
+            <code>57</code>
+            <p>Expo and expo-updates 57.0.21 with React Native 0.86.3.</p>
+          </section>
 
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}>
-            <h3>Deploy &rarr;</h3>
-            <p>Instantly deploy your Next.js site to a public URL with Vercel.</p>
-          </a>
+          <section className={styles.card}>
+            <h2>Publish</h2>
+            <code>npm run publish:update</code>
+            <p>Exports both native platforms and atomically stores the update.</p>
+          </section>
         </div>
       </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer">
-          Powered by <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
     </div>
   );
 }

@@ -1,0 +1,1 @@
+globalThis.__EXPO_UPDATES_ROLLBACK_PREVIEW_FIXTURE__ = 'ios';
