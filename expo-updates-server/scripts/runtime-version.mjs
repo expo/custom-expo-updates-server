@@ -39,10 +39,11 @@ export function selectedPlatforms(value = 'all') {
   return [value];
 }
 
-export function run(command, args, cwd, { capture = false } = {}) {
+export function run(command, args, cwd, { capture = false, env = process.env } = {}) {
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, {
       cwd,
+      env,
       shell: process.platform === 'win32',
       stdio: capture ? ['ignore', 'pipe', 'inherit'] : 'inherit',
     });

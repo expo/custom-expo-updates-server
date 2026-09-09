@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@expo/multipart-body-parser": "^2.0.0",
+    "bsdiff-node": "^2.5.0",
     "structured-headers": "^0.4.1"
   }
 }

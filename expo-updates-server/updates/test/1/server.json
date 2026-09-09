@@ -14,5 +14,25 @@
   },
   "assetRequestHeaders": {
     "x-expo-update-id": "11111111-1111-4111-8111-111111111111"
+  },
+  "launchAssetPatches": {
+    "android": {
+      "55555555-5555-4555-8555-555555555555": {
+        "path": "patches/android-from-55555555-5555-4555-8555-555555555555.bsdiff",
+        "size": 170999,
+        "patchHash": "7moIiEubg9ng0myf_S2QMiWXHq8SSlcUjd4j9FPrtl4",
+        "baseAssetHash": "PXp94rXFVeXP6KSVdZKdyUue1Qcn7t_LSdVL2QAgvcQ",
+        "targetAssetHash": "t3kWQ00Lhn5qCGGhNNMxiD_pcTO_4d7I_1zO3S5Me5k"
+      }
+    },
+    "ios": {
+      "55555555-5555-4555-8555-555555555555": {
+        "path": "patches/ios-from-55555555-5555-4555-8555-555555555555.bsdiff",
+        "size": 170461,
+        "patchHash": "EhCCoS2qzceXxg5tbm4J3zlUabSI29eCi2jIFoCuz50",
+        "baseAssetHash": "x7eTjJyhK_2l7O5bPfN6GMRwvPI2cvMundjbM23eGpk",
+        "targetAssetHash": "4nGjshgRoD62YxnJAnZBWllEzCBrQR2zQ_2ei8glL6s"
+      }
+    }
   }
 }

@@ -35,6 +35,21 @@ export type UpdateServerMetadata = {
   assetRequestHeaders?: Record<string, string>;
   extraParams?: Record<string, string>;
   extra?: Record<string, unknown>;
+  launchAssetPatches?: Partial<
+    Record<
+      Platform,
+      Record<
+        string,
+        {
+          path: string;
+          size: number;
+          patchHash: string;
+          baseAssetHash: string;
+          targetAssetHash: string;
+        }
+      >
+    >
+  >;
 };
 
 export type StoredUpdate = {
@@ -54,6 +69,15 @@ export type StoredAsset = {
   absolutePath: string;
   extension: string | null;
   isLaunchAsset: boolean;
+};
+
+export type StoredLaunchAssetPatch = {
+  absolutePath: string;
+  relativePath: string;
+  size: number;
+  patchHash: string;
+  baseAssetHash: string;
+  targetAssetHash: string;
 };
 
 type BuildCatalogRecord = {
@@ -433,5 +457,45 @@ export function getStoredAsset(
     absolutePath,
     extension: isLaunchAsset ? null : (assetMetadata?.ext ?? null),
     isLaunchAsset,
+  };
+}
+
+export function getStoredLaunchAssetPatch(
+  update: StoredUpdate,
+  platform: Platform,
+  baseUpdateId: string,
+): StoredLaunchAssetPatch | undefined {
+  const configuredPatch =
+    update.serverMetadata.launchAssetPatches?.[platform]?.[baseUpdateId.toLowerCase()];
+  if (!configuredPatch) {
+    return undefined;
+  }
+  const relativePath = validateRelativeAssetPath(configuredPatch.path);
+  const absolutePath = resolveWithin(update.directory, relativePath);
+  if (!fsSync.existsSync(absolutePath)) {
+    throw new UpdateStorageError(
+      `Configured launch asset patch is missing from update ${update.id}.`,
+      500,
+    );
+  }
+  if (
+    !Number.isInteger(configuredPatch.size) ||
+    configuredPatch.size < 0 ||
+    !configuredPatch.patchHash ||
+    !configuredPatch.baseAssetHash ||
+    !configuredPatch.targetAssetHash
+  ) {
+    throw new UpdateStorageError(
+      `Configured launch asset patch is invalid for update ${update.id}.`,
+      500,
+    );
+  }
+  return {
+    absolutePath,
+    relativePath,
+    size: configuredPatch.size,
+    patchHash: configuredPatch.patchHash,
+    baseAssetHash: configuredPatch.baseAssetHash,
+    targetAssetHash: configuredPatch.targetAssetHash,
   };
 }

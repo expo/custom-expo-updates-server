@@ -35,28 +35,125 @@
     }
   },
   "cases": [
-    { "id": "MANIFEST-001", "area": "manifest", "requirement": "Protocol 1 Expo JSON manifest" },
-    { "id": "MANIFEST-002", "area": "manifest", "requirement": "application/json representation" },
-    { "id": "MANIFEST-003", "area": "manifest", "requirement": "Multipart manifest and extensions" },
-    { "id": "MANIFEST-004", "area": "negotiation", "requirement": "Accept quality and wildcard negotiation" },
-    { "id": "MANIFEST-005", "area": "negotiation", "requirement": "Unsupported representation rejection" },
-    { "id": "MANIFEST-006", "area": "validation", "requirement": "Method, protocol, platform, and runtime validation" },
-    { "id": "MANIFEST-007", "area": "selection", "requirement": "Channel build list, latest active selection, disabled records, and channel isolation" },
-    { "id": "MANIFEST-008", "area": "selection", "requirement": "Exact fingerprint runtime matching" },
-    { "id": "MANIFEST-009", "area": "selection", "requirement": "Expo-Extra-Params structured-field targeting" },
-    { "id": "MANIFEST-010", "area": "headers", "requirement": "Manifest filters and server-defined headers" },
-    { "id": "MANIFEST-011", "area": "signing", "requirement": "Cryptographic manifest signature verification" },
-    { "id": "DIRECTIVE-001", "area": "directive", "requirement": "noUpdateAvailable" },
-    { "id": "DIRECTIVE-002", "area": "directive", "requirement": "Multipart requirement for directives" },
-    { "id": "DIRECTIVE-003", "area": "directive", "requirement": "rollBackToEmbedded" },
-    { "id": "DIRECTIVE-004", "area": "directive", "requirement": "Rollback edge cases and channel-isolated rollback state" },
-    { "id": "COMPAT-001", "area": "compatibility", "requirement": "Protocol 0 query compatibility" },
-    { "id": "ASSET-001", "area": "asset", "requirement": "Immutable scoped asset response" },
-    { "id": "ASSET-002", "area": "asset", "requirement": "HEAD, ETag, and 304" },
-    { "id": "ASSET-003", "area": "asset", "requirement": "gzip, Brotli, and Zstandard negotiation" },
-    { "id": "ASSET-004", "area": "asset", "requirement": "bsdiff patch or full-asset fallback" },
-    { "id": "ASSET-005", "area": "security", "requirement": "Update, platform, query, and path isolation" },
-    { "id": "ASSET-006", "area": "validation", "requirement": "Asset method validation" },
-    { "id": "API-001", "area": "portability", "requirement": "Configurable origin, path, fixture identifiers, and request headers" }
+    {
+      "id": "MANIFEST-001",
+      "area": "manifest",
+      "requirement": "Protocol 1 Expo JSON manifest"
+    },
+    {
+      "id": "MANIFEST-002",
+      "area": "manifest",
+      "requirement": "application/json representation"
+    },
+    {
+      "id": "MANIFEST-003",
+      "area": "manifest",
+      "requirement": "Multipart manifest and extensions"
+    },
+    {
+      "id": "MANIFEST-004",
+      "area": "negotiation",
+      "requirement": "Accept quality and wildcard negotiation"
+    },
+    {
+      "id": "MANIFEST-005",
+      "area": "negotiation",
+      "requirement": "Unsupported representation rejection"
+    },
+    {
+      "id": "MANIFEST-006",
+      "area": "validation",
+      "requirement": "Method, protocol, platform, and runtime validation"
+    },
+    {
+      "id": "MANIFEST-007",
+      "area": "selection",
+      "requirement": "Channel build list, latest active selection, disabled records, and channel isolation"
+    },
+    {
+      "id": "MANIFEST-008",
+      "area": "selection",
+      "requirement": "Exact fingerprint runtime matching"
+    },
+    {
+      "id": "MANIFEST-009",
+      "area": "selection",
+      "requirement": "Expo-Extra-Params structured-field targeting"
+    },
+    {
+      "id": "MANIFEST-010",
+      "area": "headers",
+      "requirement": "Manifest filters and server-defined headers"
+    },
+    {
+      "id": "MANIFEST-011",
+      "area": "signing",
+      "requirement": "Cryptographic manifest signature verification"
+    },
+    {
+      "id": "DIRECTIVE-001",
+      "area": "directive",
+      "requirement": "noUpdateAvailable"
+    },
+    {
+      "id": "DIRECTIVE-002",
+      "area": "directive",
+      "requirement": "Multipart requirement for directives"
+    },
+    {
+      "id": "DIRECTIVE-003",
+      "area": "directive",
+      "requirement": "rollBackToEmbedded"
+    },
+    {
+      "id": "DIRECTIVE-004",
+      "area": "directive",
+      "requirement": "Rollback edge cases and channel-isolated rollback state"
+    },
+    {
+      "id": "DIRECTIVE-005",
+      "area": "signing",
+      "requirement": "Cryptographic directive-part signature verification"
+    },
+    {
+      "id": "COMPAT-001",
+      "area": "compatibility",
+      "requirement": "Protocol 0 query compatibility"
+    },
+    {
+      "id": "ASSET-001",
+      "area": "asset",
+      "requirement": "Immutable scoped asset response"
+    },
+    {
+      "id": "ASSET-002",
+      "area": "asset",
+      "requirement": "HEAD, ETag, and 304"
+    },
+    {
+      "id": "ASSET-003",
+      "area": "asset",
+      "requirement": "gzip, Brotli, and Zstandard negotiation"
+    },
+    {
+      "id": "ASSET-004",
+      "area": "asset",
+      "requirement": "bsdiff patch or full-asset fallback"
+    },
+    {
+      "id": "ASSET-005",
+      "area": "security",
+      "requirement": "Update, platform, query, and path isolation"
+    },
+    {
+      "id": "ASSET-006",
+      "area": "validation",
+      "requirement": "Asset method validation"
+    },
+    {
+      "id": "API-001",
+      "area": "portability",
+      "requirement": "Configurable origin, path, fixture identifiers, and request headers"
+    }
   ]
 }

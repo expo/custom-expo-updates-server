@@ -28,6 +28,10 @@
     "client:android": "npm run android:release --workspace expo-updates-client",
     "client:doctor": "npm run doctor --workspace expo-updates-client",
     "publish:update": "node expo-updates-server/scripts/publish-update.mjs",
-    "publish:rollback": "node expo-updates-server/scripts/publish-rollback.mjs"
+    "publish:rollback": "node expo-updates-server/scripts/publish-rollback.mjs",
+    "patches:backfill": "node expo-updates-server/scripts/backfill-patches.mjs",
+    "artifacts:inspect": "node expo-updates-server/scripts/inspect-artifacts.mjs",
+    "demo:generate": "node scripts/demo-real-update-cycle.mjs",
+    "demo:serve": "UPDATES_DIRECTORY=.local/real-update-demo/updates EXPO_UPDATES_ARTIFACT_VIEW_ENABLED=true npm run dev"
   }
 }

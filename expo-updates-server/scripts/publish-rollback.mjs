@@ -13,7 +13,10 @@ import {
 } from './runtime-version.mjs';
 
 const serverDirectory = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const clientDirectory = path.resolve(serverDirectory, '..', 'expo-updates-client');
+const clientDirectory = path.resolve(
+  process.env.EXPO_UPDATES_CLIENT_DIRECTORY?.trim() ||
+    path.resolve(serverDirectory, '..', 'expo-updates-client'),
+);
 const updatesDirectory = path.resolve(
   serverDirectory,
   process.env.UPDATES_DIRECTORY?.trim() || 'updates',

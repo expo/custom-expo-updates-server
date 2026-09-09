@@ -5,7 +5,7 @@ import path from 'node:path';
 const LOCK_RETRY_COUNT = 100;
 const LOCK_RETRY_DELAY_MS = 50;
 
-async function readCatalogAsync(catalogPath) {
+export async function readCatalogAsync(catalogPath) {
   try {
     const catalog = JSON.parse(await readFile(catalogPath, 'utf8'));
     if (catalog.schemaVersion !== 1 || !Array.isArray(catalog.records)) {
@@ -18,6 +18,31 @@ async function readCatalogAsync(catalogPath) {
     }
     throw error;
   }
+}
+
+export async function getPatchBaseRecordsAsync({
+  updatesDirectory,
+  runtimeVersion,
+  platform,
+  channel,
+  limit,
+  excludeUpdateId,
+  beforeCreatedAt,
+}) {
+  const catalog = await readCatalogAsync(path.join(updatesDirectory, 'catalog.json'));
+  return catalog.records
+    .filter(
+      (record) =>
+        record.kind === 'update' &&
+        record.state === 'active' &&
+        record.runtimeVersion === runtimeVersion &&
+        (record.platform === undefined || record.platform === platform) &&
+        (record.channel === undefined || record.channel === channel) &&
+        (!excludeUpdateId || record.id?.toLowerCase() !== excludeUpdateId.toLowerCase()) &&
+        (!beforeCreatedAt || Date.parse(record.createdAt) < Date.parse(beforeCreatedAt)),
+    )
+    .sort((left, right) => Date.parse(right.createdAt) - Date.parse(left.createdAt))
+    .slice(0, limit);
 }
 
 async function acquireLockAsync(lockPath) {

@@ -42,6 +42,12 @@ Optional environment:
 Asset tests follow URLs returned by the manifest. They do not assume the asset
 endpoint uses the same path as this Next.js implementation.
 
+When `EXPO_UPDATES_CONFORMANCE_EXPECT_BSDIFF_PATCH=true`, the suite downloads
+the prior launch bundle and returned BSDIFF40 payload, applies the patch
+locally, and requires the reconstructed bytes to exactly equal the target
+launch bundle. It also checks patch `HEAD`/ETag behavior and safe full-asset
+fallback for unknown bases and mismatched requested update IDs.
+
 ## Fingerprint behavior
 
 Expo fingerprint policy resolves to a platform runtime-version string before a

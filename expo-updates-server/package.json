@@ -10,9 +10,12 @@
     "typecheck": "tsc --noEmit",
     "test": "jest --runInBand",
     "publish:update": "node scripts/publish-update.mjs",
-    "publish:rollback": "node scripts/publish-rollback.mjs"
+    "publish:rollback": "node scripts/publish-rollback.mjs",
+    "patches:backfill": "node scripts/backfill-patches.mjs",
+    "artifacts:inspect": "node scripts/inspect-artifacts.mjs"
   },
   "dependencies": {
+    "bsdiff-node": "^2.5.0",
     "form-data": "^4.0.4",
     "mime": "^2.5.2",
     "next": "16.3.4",

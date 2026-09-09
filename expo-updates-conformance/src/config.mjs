@@ -43,6 +43,9 @@ export const config = {
     oldUpdateId:
       process.env.EXPO_UPDATES_CONFORMANCE_OLD_UPDATE_ID ??
       '55555555-5555-4555-8555-555555555555',
+    oldIosLaunchAssetPath:
+      process.env.EXPO_UPDATES_CONFORMANCE_OLD_IOS_LAUNCH_ASSET_PATH ??
+      'bundles/ios-old.js',
     disabledUpdateId:
       process.env.EXPO_UPDATES_CONFORMANCE_DISABLED_UPDATE_ID ??
       '77777777-7777-4777-8777-777777777777',

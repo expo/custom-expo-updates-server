@@ -66,14 +66,24 @@ Publishing:
 1. resolves the runtime version independently for Android and iOS;
 2. exports each platform;
 3. stages files under `.tmp` directories;
-4. renames all platform exports into place;
-5. acquires an exclusive catalog lock;
-6. writes a complete temporary catalog; and
-7. atomically renames the catalog.
+4. finds configurable prior active builds in the same
+   runtime/platform/channel;
+5. generates BSDIFF40 launch-bundle patches and retains only efficient ones;
+6. records patch, base, and target SHA-256 hashes in `server.json`;
+7. renames all platform exports into place;
+8. acquires an exclusive catalog lock;
+9. writes a complete temporary catalog; and
+10. atomically renames the catalog.
 
 If publication or catalog insertion fails, newly published directories are
 removed. A shared `groupId` connects Android and iOS records even when
 fingerprint policy resolves different runtime versions.
+
+Patch delivery never changes update selection. After a target update is
+selected, the asset request may identify its current/base update. The server
+serves a patch only when the base update is known, the target matches, every
+recorded hash and size matches the stored bytes, and the patch remains smaller
+than the full target. Otherwise it serves the immutable full bundle.
 
 ## Future database mapping
 

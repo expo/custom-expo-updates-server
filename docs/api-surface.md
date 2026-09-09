@@ -128,20 +128,41 @@ Response behavior:
 - SHA-256 ETag and `If-None-Match`/`304`
 - `Cache-Control: public, max-age=31536000, immutable`
 - `Content-Type`, `Content-Length`, and `X-Content-Type-Options: nosniff`
-- `Vary: Accept-Encoding`
+- `Vary: Accept-Encoding, A-IM, Expo-Current-Update-ID, Expo-Requested-Update-ID`
 - Zstandard when the running Node version exposes it, then Brotli or gzip
 - no compression for small or non-compressible files
 - path normalization, traversal rejection, and update membership checks
 
 SDK 57 launch-asset requests can include:
 
-- `Expo-Runtime-Version`
 - `A-IM: bsdiff`
+- `Expo-Current-Update-ID`
+- `Expo-Requested-Update-ID`
 - `Accept-Encoding: zstd, br, gzip`
 
-This server currently uses the full-asset fallback for `bsdiff`: it returns the
-normal asset with status `200`. It does not return a generated patch with
-status `226`, `IM: bsdiff`, or `Expo-Base-Update-ID`.
+When the requested asset is a launch bundle and a smaller precomputed patch
+exists from the current update, the server validates the patch size and the
+SHA-256 hashes of the patch, base bundle, and target bundle. It then returns:
+
+- status `226 IM Used`
+- `Content-Type: application/vnd.bsdiff`
+- `IM: bsdiff`
+- `Expo-Base-Update-ID`
+- a patch-specific ETag
+- `Cache-Control: private, max-age=31536000, immutable`
+- no content encoding
+
+The server returns the normal full asset with status `200` when the base is
+unknown, the requested update does not match the URL update, no patch exists,
+or the patch is not smaller than the target. Stale or corrupt configured patch
+metadata is a server error instead of an unsafe fallback.
+
+### `GET /api/artifacts`
+
+When `EXPO_UPDATES_ARTIFACT_VIEW_ENABLED=true`, returns the local catalog,
+ordered update/rollback operations, launch-bundle sizes, generated patch sizes,
+and code-signing availability. `/artifacts` renders the same report as a
+minimal browser view. Both routes are disabled by default.
 
 ## Server metadata/store API
 
@@ -171,6 +192,7 @@ status `226`, `IM: bsdiff`, or `Expo-Base-Update-ID`.
 | `manifestFilters` | object of strings | `Expo-Manifest-Filters` |
 | `serverDefinedHeaders` | object of strings | `Expo-Server-Defined-Headers` |
 | `assetRequestHeaders` | object of strings | Multipart `assetRequestHeaders` extension |
+| `launchAssetPatches` | platform/base-update map | Validated precomputed BSDIFF40 launch-bundle patches |
 | `extraParams` | object of strings | Required client cohort/selector values |
 | `extra` | JSON object | Additional manifest `extra` values |
 
@@ -283,7 +305,6 @@ this repository:
 - dashboard/administration APIs
 - metrics, tracing, audit history, retention, and garbage collection
 - horizontal concurrency controls
-- generated `bsdiff` patches
 
 Those are deployment/product concerns rather than fields required for a client
 to consume a custom Expo Updates protocol server.

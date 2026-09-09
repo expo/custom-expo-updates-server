@@ -10,9 +10,11 @@ It includes:
 - Expo Updates protocol 1 responses and protocol 0 compatibility
 - signed manifests and directives
 - update, no-update, and rollback responses
-- immutable, update-scoped assets with caching and compression
+- immutable, update-scoped assets with caching, compression, and BSDIFF40 launch
+  bundle delivery
 - a file-backed channel/build catalog with active and disabled records
 - exact fingerprint, platform, channel, and extra-parameter update selection
+- a local artifact report and browser view for update, patch, and rollback state
 - a release client that exercises the public `expo-updates` JavaScript API
 - local publishing, signing-key generation, tests, linting, type checking, and
   production builds
@@ -134,6 +136,40 @@ The latest matching record becomes a `rollBackToEmbedded` directive. If the
 client already runs its embedded update, the server returns
 `noUpdateAvailable`. Publish a newer normal update to resume serving updates.
 
+## Generate and inspect a real update cycle
+
+The demo command copies the SDK 57 client into ignored local storage, resolves
+its real Expo fingerprint, publishes a baseline export, changes `App.js`,
+publishes a second export, and precomputes a BSDIFF40 patch between the launch
+bundles:
+
+```sh
+npm run demo:generate -- --platform ios --include-rollback
+npm run demo:serve
+```
+
+Open `http://localhost:3000/artifacts` to inspect the ordered operations,
+runtime/channel state, launch-bundle sizes, generated patch sizes and savings,
+and rollback record. The raw report is available from `/api/artifacts` and at
+`expo-updates-server/.local/real-update-demo/artifacts.json`.
+
+Normal publication generates patches from the latest three eligible active
+updates in the same runtime, platform, and channel. Change the retained base
+count with `--patch-base-count`; use `0` to disable generation:
+
+```sh
+npm run publish:update -- --patch-base-count 5
+```
+
+Backfill or regenerate patches for an existing catalog with:
+
+```sh
+npm run patches:backfill -- --runtime-version 57 --channel main
+```
+
+Only patches smaller than 90% of the target launch bundle are retained by
+default. Set `BSDIFF_MAX_PATCH_RATIO` to change that threshold.
+
 ## Configuration
 
 `npm run setup` creates ignored local signing files:
@@ -153,6 +189,8 @@ Server variables:
 | `PRIVATE_KEY_PATH` | RSA private key used when a client requests signing | Signing disabled |
 | `CODE_SIGNING_KEY_ID` | `keyid` in the `expo-signature` dictionary | `main` |
 | `UPDATES_DIRECTORY` | Update storage root | `expo-updates-server/updates` |
+| `BSDIFF_MAX_PATCH_RATIO` | Largest retained patch/target size ratio | `0.9` |
+| `EXPO_UPDATES_ARTIFACT_VIEW_ENABLED` | Expose local `/artifacts` and `/api/artifacts` | `false` unless configured |
 
 Client build variables:
 
@@ -208,6 +246,17 @@ Each update can contain a `server.json` file:
   "assetRequestHeaders": {
     "x-expo-update-id": "7702c2db-236f-6f55-3667-0d0ff78c7094"
   },
+  "launchAssetPatches": {
+    "ios": {
+      "previous-update-id": {
+        "path": "patches/ios-from-previous-update-id.bsdiff",
+        "size": 59589,
+        "patchHash": "base64url-sha256",
+        "baseAssetHash": "base64url-sha256",
+        "targetAssetHash": "base64url-sha256"
+      }
+    }
+  },
   "extraParams": {
     "cohort": "local"
   },
@@ -219,7 +268,8 @@ Each update can contain a `server.json` file:
 
 `channel` must match `Expo-Channel-Name`. Every entry in `extraParams` must
 match the client's `Expo-Extra-Params` structured-field dictionary. Omitted
-selectors match any request.
+selectors match any request. Patch metadata is validated against the base,
+target, and patch bytes before a `226 IM Used` response is sent.
 
 ## Validation
 
@@ -245,7 +295,8 @@ npm run test:api:remote
 The test suite covers manifest negotiation, signatures, protocol 0
 compatibility, channel state, fingerprint near-misses, disabled records,
 channel-isolated rollbacks, directives, immutable assets, conditional requests,
-`HEAD`, compression, patch negotiation fallback, and path confinement.
+`HEAD`, compression, exact BSDIFF application, patch fallback cases, and path
+confinement.
 
 ## Protocol support
 
@@ -263,6 +314,9 @@ See
 [expo-updates-conformance/README.md](expo-updates-conformance/README.md) for
 running the same HTTP contract against another backend.
 
-The SDK 57 client may request bundle patches with `A-IM: bsdiff`. This server
-currently returns the complete immutable asset with status `200`, which is the
-supported fallback. It does not generate `226 IM Used` binary patches.
+The SDK 57 client may request launch-bundle patches with `A-IM: bsdiff`,
+`Expo-Current-Update-ID`, and `Expo-Requested-Update-ID`. When a validated,
+smaller precomputed patch exists, the server returns `226 IM Used`,
+`IM: bsdiff`, and `Expo-Base-Update-ID`. Unknown bases, mismatched requested
+updates, absent patches, and inefficient patches safely fall back to the full
+immutable asset.

@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import Link from 'next/link';
 
 import styles from '../styles/Home.module.css';
 
@@ -30,7 +31,7 @@ export default function Home() {
           <section className={styles.card}>
             <h2>Asset endpoint</h2>
             <code>/api/assets</code>
-            <p>Immutable update assets, ETags, HEAD, and compression.</p>
+            <p>Immutable assets, ETags, compression, and validated BSDIFF40 deltas.</p>
           </section>
 
           <section className={styles.card}>
@@ -40,9 +41,13 @@ export default function Home() {
           </section>
 
           <section className={styles.card}>
-            <h2>Publish</h2>
-            <code>npm run publish:update</code>
-            <p>Exports both native platforms and atomically stores the update.</p>
+            <h2>Artifact view</h2>
+            <code>/artifacts</code>
+            <p>
+              <Link href="/artifacts">
+                Inspect channel state, bundle sizes, patches, and rollbacks.
+              </Link>
+            </p>
           </section>
         </div>
       </main>

@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { getConfig } from '@expo/config';
 
 import { appendCatalogRecordsAsync } from './catalog.mjs';
+import { generateLaunchAssetPatchesAsync } from './patches.mjs';
 import {
   option,
   resolveRuntimeVersionAsync,
@@ -16,7 +17,10 @@ import {
 } from './runtime-version.mjs';
 
 const serverDirectory = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const clientDirectory = path.resolve(serverDirectory, '..', 'expo-updates-client');
+const clientDirectory = path.resolve(
+  process.env.EXPO_UPDATES_CLIENT_DIRECTORY?.trim() ||
+    path.resolve(serverDirectory, '..', 'expo-updates-client'),
+);
 const updatesDirectory = path.resolve(
   serverDirectory,
   process.env.UPDATES_DIRECTORY?.trim() || 'updates',
@@ -27,9 +31,18 @@ const platforms = selectedPlatforms(option('--platform', 'all'));
 const createdAt = new Date().toISOString();
 const directoryPrefix = String(Date.now());
 const groupId = crypto.randomUUID();
+const patchBaseCount = Number.parseInt(option('--patch-base-count', '3'), 10);
+const maxPatchRatio = Number.parseFloat(process.env.BSDIFF_MAX_PATCH_RATIO?.trim() || '0.9');
 const temporaryDirectory = await mkdtemp(path.join(os.tmpdir(), 'expo-update-export-'));
 const preparedUpdates = [];
 const publishedDirectories = [];
+
+if (!Number.isInteger(patchBaseCount) || patchBaseCount < 0) {
+  throw new Error('--patch-base-count must be a non-negative integer.');
+}
+if (!(maxPatchRatio > 0 && maxPatchRatio <= 1)) {
+  throw new Error('BSDIFF_MAX_PATCH_RATIO must be greater than 0 and at most 1.');
+}
 
 const { exp } = getConfig(clientDirectory, {
   skipSDKVersionRequirement: true,
@@ -68,6 +81,7 @@ try {
     );
 
     const metadataBuffer = await readFile(path.join(exportDirectory, 'metadata.json'));
+    const exportMetadata = JSON.parse(metadataBuffer.toString('utf8'));
     const updateId = crypto.randomUUID();
     const resolvedExpoConfig = {
       ...exp,
@@ -85,6 +99,16 @@ try {
       `${JSON.stringify(resolvedExpoConfig, null, 2)}\n`,
       'utf8',
     );
+    const launchAssetPatches = await generateLaunchAssetPatchesAsync({
+      updatesDirectory,
+      runtimeVersion,
+      platform,
+      channel,
+      targetDirectory: stagingDirectory,
+      exportMetadata,
+      patchBaseCount,
+      maxPatchRatio,
+    });
     await writeFile(
       path.join(stagingDirectory, 'server.json'),
       `${JSON.stringify(
@@ -102,6 +126,7 @@ try {
             'x-expo-update-id': updateId,
             'x-expo-update-group-id': groupId,
           },
+          launchAssetPatches,
           exportHash: crypto.createHash('sha256').update(metadataBuffer).digest('hex'),
         },
         null,
@@ -148,6 +173,16 @@ try {
       `${update.platform}: ${update.updateId} (runtime ${update.runtimeVersion})`,
     );
     console.log(`Directory: ${update.targetDirectory}`);
+    const metadata = JSON.parse(
+      await readFile(path.join(update.targetDirectory, 'server.json'), 'utf8'),
+    );
+    for (const [baseUpdateId, patch] of Object.entries(
+      metadata.launchAssetPatches?.[update.platform] ?? {},
+    )) {
+      console.log(
+        `BSDIFF: ${baseUpdateId} -> ${update.updateId} (${patch.size} bytes, ${patch.path})`,
+      );
+    }
   }
 } catch (error) {
   await Promise.all(

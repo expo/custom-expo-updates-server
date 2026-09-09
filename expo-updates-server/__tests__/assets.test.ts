@@ -1,6 +1,8 @@
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import * as zlib from 'node:zlib';
+import bsdiff from 'bsdiff-node';
 import { createMocks } from 'node-mocks-http';
 
 import handleAssets from '../pages/api/assets';
@@ -96,9 +98,89 @@ test('supports zstd compression when the Node runtime provides it', async () => 
   expect(zstdDecompressSync(res._getBuffer())).toEqual(original);
 });
 
-test('falls back to the full launch asset when bsdiff is requested', async () => {
+test('returns and applies a smaller bsdiff launch-asset patch', async () => {
   const { req, res } = createAssetRequest({
-    headers: { 'a-im': 'bsdiff' },
+    headers: {
+      'a-im': 'bsdiff',
+      'expo-current-update-id': '55555555-5555-4555-8555-555555555555',
+      'expo-requested-update-id': UPDATE_ID,
+    },
+    query: { asset: IOS_BUNDLE_PATH },
+  });
+  await handleAssets(req, res);
+  expect(res._getStatusCode()).toBe(226);
+  expect(res.getHeader('im')).toBe('bsdiff');
+  expect(res.getHeader('expo-base-update-id')).toBe('55555555-5555-4555-8555-555555555555');
+  expect(res.getHeader('content-type')).toBe('application/vnd.bsdiff');
+  expect(res.getHeader('cache-control')).toMatch(/^private,/);
+
+  const tempDirectory = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-bsdiff-jest-'));
+  try {
+    const oldPath = path.join(tempDirectory, 'old');
+    const patchPath = path.join(tempDirectory, 'patch');
+    const resultPath = path.join(tempDirectory, 'result');
+    fs.writeFileSync(
+      oldPath,
+      fs.readFileSync(path.join('updates', 'test', '0', 'bundles', 'ios-old.js')),
+    );
+    fs.writeFileSync(patchPath, res._getBuffer());
+    bsdiff.patchSync(oldPath, resultPath, patchPath);
+    expect(fs.readFileSync(resultPath)).toEqual(
+      fs.readFileSync(path.join('updates', 'test', '1', IOS_BUNDLE_PATH)),
+    );
+  } finally {
+    fs.rmSync(tempDirectory, { recursive: true, force: true });
+  }
+});
+
+test('rejects stale launch-asset patch metadata', async () => {
+  const tempDirectory = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-bsdiff-stale-'));
+  const updatesDirectory = path.join(tempDirectory, 'updates');
+  const previousUpdatesDirectory = process.env.UPDATES_DIRECTORY;
+  try {
+    fs.cpSync('updates', updatesDirectory, { recursive: true });
+    const metadataPath = path.join(updatesDirectory, 'test', '1', 'server.json');
+    const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
+    metadata.launchAssetPatches.ios['55555555-5555-4555-8555-555555555555'].targetAssetHash =
+      'stale-target-hash';
+    fs.writeFileSync(metadataPath, `${JSON.stringify(metadata, null, 2)}\n`);
+    process.env.UPDATES_DIRECTORY = updatesDirectory;
+
+    const { req, res } = createAssetRequest({
+      headers: {
+        'a-im': 'bsdiff',
+        'expo-current-update-id': '55555555-5555-4555-8555-555555555555',
+        'expo-requested-update-id': UPDATE_ID,
+      },
+      query: { asset: IOS_BUNDLE_PATH },
+    });
+    await handleAssets(req, res);
+
+    expect(res._getStatusCode()).toBe(500);
+    expect(res._getJSONData().error).toMatch(/metadata is stale/i);
+  } finally {
+    if (previousUpdatesDirectory === undefined) {
+      delete process.env.UPDATES_DIRECTORY;
+    } else {
+      process.env.UPDATES_DIRECTORY = previousUpdatesDirectory;
+    }
+    fs.rmSync(tempDirectory, { recursive: true, force: true });
+  }
+});
+
+test.each([
+  ['missing base', {}],
+  ['unknown base', { 'expo-current-update-id': '22222222-2222-4222-8222-222222222222' }],
+  [
+    'wrong requested update',
+    {
+      'expo-current-update-id': '55555555-5555-4555-8555-555555555555',
+      'expo-requested-update-id': '66666666-6666-4666-8666-666666666666',
+    },
+  ],
+])('falls back to the full launch asset for %s', async (_label, headers) => {
+  const { req, res } = createAssetRequest({
+    headers: { 'a-im': 'bsdiff', ...headers },
     query: { asset: IOS_BUNDLE_PATH },
   });
   await handleAssets(req, res);

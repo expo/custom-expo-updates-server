@@ -67,12 +67,11 @@ The local asset endpoint therefore:
 - keeps assets immutable and scoped to a runtime/update/platform;
 - sends `Content-Length`, which improves `downloadProgress`;
 - negotiates Zstandard when Node supports it, then Brotli and gzip; and
-- safely returns a full status-`200` asset when a client advertises
-  `A-IM: bsdiff`.
+- returns a validated status-`226` BSDIFF40 patch when a known prior launch
+  bundle is available and the patch is smaller than the target.
 
-Returning a full asset is compatible fallback behavior. Generating a patch
-would additionally require a known base update, patch creation, status `226`,
-`IM: bsdiff`, and `Expo-Base-Update-ID`.
+Unknown bases, mismatched requested updates, absent patches, and inefficient
+patches use the compatible full-asset fallback.
 
 ## SDK 57
 
@@ -150,7 +149,8 @@ It also adds:
 - MIME types and content lengths
 - Zstandard/Brotli/gzip negotiation
 - `nosniff`
-- full-asset fallback for `bsdiff`
+- precomputed BSDIFF40 launch-bundle patches with hash validation and
+  full-asset fallback
 - path traversal prevention
 
 ### Publishing
@@ -162,10 +162,15 @@ The new Node publisher:
 - runs the real `expo export --platform all`;
 - computes a UUID for the update;
 - writes exported config plus server metadata;
+- precomputes efficient launch-bundle patches from configurable prior active
+  updates in the same runtime/platform/channel;
 - stages the complete update under a `.tmp` directory; and
 - atomically renames it into the update store.
 
 A separate publisher creates rollback records with the same atomic pattern.
+The demo workflow produces two real Expo exports from a controlled JavaScript
+change and exposes an artifact report/browser view showing update, patch, and
+rollback state.
 
 ### Diagnostic app
 
