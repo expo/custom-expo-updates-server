@@ -1,0 +1,7 @@
+**/node_modules
+**/.next
+.git
+expo-updates-client
+expo-updates-server/.env*
+expo-updates-server/code-signing-keys
+expo-updates-server/updates
